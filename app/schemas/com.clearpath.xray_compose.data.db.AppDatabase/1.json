@@ -1,0 +1,295 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "85b4db1152755e1d54a0e35edd5b4048",
+    "entities": [
+      {
+        "tableName": "profiles",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `configType` INTEGER NOT NULL, `configVersion` INTEGER NOT NULL, `subId` TEXT NOT NULL, `isSub` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `sortOrder` REAL NOT NULL, `remark` TEXT NOT NULL, `address` TEXT NOT NULL, `port` INTEGER NOT NULL, `password` TEXT NOT NULL, `username` TEXT NOT NULL, `network` TEXT NOT NULL, `streamSecurity` TEXT NOT NULL, `allowInsecure` TEXT NOT NULL, `sni` TEXT NOT NULL, `alpn` TEXT NOT NULL, `utlsFingerprint` TEXT NOT NULL, `realityPublicKey` TEXT NOT NULL, `realityShortId` TEXT NOT NULL, `realitySpiderX` TEXT NOT NULL, `realityMldsa65Verify` TEXT NOT NULL, `muxEnabled` TEXT NOT NULL, `cert` TEXT NOT NULL, `certSha` TEXT NOT NULL, `certVerifyName` TEXT NOT NULL, `echConfigList` TEXT NOT NULL, `finalmask` TEXT NOT NULL, `protoExtraRaw` TEXT NOT NULL, `transportExtraRaw` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "configType",
+            "columnName": "configType",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "configVersion",
+            "columnName": "configVersion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subId",
+            "columnName": "subId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSub",
+            "columnName": "isSub",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sortOrder",
+            "columnName": "sortOrder",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remark",
+            "columnName": "remark",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "port",
+            "columnName": "port",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "password",
+            "columnName": "password",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "username",
+            "columnName": "username",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "network",
+            "columnName": "network",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "streamSecurity",
+            "columnName": "streamSecurity",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "allowInsecure",
+            "columnName": "allowInsecure",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sni",
+            "columnName": "sni",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alpn",
+            "columnName": "alpn",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "utlsFingerprint",
+            "columnName": "utlsFingerprint",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "realityPublicKey",
+            "columnName": "realityPublicKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "realityShortId",
+            "columnName": "realityShortId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "realitySpiderX",
+            "columnName": "realitySpiderX",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "realityMldsa65Verify",
+            "columnName": "realityMldsa65Verify",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "muxEnabled",
+            "columnName": "muxEnabled",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cert",
+            "columnName": "cert",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "certSha",
+            "columnName": "certSha",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "certVerifyName",
+            "columnName": "certVerifyName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "echConfigList",
+            "columnName": "echConfigList",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "finalmask",
+            "columnName": "finalmask",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "protoExtraRaw",
+            "columnName": "protoExtraRaw",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "transportExtraRaw",
+            "columnName": "transportExtraRaw",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "profile_stats",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `totalUp` INTEGER NOT NULL, `totalDown` INTEGER NOT NULL, `todayUp` INTEGER NOT NULL, `todayDown` INTEGER NOT NULL, `lastUpdated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalUp",
+            "columnName": "totalUp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalDown",
+            "columnName": "totalDown",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "todayUp",
+            "columnName": "todayUp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "todayDown",
+            "columnName": "todayDown",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "profile_test",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` BLOB NOT NULL, `delay` INTEGER NOT NULL, `speedMB` REAL NOT NULL, `testResult` TEXT NOT NULL, `message` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "BLOB",
+            "notNull": true
+          },
+          {
+            "fieldPath": "delay",
+            "columnName": "delay",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "speedMB",
+            "columnName": "speedMB",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "testResult",
+            "columnName": "testResult",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "message",
+            "columnName": "message",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '85b4db1152755e1d54a0e35edd5b4048')"
+    ]
+  }
+}
