@@ -1,0 +1,193 @@
+package com.clearpath.xray_compose.ui.screen.settings
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.clearpath.xray_compose.R
+import com.clearpath.xray_compose.ui.components.EditableTrailingIconField
+import com.clearpath.xray_compose.ui.components.FormBottomSheetContext
+import com.clearpath.xray_compose.ui.components.ReusableFormBottomSheet
+import com.clearpath.xray_compose.ui.navigation.LocalNavigator
+import com.clearpath.xray_compose.ui.navigation.sharedviewmodel.LocalSharedViewModelStoreOwner
+import com.clearpath.xray_compose.ui.screen.LocalRootInnerPadding
+import com.clearpath.xray_compose.viewmodel.SettingsRoutingViewModel
+import com.clearpath.xray_compose.viewmodel.SettingsRuleViewModel
+
+@Composable
+fun SettingsRuleScreen(
+    id: String,
+) {
+    val parentViewModel = viewModel<SettingsRoutingViewModel>(
+        viewModelStoreOwner = LocalSharedViewModelStoreOwner.current
+    )
+    val viewModel = viewModel<SettingsRuleViewModel>(
+        factory = viewModelFactory {
+            initializer {
+                val application = checkNotNull(this[APPLICATION_KEY])
+                SettingsRuleViewModel(
+                    id = id,
+                    settingsRoutingViewModel = parentViewModel,
+                    application = application
+                )
+            }
+        }
+    )
+
+    val navigator = LocalNavigator.current
+    val rootInnerPadding = LocalRootInnerPadding.current
+    val rule by viewModel.ruleFlow.collectAsState()
+
+    var activeDialogContext by remember { mutableStateOf<FormBottomSheetContext?>(null) }
+
+    Scaffold(
+        modifier = Modifier.padding(rootInnerPadding),
+        topBar = {
+            TopAppBar(
+                title = { Text("Rule Settings") },
+                navigationIcon = {
+                    IconButton(onClick = { navigator.goBack() }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow_back),
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                windowInsets = WindowInsets(0.dp)
+            )
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                EditableTrailingIconField(
+                    value = rule.remark,
+                    onValueChange = { newRemark ->
+                        viewModel.updateRule { currentRule ->
+                            currentRule.copy(remark = newRemark)
+                        }
+                    },
+                    label = { Text("Remark") },
+                    modifier = Modifier.fillMaxWidth(),
+                    onEditIconClick = {
+                        activeDialogContext = FormBottomSheetContext(
+                            fieldKey = "remark",
+                            title = "Edit Remark",
+                            initialValue = rule.remark,
+                            onConfirm = { newRemark ->
+                                viewModel.updateRule { currentRule ->
+                                    currentRule.copy(remark = newRemark)
+                                }
+                            }
+                        )
+                    }
+                )
+            }
+            item {
+                EditableTrailingIconField(
+                    value = rule.outboundTag,
+                    onValueChange = { newOutboundTag ->
+                        viewModel.updateRule { currentRule ->
+                            currentRule.copy(outboundTag = newOutboundTag)
+                        }
+                    },
+                    label = { Text("OutboundTag") },
+                    modifier = Modifier.fillMaxWidth(),
+                    onEditIconClick = {
+                        activeDialogContext = FormBottomSheetContext(
+                            fieldKey = "outboundTag",
+                            title = "Edit OutboundTag",
+                            initialValue = rule.outboundTag,
+                            onConfirm = { newOutboundTag ->
+                                viewModel.updateRule { currentRule ->
+                                    currentRule.copy(outboundTag = newOutboundTag)
+                                }
+                            }
+                        )
+                    }
+                )
+            }
+            item {
+                EditableTrailingIconField(
+                    value = rule.domain,
+                    onValueChange = { newDomain ->
+                        viewModel.updateRule { currentRule ->
+                            currentRule.copy(domain = newDomain)
+                        }
+                    },
+                    label = { Text("Domain") },
+                    modifier = Modifier.fillMaxWidth(),
+                    onEditIconClick = {
+                        activeDialogContext = FormBottomSheetContext(
+                            fieldKey = "domain",
+                            title = "Edit Domain",
+                            initialValue = rule.domain,
+                            onConfirm = { newDomain ->
+                                viewModel.updateRule { currentRule ->
+                                    currentRule.copy(domain = newDomain)
+                                }
+                            }
+                        )
+                    }
+                )
+            }
+            item {
+                EditableTrailingIconField(
+                    value = rule.ip,
+                    onValueChange = { newIP ->
+                        viewModel.updateRule { currentRule ->
+                            currentRule.copy(ip = newIP)
+                        }
+                    },
+                    label = { Text("IP") },
+                    modifier = Modifier.fillMaxWidth(),
+                    onEditIconClick = {
+                        activeDialogContext = FormBottomSheetContext(
+                            fieldKey = "ip",
+                            title = "Edit IP",
+                            initialValue = rule.ip,
+                            onConfirm = { newIP ->
+                                viewModel.updateRule { currentRule ->
+                                    currentRule.copy(ip = newIP)
+                                }
+                            }
+                        )
+                    }
+                )
+            }
+        }
+    }
+    ReusableFormBottomSheet(
+        context = activeDialogContext,
+        onDismiss = {
+            @Suppress("AssignedValueIsNeverRead")
+            activeDialogContext = null
+        }
+    )
+}
