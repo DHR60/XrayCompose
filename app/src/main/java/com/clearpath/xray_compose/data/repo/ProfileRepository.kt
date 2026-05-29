@@ -7,7 +7,6 @@ import com.clearpath.xray_compose.data.db.dao.ProfileDao
 import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.util.UUID
 
 val Context.profileRepository: ProfileRepository
     get() = ProfileRepository.getInstance(this)
@@ -67,8 +66,9 @@ class ProfileRepository private constructor(context: Context) {
     suspend fun getAllProfiles(): List<ProfileModel> =
         profileDao.getAllProfiles().map { ProfileModel.fromProfileItem(it) }
 
-    suspend fun getProfileById(id: UUID): ProfileModel? =
-        profileDao.getProfileById(id)?.let { ProfileModel.fromProfileItem(it) }
+    suspend fun getProfileById(id: String): ProfileModel? =
+        profileDao.getProfileById(UuidCreator.fromString(id))
+            ?.let { ProfileModel.fromProfileItem(it) }
 
     suspend fun getAllProfilesBySubid(subid: String): List<ProfileModel> =
         profileDao.getAllProfilesBySubid(subid).map { ProfileModel.fromProfileItem(it) }
@@ -82,8 +82,8 @@ class ProfileRepository private constructor(context: Context) {
     suspend fun findFirstProfileByRemark(remark: String): ProfileModel? =
         profileDao.findFirstProfileByRemark(remark)?.let { ProfileModel.fromProfileItem(it) }
 
-    fun observeProfileById(id: UUID): Flow<ProfileModel?> =
-        profileDao.observeProfileById(id)
+    fun observeProfileById(id: String): Flow<ProfileModel?> =
+        profileDao.observeProfileById(UuidCreator.fromString(id))
             .map { it?.let { ProfileModel.fromProfileItem(it) } }
 
     fun observeAllProfilesOrdered(): Flow<List<ProfileModel>> =

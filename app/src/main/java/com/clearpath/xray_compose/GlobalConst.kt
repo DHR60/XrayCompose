@@ -7,6 +7,9 @@ import com.clearpath.xray_compose.enums.ETransport
 
 object GlobalConst {
     const val appName = "Xray-Compose"
+    const val appId = BuildConfig.APPLICATION_ID
+
+    const val broadcastActionService = "$appId.action.service"
 
     const val loopbackAddress = "127.0.0.1"
     const val publicAddress = "0.0.0.0"

@@ -2,6 +2,8 @@ package com.clearpath.xray_compose.utils
 
 import android.content.ClipboardManager
 import android.content.Context
+import android.os.Build
+import androidx.core.content.ContextCompat
 import java.net.URLDecoder
 import java.net.URLEncoder
 import kotlin.io.encoding.Base64
@@ -212,5 +214,11 @@ object Utils {
             LogUtil.e("Failed to get user asset path", e)
             ""
         }
+    }
+
+    fun receiverFlags(): Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        ContextCompat.RECEIVER_EXPORTED
+    } else {
+        ContextCompat.RECEIVER_NOT_EXPORTED
     }
 }

@@ -7,7 +7,7 @@ object LogUtil {
     private fun mkTag(): String {
         // val stackTrace = Thread.currentThread().stackTrace
         // return stackTrace[4].className.substringAfterLast(".")
-        return GlobalConst.appName
+        return GlobalConst.appId
     }
 
     fun v(message: String) {

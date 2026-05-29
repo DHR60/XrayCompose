@@ -9,7 +9,6 @@ import com.clearpath.xray_compose.data.TransportExtraItem
 import com.clearpath.xray_compose.data.repo.profileRepository
 import com.clearpath.xray_compose.data.tempstore.TempStore
 import com.clearpath.xray_compose.viewmodel.uistate.ProfileUiState
-import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -57,8 +56,7 @@ class ProfileEditorViewModel(id: String, application: Application) : AndroidView
             _uiState.value = ProfileUiState(loading = true)
             // load from db
             viewModelScope.launch {
-                val profileId = UuidCreator.fromString(id)
-                val profileItem = profileRepository.getProfileById(profileId)
+                val profileItem = profileRepository.getProfileById(id)
                 if (profileItem != null) {
                     _uiState.value = ProfileUiState.fromProfileModel(profileItem)
                 } else {

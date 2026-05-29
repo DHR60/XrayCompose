@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.clearpath.xray_compose"
-        minSdk = 28
+        minSdk = 29
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
@@ -41,6 +41,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     sourceSets {

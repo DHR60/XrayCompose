@@ -7,7 +7,6 @@ import com.clearpath.xray_compose.data.repo.configRepository
 import com.clearpath.xray_compose.data.repo.preferencesRepository
 import com.clearpath.xray_compose.data.repo.profileRepository
 import com.clearpath.xray_compose.data.tempstore.TempStore
-import com.github.f4b6a3.uuid.UuidCreator
 import kotlinx.coroutines.flow.firstOrNull
 
 data class EngineConfigContextBuilderResult(
@@ -32,7 +31,7 @@ class EngineConfigContextBuilder(context: Context) {
                 warnings = emptyList(),
             )
         val activeProfile =
-            profileRepository.getProfileById(UuidCreator.fromString(activeProfileId)) ?: run {
+            profileRepository.getProfileById(activeProfileId) ?: run {
                 return EngineConfigContextBuilderResult(
                     ecContext = null,
                     errors = listOf("Active profile with ID $activeProfileId not found."),
@@ -45,7 +44,7 @@ class EngineConfigContextBuilder(context: Context) {
 
     suspend fun build(profileId: String): EngineConfigContextBuilderResult {
         val profile = TempStore.consume(profileId)
-            ?: profileRepository.getProfileById(UuidCreator.fromString(profileId))
+            ?: profileRepository.getProfileById(profileId)
             ?: run {
                 return EngineConfigContextBuilderResult(
                     ecContext = null,
@@ -89,5 +88,29 @@ class EngineConfigContextBuilder(context: Context) {
             errors = errors,
             warnings = warnings,
         )
+    }
+
+    suspend fun quickCheck(): List<String> {
+        val errors = mutableListOf<String>()
+
+        val activeProfileId = preferencesRepository.activeProfileIdFlow.firstOrNull()
+        if (activeProfileId == null) {
+            errors.add("No active profile ID found in preferences.")
+            return errors
+        }
+
+        val activeProfile = profileRepository.getProfileById(activeProfileId)
+        if (activeProfile == null) {
+            errors.add("Active profile with ID $activeProfileId not found.")
+            return errors
+        }
+
+        return errors
+    }
+
+    suspend fun isVpnMode(): Boolean {
+        return !(configRepository.engineSettingListFlow.firstOrNull()
+            ?.firstOrNull()?.inbound?.disableTun
+            ?: false)
     }
 }
