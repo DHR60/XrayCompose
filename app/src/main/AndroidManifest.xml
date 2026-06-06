@@ -62,6 +62,7 @@
             android:foregroundServiceType="specialUse"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_VPN_SERVICE"
+            android:process=":engine"
             tools:ignore="VpnServicePolicy">
             <intent-filter>
                 <action android:name="android.net.VpnService" />
@@ -78,7 +79,8 @@
             android:name=".service.engine.control.EngineProxyOnlyService"
             android:exported="false"
             android:foregroundServiceType="specialUse"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:process=":engine">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="proxy" />
