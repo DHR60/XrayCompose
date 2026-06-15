@@ -21,10 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.ui.components.EditableTrailingIconField
 import com.clearpath.xray_compose.ui.components.FormBottomSheetContext
@@ -39,20 +36,11 @@ import com.clearpath.xray_compose.viewmodel.SettingsRuleViewModel
 fun SettingsRuleScreen(
     id: String,
 ) {
-    val parentViewModel = viewModel<SettingsRoutingViewModel>(
+    val parentViewModel = hiltViewModel<SettingsRoutingViewModel>(
         viewModelStoreOwner = LocalSharedViewModelStoreOwner.current
     )
-    val viewModel = viewModel<SettingsRuleViewModel>(
-        factory = viewModelFactory {
-            initializer {
-                val application = checkNotNull(this[APPLICATION_KEY])
-                SettingsRuleViewModel(
-                    id = id,
-                    settingsRoutingViewModel = parentViewModel,
-                    application = application
-                )
-            }
-        }
+    val viewModel = hiltViewModel<SettingsRuleViewModel, SettingsRuleViewModel.Factory>(
+        creationCallback = { factory -> factory.create(id, parentViewModel) }
     )
 
     val navigator = LocalNavigator.current

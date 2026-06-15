@@ -163,7 +163,12 @@ object FmtUtils {
         val params = EncodedParameters()
         val itemNetwork = item.network.ifEmpty { GlobalConst.defaultTransportNetworkEnum.value }
         val transportType =
-            enumEntries<ETransport>().firstOrNull { it.value.equals(itemNetwork, ignoreCase = true) }
+            enumEntries<ETransport>().firstOrNull {
+                it.value.equals(
+                    itemNetwork,
+                    ignoreCase = true
+                )
+            }
         if (transportType == null) {
             return params
         }

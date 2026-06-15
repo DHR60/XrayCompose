@@ -37,35 +37,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
 import com.clearpath.xray_compose.ui.navigation.SettingsRule
-import com.clearpath.xray_compose.ui.navigation.sharedviewmodel.LocalSharedViewModelStoreOwner
 import com.clearpath.xray_compose.ui.screen.LocalRootInnerPadding
 import com.clearpath.xray_compose.viewmodel.SettingsRoutingViewModel
-import com.clearpath.xray_compose.viewmodel.SettingsViewModel
 
 @Composable
 fun SettingsRoutingScreen() {
-    val parentViewModel = viewModel<SettingsViewModel>(
-        viewModelStoreOwner = LocalSharedViewModelStoreOwner.current
-    )
-    val viewModel: SettingsRoutingViewModel = viewModel(
-        factory = viewModelFactory {
-            initializer {
-                val application = checkNotNull(this[APPLICATION_KEY])
-                SettingsRoutingViewModel(
-                    settingsViewModel = parentViewModel,
-                    application = application
-                )
-            }
-        }
-    )
+    val viewModel: SettingsRoutingViewModel = hiltViewModel()
 
     val navigator = LocalNavigator.current
     val rootInnerPadding = LocalRootInnerPadding.current

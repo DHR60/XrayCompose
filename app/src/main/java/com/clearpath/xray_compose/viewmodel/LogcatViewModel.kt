@@ -1,9 +1,9 @@
 package com.clearpath.xray_compose.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clearpath.xray_compose.GlobalConst
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
@@ -16,8 +16,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import javax.inject.Inject
 
-class LogcatViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class LogcatViewModel @Inject constructor() : ViewModel() {
     private val _logcatSourceFlow: Flow<String> = flow {
         var process: Process? = null
         try {

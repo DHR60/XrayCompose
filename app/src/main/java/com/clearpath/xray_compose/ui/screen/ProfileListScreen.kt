@@ -45,7 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.data.ProfileModel
@@ -60,7 +60,7 @@ import com.clearpath.xray_compose.viewmodel.uistate.ProfileUiState
 
 @Composable
 fun ProfileListScreen() {
-    val viewModel: ProfileListViewModel = viewModel()
+    val viewModel: ProfileListViewModel = hiltViewModel()
     val navigator = LocalNavigator.current
     val rootInnerPadding = LocalRootInnerPadding.current
     val subItems by viewModel.subItemsFlow.collectAsState()

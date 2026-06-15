@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
 import com.clearpath.xray_compose.ui.navigation.SettingsSubEditor
@@ -40,7 +40,7 @@ fun SettingsSubScreen() {
     val navigator = LocalNavigator.current
     val rootInnerPadding = LocalRootInnerPadding.current
 
-    val viewModel: SettingsSubViewModel = viewModel()
+    val viewModel: SettingsSubViewModel = hiltViewModel()
 
     val subList by viewModel.subListFlow.collectAsState()
 

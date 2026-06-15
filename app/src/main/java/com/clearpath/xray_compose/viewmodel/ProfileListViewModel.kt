@@ -1,20 +1,17 @@
 package com.clearpath.xray_compose.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clearpath.xray_compose.data.ConfigSubItem
 import com.clearpath.xray_compose.data.ProfileModel
-import com.clearpath.xray_compose.data.StoreRepos
 import com.clearpath.xray_compose.data.db.entities.ProfileTestItem
-import com.clearpath.xray_compose.data.repo.configRepository
-import com.clearpath.xray_compose.data.repo.preferencesRepository
-import com.clearpath.xray_compose.data.repo.profileRepository
+import com.clearpath.xray_compose.data.repo.ConfigRepository
+import com.clearpath.xray_compose.data.repo.PreferencesRepository
+import com.clearpath.xray_compose.data.repo.ProfileRepository
 import com.clearpath.xray_compose.service.ProfileImportInteractor
 import com.clearpath.xray_compose.service.engine.control.tester.EngineTesterRepository
-import com.clearpath.xray_compose.service.engine.control.tester.engineTesterRepository
 import com.clearpath.xray_compose.utils.LogUtil
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,18 +27,21 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class ProfileWithTest(
     val profile: ProfileModel,
     val test: ProfileTestItem? = null
 )
 
-class ProfileListViewModel(application: Application) : AndroidViewModel(application) {
-    private val preferencesRepository = application.preferencesRepository
-    private val profileRepository = application.profileRepository
-    private val configRepository = application.configRepository
-
-    private val engineTesterRepository = application.engineTesterRepository
+@HiltViewModel
+class ProfileListViewModel @Inject constructor(
+    private val preferencesRepository: PreferencesRepository,
+    private val profileRepository: ProfileRepository,
+    private val configRepository: ConfigRepository,
+    private val engineTesterRepository: EngineTesterRepository,
+    private val profileImportInteractor: ProfileImportInteractor
+) : ViewModel() {
 
     val prefsActiveProfileIdFlow = preferencesRepository.activeProfileIdFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
@@ -53,7 +53,7 @@ class ProfileListViewModel(application: Application) : AndroidViewModel(applicat
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     private val _activeSubIdFlow =
-        MutableStateFlow<String?>(preferencesRepository.activeSubIdFlow.value)
+        MutableStateFlow(preferencesRepository.activeSubIdFlow.value)
     val activeSubIdFlow = _activeSubIdFlow.asStateFlow()
 
     val subItemsFlow: StateFlow<List<ConfigSubItem>> = configRepository.subListFlow
@@ -189,16 +189,7 @@ class ProfileListViewModel(application: Application) : AndroidViewModel(applicat
             _isBusy.value = true
             _errorMessage.value = null
             try {
-                val profileImportInteractor = ProfileImportInteractor(
-                    storeRepos = StoreRepos(
-                        profileRepo = profileRepository,
-                        configRepo = configRepository,
-                        prefsRepo = preferencesRepository,
-                    ),
-                    targetSubId = activeSubIdFlow.value ?: "",
-                    context = application
-                )
-                profileImportInteractor.importFromClipboard()
+                profileImportInteractor.importFromClipboard(activeSubIdFlow.value ?: "")
             } catch (e: Exception) {
                 _errorMessage.value = e.message ?: "Failed to import from clipboard"
             } finally {
@@ -216,16 +207,7 @@ class ProfileListViewModel(application: Application) : AndroidViewModel(applicat
                     _errorMessage.value = "No active subscription"
                     return@launch
                 }
-                val profileImportInteractor = ProfileImportInteractor(
-                    storeRepos = StoreRepos(
-                        profileRepo = profileRepository,
-                        configRepo = configRepository,
-                        prefsRepo = preferencesRepository,
-                    ),
-                    targetSubId = subId,
-                    context = application
-                )
-                profileImportInteractor.updateSub()
+                profileImportInteractor.updateSub(subId)
             } catch (e: Exception) {
                 _errorMessage.value = e.message ?: "Failed to update subscription"
                 LogUtil.e("ProfileListViewModel Failed to update sub for network", e)

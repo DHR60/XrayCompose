@@ -5,4 +5,5 @@ plugins {
     alias(libs.plugins.kotlin.serialization) apply false
     alias(libs.plugins.google.ksp) apply false
     alias(libs.plugins.room3) apply false
+    alias(libs.plugins.google.hilt.android) apply false
 }

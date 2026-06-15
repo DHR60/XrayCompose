@@ -1,6 +1,5 @@
 package com.clearpath.xray_compose.service.engine.control.tester
 
-import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -9,26 +8,17 @@ import android.os.IBinder
 import com.clearpath.xray_compose.IEngineTesterCallback
 import com.clearpath.xray_compose.IEngineTesterService
 import com.clearpath.xray_compose.utils.LogUtil
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-val Context.engineTesterRepository: EngineTesterRepository
-    get() = EngineTesterRepository.getInstance(this)
-
-class EngineTesterRepository private constructor(private val context: Context) {
-    companion object {
-        @SuppressLint("StaticFieldLeak")
-        @Volatile
-        private var instance: EngineTesterRepository? = null
-
-        fun getInstance(context: Context): EngineTesterRepository {
-            return instance ?: synchronized(this) {
-                instance ?: EngineTesterRepository(context).also { instance = it }
-            }
-        }
-    }
-
+@Singleton
+class EngineTesterRepository @Inject constructor(
+    @param:ApplicationContext private val context: Context
+) {
     private var testerService: IEngineTesterService? = null
     private var connectionDeferred: CompletableDeferred<IEngineTesterService>? = null
     private var isServiceBound = false

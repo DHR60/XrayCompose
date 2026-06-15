@@ -42,9 +42,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.enums.EngineState
@@ -56,7 +56,7 @@ import com.clearpath.xray_compose.viewmodel.HomeViewModel
 fun HomeScreen() {
     val context = LocalContext.current
 
-    val viewModel: HomeViewModel = viewModel()
+    val viewModel: HomeViewModel = hiltViewModel()
     val rootInnerPadding = LocalRootInnerPadding.current
     val engineState by viewModel.engineStateFlow.collectAsState()
     val engineErrorMsg by viewModel.engineErrorMsgFlow.collectAsState()

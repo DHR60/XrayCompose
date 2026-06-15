@@ -1,23 +1,25 @@
 package com.clearpath.xray_compose.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clearpath.xray_compose.data.ConfigSubItem
-import com.clearpath.xray_compose.data.StoreRepos
-import com.clearpath.xray_compose.data.repo.configRepository
-import com.clearpath.xray_compose.data.repo.profileRepository
+import com.clearpath.xray_compose.data.repo.ConfigRepository
+import com.clearpath.xray_compose.data.repo.ProfileRepository
 import com.clearpath.xray_compose.service.ProfileImportInteractor
 import com.clearpath.xray_compose.utils.LogUtil
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SettingsSubViewModel(application: Application) : AndroidViewModel(application) {
-    private val profileRepository = application.profileRepository
-    private val configRepository = application.configRepository
+@HiltViewModel
+class SettingsSubViewModel @Inject constructor(
+    private val profileRepository: ProfileRepository,
+    private val configRepository: ConfigRepository,
+    private val profileImportInteractor: ProfileImportInteractor
+) : ViewModel() {
 
     private val _subListFlow = MutableStateFlow<List<SubItemUiState>>(emptyList())
     val subListFlow = _subListFlow.asStateFlow()
@@ -85,12 +87,7 @@ class SettingsSubViewModel(application: Application) : AndroidViewModel(applicat
                 _subListFlow.value = _subListFlow.value.map {
                     if (it.config.id == subId) it.copy(isUpdating = true) else it
                 }
-                val profileImportInteractor = ProfileImportInteractor(
-                    storeRepos = StoreRepos.getOrBuildSingleton(application),
-                    targetSubId = subId,
-                    context = application
-                )
-                profileImportInteractor.updateSub()
+                profileImportInteractor.updateSub(subId)
                 val count = profileRepository.getProfileCountForSub(subId)
                 _subListFlow.value = _subListFlow.value.map {
                     if (it.config.id == subId) it.copy(isUpdating = false, count = count) else it

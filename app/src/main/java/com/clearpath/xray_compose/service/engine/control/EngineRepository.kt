@@ -1,6 +1,5 @@
 package com.clearpath.xray_compose.service.engine.control
 
-import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -14,6 +13,7 @@ import com.clearpath.xray_compose.enums.EngineState
 import com.clearpath.xray_compose.service.engine.context.EngineConfigContextBuilder
 import com.clearpath.xray_compose.service.engine.model.TrafficSummary
 import com.clearpath.xray_compose.utils.LogUtil
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,24 +25,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.time.Duration.Companion.milliseconds
 
-val Context.engineRepository: EngineRepository
-    get() = EngineRepository.getInstance(this)
-
-class EngineRepository private constructor(private val context: Context) {
-    companion object {
-        @SuppressLint("StaticFieldLeak")
-        @Volatile
-        private var instance: EngineRepository? = null
-
-        fun getInstance(context: Context): EngineRepository {
-            return instance ?: synchronized(this) {
-                instance ?: EngineRepository(context).also { instance = it }
-            }
-        }
-    }
-
+@Singleton
+class EngineRepository @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+    private val configContextBuilder: EngineConfigContextBuilder
+) {
     private var engineServiceControl: IEngineServiceControl? = null
     private var connectionDeferred: CompletableDeferred<IEngineServiceControl>? = null
 
@@ -113,7 +104,7 @@ class EngineRepository private constructor(private val context: Context) {
             CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
                 try {
                     val configContextResult =
-                        EngineConfigContextBuilder(context).buildActiveProfile()
+                        configContextBuilder.buildActiveProfile()
                     val ecContext = configContextResult.ecContext
                     if (!configContextResult.success
                         || ecContext == null
@@ -178,7 +169,7 @@ class EngineRepository private constructor(private val context: Context) {
     }
 
     suspend fun startActiveProfileEngine() {
-        val configContextResult = EngineConfigContextBuilder(context).buildActiveProfile()
+        val configContextResult = configContextBuilder.buildActiveProfile()
         if (!configContextResult.success) {
             _lastError.value = configContextResult.errors.joinToString("; ")
             return

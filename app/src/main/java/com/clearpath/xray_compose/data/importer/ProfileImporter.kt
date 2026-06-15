@@ -1,13 +1,15 @@
 package com.clearpath.xray_compose.data.importer
 
 import com.clearpath.xray_compose.data.ProfileModel
-import com.clearpath.xray_compose.data.StoreRepos
+import com.clearpath.xray_compose.data.repo.PreferencesRepository
+import com.clearpath.xray_compose.data.repo.ProfileRepository
 import com.clearpath.xray_compose.service.formatter.FmtFact
 import com.clearpath.xray_compose.utils.Base64Util
 import com.clearpath.xray_compose.utils.LogUtil
 
 class ProfileImporter(
-    private val storeRepos: StoreRepos,
+    private val profileRepo: ProfileRepository,
+    private val prefsRepo: PreferencesRepository,
     private val isSub: Boolean,
     private val targetSubId: String = "",
 ) {
@@ -15,7 +17,7 @@ class ProfileImporter(
 
     suspend fun addBatchServers(data: String): Int {
         // TODO: inner url, shadowsocks SIP008, wireguard config, custom config...
-        val subId = targetSubId.ifEmpty { storeRepos.prefsRepo.activeSubIdFlow.value } ?: ""
+        val subId = targetSubId.ifEmpty { prefsRepo.activeSubIdFlow.value } ?: ""
 
         val profiles = doParse(data)
             .filter { profileFilter(it) }
@@ -27,11 +29,11 @@ class ProfileImporter(
             }
 
         if (profiles.isNotEmpty() && subId.isNotEmpty() && isSub) {
-            storeRepos.profileRepo.deleteSubProfiles(subId)
+            profileRepo.deleteSubProfiles(subId)
         }
 
         if (profiles.isNotEmpty()) {
-            storeRepos.profileRepo.insertProfiles(profiles)
+            profileRepo.insertProfiles(profiles)
         }
         return profiles.size
     }

@@ -1,6 +1,5 @@
 package com.clearpath.xray_compose.data.repo
 
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -15,34 +14,12 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
+import javax.inject.Singleton
 
-val Context.preferencesRepository: PreferencesRepository
-    get() = PreferencesRepository.getInstance(this)
-
-val preferencesRepository: PreferencesRepository
-    get() = PreferencesRepository.getInstance()
-
-class PreferencesRepository private constructor(private val dataStore: DataStore<Preferences>) {
+@Singleton
+class PreferencesRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
     private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
-    companion object {
-        @Volatile
-        private var INSTANCE: PreferencesRepository? = null
-
-        fun getInstance(context: Context): PreferencesRepository {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE
-                    ?: PreferencesRepository(context.applicationContext.preferencesDataStore).also {
-                        INSTANCE = it
-                    }
-            }
-        }
-
-        fun getInstance(): PreferencesRepository {
-            return INSTANCE
-                ?: error("PreferencesRepository is not initialized. Please call getInstance(context) first.")
-        }
-    }
 
     val configState: StateFlow<StateItem> = dataStore.data
         .map { preferences ->

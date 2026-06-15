@@ -37,10 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.enums.EConfigType
@@ -64,16 +61,8 @@ fun ProfileEditorScreen(
     val navigator = LocalNavigator.current
     val rootInnerPadding = LocalRootInnerPadding.current
 
-    val viewModel = viewModel<ProfileEditorViewModel>(
-        factory = viewModelFactory {
-            initializer {
-                val application = checkNotNull(this[APPLICATION_KEY])
-                ProfileEditorViewModel(
-                    id = id,
-                    application = application
-                )
-            }
-        }
+    val viewModel = hiltViewModel<ProfileEditorViewModel, ProfileEditorViewModel.Factory>(
+        creationCallback = { factory -> factory.create(id) }
     )
 
     // val profileUiState by viewModel.uiState.collectAsState()

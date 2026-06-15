@@ -39,7 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.data.ConfigEngineItem
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
@@ -55,7 +55,7 @@ fun SettingsScreen() {
     val navigator = LocalNavigator.current
     val rootInnerPadding = LocalRootInnerPadding.current
 
-    val viewModel: SettingsViewModel = viewModel()
+    val viewModel: SettingsViewModel = hiltViewModel()
     val engineSettingList = viewModel.engineSettingListFlow.collectAsState().value
     val activeEngineSetting = viewModel.activeEngineSettingFlow.collectAsState().value
 

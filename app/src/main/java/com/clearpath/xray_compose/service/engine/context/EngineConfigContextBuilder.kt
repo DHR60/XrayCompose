@@ -1,13 +1,14 @@
 package com.clearpath.xray_compose.service.engine.context
 
-import android.content.Context
 import com.clearpath.xray_compose.data.ConfigEngineItem
 import com.clearpath.xray_compose.data.ProfileModel
-import com.clearpath.xray_compose.data.repo.configRepository
-import com.clearpath.xray_compose.data.repo.preferencesRepository
-import com.clearpath.xray_compose.data.repo.profileRepository
+import com.clearpath.xray_compose.data.repo.ConfigRepository
+import com.clearpath.xray_compose.data.repo.PreferencesRepository
+import com.clearpath.xray_compose.data.repo.ProfileRepository
 import com.clearpath.xray_compose.data.tempstore.TempStore
 import kotlinx.coroutines.flow.firstOrNull
+import javax.inject.Inject
+import javax.inject.Singleton
 
 data class EngineConfigContextBuilderResult(
     val ecContext: EngineConfigContext?,
@@ -18,10 +19,12 @@ data class EngineConfigContextBuilderResult(
         get() = errors.isEmpty()
 }
 
-class EngineConfigContextBuilder(context: Context) {
-    private val preferencesRepository = context.preferencesRepository
-    private val profileRepository = context.profileRepository
-    private val configRepository = context.configRepository
+@Singleton
+class EngineConfigContextBuilder @Inject constructor(
+    private val preferencesRepository: PreferencesRepository,
+    private val profileRepository: ProfileRepository,
+    private val configRepository: ConfigRepository
+) {
 
     suspend fun buildActiveProfile(): EngineConfigContextBuilderResult {
         val activeProfileId = preferencesRepository.getActiveProfileId()
