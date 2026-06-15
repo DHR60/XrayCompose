@@ -22,7 +22,7 @@ import kotlin.enums.enumEntries
 
 object FmtUtils {
     fun buildAuthority(host: String, port: Int?): String {
-        return buildAuthority("", host, port)
+        return buildAuthorityInner("", host, port)
     }
 
     fun buildAuthority(userinfo: String, host: String, port: Int?): String {
@@ -38,7 +38,7 @@ object FmtUtils {
             if (item.username.isNotEmpty()) Utils.encodeURIComponent(item.username) + ":" + Utils.encodeURIComponent(
                 item.password
             ) else Utils.encodeURIComponent(item.password)
-        return buildAuthority(userinfo, item.address, item.port)
+        return buildAuthorityInner(userinfo, item.address, item.port)
     }
 
     private fun buildAuthorityInner(userinfoEncoded: String, host: String, port: Int?): String {
@@ -263,7 +263,7 @@ object FmtUtils {
         if (params.contains("fm")) {
             item = item.copy(finalmask = JsonUtil.prettyJson(params["fm"]!!))
         }
-        return item;
+        return item
     }
 
     private fun parseTransportParams(params: StringValues, baseItem: ProfileModel): ProfileModel {

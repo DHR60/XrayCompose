@@ -32,7 +32,7 @@ class ProfileImportInteractor @Inject constructor(
 
     suspend fun updateSub(targetSubId: String) {
         val subItem =
-            configRepo.subListFlow.value.firstOrNull { it.id == targetSubId } ?: run {
+            configRepo.getConfig().subList.firstOrNull { it.id == targetSubId } ?: run {
                 error("Sub with id $targetSubId not found")
             }
         if (subItem.url.isEmpty()) {

@@ -114,8 +114,8 @@ class EngineConfigContextBuilder @Inject constructor(
     }
 
     suspend fun isVpnMode(): Boolean {
-        return !(configRepository.engineSettingListFlow.firstOrNull()
-            ?.firstOrNull()?.inbound?.disableTun
+        return !(configRepository.getConfig().engineSettingList
+            .firstOrNull()?.inbound?.disableTun
             ?: false)
     }
 }
