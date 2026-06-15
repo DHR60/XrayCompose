@@ -1,6 +1,5 @@
 package com.clearpath.xray_compose.data.repo
 
-import android.content.Context
 import androidx.datastore.core.DataStore
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.data.ConfigEngineItem
@@ -20,33 +19,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-val Context.configRepository: ConfigRepository
-    get() = ConfigRepository.getInstance(this)
-
-val configRepository: ConfigRepository
-    get() = ConfigRepository.getInstance()
-
-class ConfigRepository private constructor(private val dataStore: DataStore<ConfigItem>) {
+@Singleton
+class ConfigRepository @Inject constructor(private val dataStore: DataStore<ConfigItem>) {
     private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
-    companion object {
-        @Volatile
-        private var INSTANCE: ConfigRepository? = null
-
-        fun getInstance(context: Context): ConfigRepository {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: ConfigRepository(context.applicationContext.configDataStore).also {
-                    INSTANCE = it
-                }
-            }
-        }
-
-        fun getInstance(): ConfigRepository {
-            return INSTANCE
-                ?: error("ConfigRepository is not initialized. Please call getInstance(context) first.")
-        }
-    }
 
     init {
         repositoryScope.launch {

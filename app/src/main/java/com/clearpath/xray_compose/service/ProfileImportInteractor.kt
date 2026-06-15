@@ -2,31 +2,37 @@ package com.clearpath.xray_compose.service
 
 import android.content.Context
 import com.clearpath.xray_compose.core.NetworkManager
-import com.clearpath.xray_compose.data.StoreRepos
 import com.clearpath.xray_compose.data.importer.ProfileImporter
+import com.clearpath.xray_compose.data.repo.ConfigRepository
+import com.clearpath.xray_compose.data.repo.PreferencesRepository
+import com.clearpath.xray_compose.data.repo.ProfileRepository
 import com.clearpath.xray_compose.utils.Utils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.headers
+import javax.inject.Inject
 
-class ProfileImportInteractor(
-    private val storeRepos: StoreRepos,
-    private val targetSubId: String = "",
-    private val context: Context
+class ProfileImportInteractor @Inject constructor(
+    private val profileRepo: ProfileRepository,
+    private val configRepo: ConfigRepository,
+    private val prefsRepo: PreferencesRepository,
+    @param:ApplicationContext private val context: Context
 ) {
-    suspend fun importFromClipboard() {
+    suspend fun importFromClipboard(targetSubId: String = "") {
         val clipboardText = Utils.getClipboard(context)
         val importer = ProfileImporter(
-            storeRepos = storeRepos,
+            profileRepo = profileRepo,
+            prefsRepo = prefsRepo,
             isSub = false,
             targetSubId = targetSubId,
         )
         importer.addBatchServers(clipboardText)
     }
 
-    suspend fun updateSub() {
+    suspend fun updateSub(targetSubId: String) {
         val subItem =
-            storeRepos.configRepo.subListFlow.value.firstOrNull { it.id == targetSubId } ?: run {
+            configRepo.subListFlow.value.firstOrNull { it.id == targetSubId } ?: run {
                 error("Sub with id $targetSubId not found")
             }
         if (subItem.url.isEmpty()) {
@@ -51,7 +57,8 @@ class ProfileImportInteractor(
             }.bodyAsText()
         }.onSuccess {
             val importer = ProfileImporter(
-                storeRepos = storeRepos,
+                profileRepo = profileRepo,
+                prefsRepo = prefsRepo,
                 isSub = true,
                 targetSubId = targetSubId,
             )
@@ -61,7 +68,7 @@ class ProfileImportInteractor(
                 }
             }
             importer.addBatchServers(it)
-            storeRepos.configRepo.updateSubItem(
+            configRepo.updateSubItem(
                 subItem.copy(
                     lastUpdate = System.currentTimeMillis()
                 )

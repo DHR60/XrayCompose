@@ -1,17 +1,20 @@
 package com.clearpath.xray_compose.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.data.ProfileModel
 import com.clearpath.xray_compose.data.ProtocolExtraItem
 import com.clearpath.xray_compose.data.TransportExtraItem
-import com.clearpath.xray_compose.data.repo.profileRepository
+import com.clearpath.xray_compose.data.repo.ProfileRepository
 import com.clearpath.xray_compose.data.tempstore.TempStore
 import com.clearpath.xray_compose.enums.ETransport
 import com.clearpath.xray_compose.utils.JsonUtil
 import com.clearpath.xray_compose.viewmodel.uistate.ProfileUiState
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,8 +26,16 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.enums.enumEntries
 
-class ProfileEditorViewModel(id: String, application: Application) : AndroidViewModel(application) {
-    private val profileRepository = application.profileRepository
+@HiltViewModel(assistedFactory = ProfileEditorViewModel.Factory::class)
+class ProfileEditorViewModel @AssistedInject constructor(
+    @Assisted private val id: String,
+    private val profileRepository: ProfileRepository
+) : ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(id: String): ProfileEditorViewModel
+    }
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState = _uiState.asStateFlow()

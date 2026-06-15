@@ -1,21 +1,22 @@
 package com.clearpath.xray_compose.viewmodel
 
 import android.Manifest
-import android.app.Application
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clearpath.xray_compose.data.ConfigEngineItem
-import com.clearpath.xray_compose.data.repo.configRepository
-import com.clearpath.xray_compose.data.repo.preferencesRepository
-import com.clearpath.xray_compose.data.repo.profileRepository
+import com.clearpath.xray_compose.data.repo.ConfigRepository
+import com.clearpath.xray_compose.data.repo.PreferencesRepository
+import com.clearpath.xray_compose.data.repo.ProfileRepository
 import com.clearpath.xray_compose.enums.EngineState
 import com.clearpath.xray_compose.enums.HttpDelayStatus
-import com.clearpath.xray_compose.service.engine.control.engineRepository
+import com.clearpath.xray_compose.service.engine.control.EngineRepository
 import com.clearpath.xray_compose.service.engine.model.TrafficSummary
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,14 +26,16 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
-    private val preferencesRepository = application.preferencesRepository
-    private val profileRepository = application.profileRepository
-    private val configRepository = application.configRepository
-
-    private val engineRepository = application.engineRepository
-
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+    private val preferencesRepository: PreferencesRepository,
+    private val profileRepository: ProfileRepository,
+    private val configRepository: ConfigRepository,
+    private val engineRepository: EngineRepository
+) : ViewModel() {
     val engineStateFlow = engineRepository.engineStateFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), EngineState.STOPPED)
 
@@ -120,7 +123,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             val granted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 ContextCompat.checkSelfPermission(
-                    application,
+                    context,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED
             } else true
@@ -142,7 +145,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun isQueryAllPackagesReallyGranted(): Boolean {
         val hasManifestPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             ContextCompat.checkSelfPermission(
-                application, Manifest.permission.QUERY_ALL_PACKAGES
+                context, Manifest.permission.QUERY_ALL_PACKAGES
             ) == PackageManager.PERMISSION_GRANTED
         } else {
             true
@@ -155,7 +158,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         )
         var matchCount = 0
         try {
-            val pm = application.packageManager
+            val pm = context.packageManager
             val packageList = pm.getInstalledPackages(0)
             for (pkg in packageList) {
                 if (testPackages.contains(pkg.packageName)) {

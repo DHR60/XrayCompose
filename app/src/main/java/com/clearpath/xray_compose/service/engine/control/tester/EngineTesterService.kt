@@ -8,13 +8,14 @@ import com.clearpath.xray_compose.IEngineTesterCallback
 import com.clearpath.xray_compose.IEngineTesterService
 import com.clearpath.xray_compose.data.ProfileModel
 import com.clearpath.xray_compose.data.db.entities.ProfileTestItem
-import com.clearpath.xray_compose.data.repo.preferencesRepository
-import com.clearpath.xray_compose.data.repo.profileRepository
+import com.clearpath.xray_compose.data.repo.PreferencesRepository
+import com.clearpath.xray_compose.data.repo.ProfileRepository
 import com.clearpath.xray_compose.service.engine.config.XrayConfigService
 import com.clearpath.xray_compose.service.engine.connect.EngineNativeManager
 import com.clearpath.xray_compose.service.engine.context.EngineConfigContextBuilder
 import com.clearpath.xray_compose.utils.LogUtil
 import com.github.f4b6a3.uuid.UuidCreator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,11 +26,22 @@ import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class EngineTesterService : Service() {
     companion object {
         private const val CONCURRENCY = 5
     }
+
+    @Inject
+    lateinit var preferencesRepository: PreferencesRepository
+
+    @Inject
+    lateinit var profileRepository: ProfileRepository
+
+    @Inject
+    lateinit var configContextBuilder: EngineConfigContextBuilder
 
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var testJob: Job? = null
@@ -205,7 +217,7 @@ class EngineTesterService : Service() {
     private suspend fun doRealPing(profile: ProfileModel) {
         var realPingDelay = -1L
         var errorMessage = ""
-        val ecContextResult = EngineConfigContextBuilder(this).buildByProfile(profile)
+        val ecContextResult = configContextBuilder.buildByProfile(profile)
         if (!ecContextResult.success
             || ecContextResult.ecContext == null
         ) {
@@ -227,16 +239,16 @@ class EngineTesterService : Service() {
             }
         }
         val profileTestItem =
-            this@EngineTesterService.profileRepository.getProfileTestById(profile.id)
+            profileRepository.getProfileTestById(profile.id)
         if (profileTestItem != null) {
-            this@EngineTesterService.profileRepository.updateProfileTest(
+            profileRepository.updateProfileTest(
                 profileTestItem.copy(
                     delay = realPingDelay.toInt(),
                     message = errorMessage
                 )
             )
         } else {
-            this@EngineTesterService.profileRepository.insertProfileTest(
+            profileRepository.insertProfileTest(
                 ProfileTestItem(
                     id = UuidCreator.fromString(profile.id),
                     delay = realPingDelay.toInt(),

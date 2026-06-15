@@ -1,8 +1,6 @@
 package com.clearpath.xray_compose.data.repo
 
-import android.content.Context
 import com.clearpath.xray_compose.data.ProfileModel
-import com.clearpath.xray_compose.data.db.AppDatabase
 import com.clearpath.xray_compose.data.db.dao.ProfileDao
 import com.clearpath.xray_compose.data.db.entities.ProfileTestItem
 import com.clearpath.xray_compose.data.sanitizer.ProfileSanitizer
@@ -14,32 +12,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-val Context.profileRepository: ProfileRepository
-    get() = ProfileRepository.getInstance(this)
-
-val profileRepository: ProfileRepository
-    get() = ProfileRepository.getInstance()
-
-class ProfileRepository private constructor(context: Context) {
-    private val profileDao: ProfileDao = AppDatabase.getDatabase(context).profileDao()
+@Singleton
+class ProfileRepository @Inject constructor(private val profileDao: ProfileDao) {
     private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
-    companion object {
-        @Volatile
-        private var INSTANCE: ProfileRepository? = null
-
-        fun getInstance(context: Context): ProfileRepository {
-            return INSTANCE ?: synchronized(this) {
-                INSTANCE ?: ProfileRepository(context.applicationContext).also { INSTANCE = it }
-            }
-        }
-
-        fun getInstance(): ProfileRepository {
-            return INSTANCE
-                ?: error("ProfileRepository is not initialized. Please call getInstance(context) first.")
-        }
-    }
 
     init {
         repositoryScope.launch {

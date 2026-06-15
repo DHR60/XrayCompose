@@ -21,10 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.ui.components.EditableTrailingIconField
 import com.clearpath.xray_compose.ui.components.FormBottomSheetContext
@@ -39,20 +36,11 @@ import com.clearpath.xray_compose.viewmodel.SettingsSubViewModel
 fun SettingsSubEditorScreen(
     id: String,
 ) {
-    val parentViewModel = viewModel<SettingsSubViewModel>(
+    val parentViewModel = hiltViewModel<SettingsSubViewModel>(
         viewModelStoreOwner = LocalSharedViewModelStoreOwner.current
     )
-    val viewModel = viewModel<SettingsSubEditorViewModel>(
-        factory = viewModelFactory {
-            initializer {
-                val application = checkNotNull(this[APPLICATION_KEY])
-                SettingsSubEditorViewModel(
-                    id = id,
-                    settingsSubViewModel = parentViewModel,
-                    application = application
-                )
-            }
-        }
+    val viewModel = hiltViewModel<SettingsSubEditorViewModel, SettingsSubEditorViewModel.Factory>(
+        creationCallback = { factory -> factory.create(id, parentViewModel) }
     )
 
     val navigator = LocalNavigator.current

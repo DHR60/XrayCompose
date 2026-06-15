@@ -21,14 +21,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
 import com.clearpath.xray_compose.viewmodel.LogcatViewModel
 
 @Composable
 fun LogcatScreen() {
-    val viewModel: LogcatViewModel = viewModel()
+    val viewModel: LogcatViewModel = hiltViewModel()
     val navigator = LocalNavigator.current
     val rootInnerPadding = LocalRootInnerPadding.current
 

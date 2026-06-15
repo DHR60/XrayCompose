@@ -3,16 +3,21 @@ package com.clearpath.xray_compose.service.engine.control
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import com.clearpath.xray_compose.enums.EngineState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class EngineTileService : TileService() {
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    private val repository by lazy { EngineRepository.getInstance(this) }
+
+    @Inject
+    lateinit var repository: EngineRepository
 
     override fun onStartListening() {
         super.onStartListening()

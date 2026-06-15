@@ -1,20 +1,31 @@
 package com.clearpath.xray_compose.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clearpath.xray_compose.data.ConfigRuleItem
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class SettingsRuleViewModel(
-    id: String,
-    val settingsRoutingViewModel: SettingsRoutingViewModel,
-    application: Application
-) : AndroidViewModel(application) {
+@HiltViewModel(assistedFactory = SettingsRuleViewModel.Factory::class)
+class SettingsRuleViewModel @AssistedInject constructor(
+    @Assisted private val id: String,
+    @Assisted val settingsRoutingViewModel: SettingsRoutingViewModel
+) : ViewModel() {
     private val _ruleFlow = MutableStateFlow(ConfigRuleItem())
     val ruleFlow = _ruleFlow.asStateFlow()
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            id: String,
+            settingsRoutingViewModel: SettingsRoutingViewModel
+        ): SettingsRuleViewModel
+    }
 
     init {
         viewModelScope.launch {

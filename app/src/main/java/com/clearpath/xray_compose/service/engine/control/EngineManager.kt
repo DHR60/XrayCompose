@@ -31,6 +31,7 @@ import com.clearpath.xray_compose.service.engine.model.TrafficMetrics
 import com.clearpath.xray_compose.service.engine.model.TrafficSummary
 import com.clearpath.xray_compose.utils.LogUtil
 import com.clearpath.xray_compose.utils.Utils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -45,10 +46,20 @@ import libv2ray.CoreCallbackHandler
 import libv2ray.CoreController
 import libv2ray.ProcessFinder
 import java.net.InetSocketAddress
+import javax.inject.Inject
 import kotlin.math.min
 import kotlin.time.Duration.Companion.milliseconds
 
-class EngineManager(val serviceControl: IEngineService) {
+class EngineManager @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+    private val configContextBuilder: EngineConfigContextBuilder
+) {
+    private var serviceControl: IEngineService? = null
+
+    fun attach(control: IEngineService) {
+        this.serviceControl = control
+    }
+
     companion object {
         const val BROADCAST_ACTION_SERVICE = "${GlobalConst.appId}.action.service"
         const val ACTION_START_ENGINE = 1005
@@ -83,7 +94,7 @@ class EngineManager(val serviceControl: IEngineService) {
     private val binder = object : IEngineServiceControl.Stub() {
         override fun start() {
             LogUtil.i("StartEngine-Manager: Received start command")
-            serviceControl.startService()
+            serviceControl?.startService()
         }
 
         override fun stop() {
@@ -159,8 +170,7 @@ class EngineManager(val serviceControl: IEngineService) {
     fun initialize() {
         LogUtil.i("StartEngine-Manager: Initializing engine controller")
         trafficStatMonitor.init()
-        val service = getService()
-        EngineNativeManager.initCoreEnv(service)
+        EngineNativeManager.initCoreEnv(context)
         if (processFinder == null) {
             processFinder = XrayProcessFinder()
             engineController.registerProcessFinder(processFinder)
@@ -183,10 +193,8 @@ class EngineManager(val serviceControl: IEngineService) {
             LogUtil.w("StartEngine-Manager: Engine already running")
             return
         }
-        val service = getService()
-        val engineConfigContextBuilder = EngineConfigContextBuilder(service)
         val quickCheckResult = runBlocking {
-            engineConfigContextBuilder.quickCheck()
+            configContextBuilder.quickCheck()
         }
         if (quickCheckResult.isNotEmpty()) {
             val errorMessage = quickCheckResult.joinToString("; ")
@@ -197,7 +205,7 @@ class EngineManager(val serviceControl: IEngineService) {
         }
 
         val configContextResult = runBlocking {
-            EngineConfigContextBuilder(service).buildActiveProfile()
+            configContextBuilder.buildActiveProfile()
         }
 
         if (!configContextResult.success) {
@@ -227,7 +235,7 @@ class EngineManager(val serviceControl: IEngineService) {
         mFilter.addAction(Intent.ACTION_SCREEN_OFF)
         mFilter.addAction(Intent.ACTION_USER_PRESENT)
         ContextCompat.registerReceiver(
-            service,
+            context,
             mMsgReceive, mFilter, Utils.receiverFlags()
         )
 
@@ -262,13 +270,13 @@ class EngineManager(val serviceControl: IEngineService) {
                 LogUtil.e("StopEngine: ${e.message}")
             } finally {
                 changeState(EngineState.STOPPED)
-                serviceControl.stopService()
+                serviceControl?.stopService()
             }
         }
         trafficStatMonitor.stopQuery()
         cancelForegroundNotification()
         try {
-            getService().unregisterReceiver(mMsgReceive)
+            context.unregisterReceiver(mMsgReceive)
         } catch (_: Exception) {
         }
     }
@@ -287,7 +295,7 @@ class EngineManager(val serviceControl: IEngineService) {
 
     fun isVpnMode(): Boolean {
         val vpnMode = runBlocking {
-            EngineConfigContextBuilder(getService()).isVpnMode()
+            configContextBuilder.isVpnMode()
         }
         return vpnMode
     }
@@ -349,7 +357,7 @@ class EngineManager(val serviceControl: IEngineService) {
     }
 
     private fun getService(): Service {
-        return serviceControl.getService()
+        return serviceControl?.getService() ?: error("Service not attached")
     }
 
     private inner class EngineCallback : CoreCallbackHandler {
@@ -361,7 +369,7 @@ class EngineManager(val serviceControl: IEngineService) {
         override fun shutdown(): Long {
             return try {
                 changeState(EngineState.STOPPED)
-                serviceControl.stopService()
+                serviceControl?.stopService()
                 0
             } catch (e: Exception) {
                 LogUtil.e("StartEngine-Manager: Failed to stop service", e)
@@ -376,7 +384,7 @@ class EngineManager(val serviceControl: IEngineService) {
 
     private inner class XrayProcessFinder : ProcessFinder {
         private val cm: ConnectivityManager? =
-            getService().getSystemService(ConnectivityManager::class.java)
+            context.getSystemService(ConnectivityManager::class.java)
 
         override fun findProcessByConnection(
             network: String,

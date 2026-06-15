@@ -12,13 +12,17 @@ import android.os.ParcelFileDescriptor
 import com.clearpath.xray_compose.BuildConfig
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.utils.LogUtil
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 @SuppressLint("VpnServicePolicy")
 class EngineVpnService : VpnService(), IEngineService {
     private lateinit var mInterface: ParcelFileDescriptor
     private var isRunning = false
 
-    private var engineManager: EngineManager? = null
+    @Inject
+    lateinit var engineManager: EngineManager
 
     private val defaultNetworkRequest by lazy {
         NetworkRequest.Builder()
@@ -52,14 +56,13 @@ class EngineVpnService : VpnService(), IEngineService {
     override fun onCreate() {
         super.onCreate()
         LogUtil.i("StartEngine-VPN: Service created")
-        engineManager = EngineManager(this).apply {
-            initialize()
-        }
+        engineManager.attach(this)
+        engineManager.initialize()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
         super.onBind(intent)
-        return engineManager?.getBinder()
+        return engineManager.getBinder()
     }
 
     override fun onRevoke() {
@@ -78,27 +81,27 @@ class EngineVpnService : VpnService(), IEngineService {
             connectivity.unregisterNetworkCallback(defaultNetworkCallback)
         } catch (_: Exception) {
         }
-        engineManager?.cancelForegroundNotification()
+        engineManager.cancelForegroundNotification()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        engineManager?.showForegroundNotification()
+        engineManager.showForegroundNotification()
         return START_STICKY
     }
 
     override fun getService() = this
 
     override fun startService() {
-        if (engineManager?.isVpnMode() != false) {
+        if (engineManager.isVpnMode()) {
             setupVpnService()
         }
-        if (engineManager?.startActiveProfile() != true) stopService()
+        if (!engineManager.startActiveProfile()) stopService()
     }
 
     override fun stopService() {
         isRunning = false
-        engineManager?.stopCoreLoop()
+        engineManager.stopCoreLoop()
         stopSelf()
     }
 
@@ -146,7 +149,7 @@ class EngineVpnService : VpnService(), IEngineService {
         try {
             val pfd = builder.establish()!!
             mInterface = pfd
-            engineManager?.vpnInterface = pfd
+            engineManager.vpnInterface = pfd
             isRunning = true
             return true
         } catch (e: Exception) {

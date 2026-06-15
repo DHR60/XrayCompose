@@ -1,21 +1,22 @@
 package com.clearpath.xray_compose.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clearpath.xray_compose.data.ConfigEngineItem
-import com.clearpath.xray_compose.data.repo.configRepository
-import com.clearpath.xray_compose.data.repo.preferencesRepository
-import com.clearpath.xray_compose.data.repo.profileRepository
+import com.clearpath.xray_compose.data.repo.ConfigRepository
+import com.clearpath.xray_compose.data.repo.PreferencesRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SettingsViewModel(application: Application) : AndroidViewModel(application) {
-    private val preferencesRepository = application.preferencesRepository
-    private val profileRepository = application.profileRepository
-    private val configRepository = application.configRepository
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
+    private val preferencesRepository: PreferencesRepository,
+    private val configRepository: ConfigRepository
+) : ViewModel() {
 
     val prefsActiveEngineSettingIdFlow = preferencesRepository.activeEngineSettingIdFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)

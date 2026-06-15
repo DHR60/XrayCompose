@@ -1,17 +1,47 @@
 package com.clearpath.xray_compose.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clearpath.xray_compose.GlobalConst
+import com.clearpath.xray_compose.data.ConfigEngineItem
 import com.clearpath.xray_compose.data.ConfigRoutingItem
 import com.clearpath.xray_compose.data.ConfigRuleItem
+import com.clearpath.xray_compose.data.repo.ConfigRepository
+import com.clearpath.xray_compose.data.repo.PreferencesRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SettingsRoutingViewModel(val settingsViewModel: SettingsViewModel, application: Application) :
-    AndroidViewModel(application) {
+@HiltViewModel
+class SettingsRoutingViewModel @Inject constructor(
+    private val preferencesRepository: PreferencesRepository,
+    private val configRepository: ConfigRepository
+) : ViewModel() {
+
+    private val prefsActiveEngineSettingIdFlow = preferencesRepository.activeEngineSettingIdFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+    private val configEngineSettingListFlow = configRepository.engineSettingListFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    private val activeEngineSettingIdFlow = combine(
+        prefsActiveEngineSettingIdFlow,
+        configEngineSettingListFlow
+    ) { activeId, list ->
+        if (list.any { it.id == activeId }) activeId else list.firstOrNull()?.id
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    val activeEngineSettingFlow = combine(
+        activeEngineSettingIdFlow,
+        configEngineSettingListFlow
+    ) { activeId, list ->
+        list.find { it.id == activeId } ?: ConfigEngineItem()
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ConfigEngineItem())
+
     private val _domainStrategyFlow = MutableStateFlow(GlobalConst.AsIs)
     val domainStrategyFlow = _domainStrategyFlow.asStateFlow()
 
@@ -23,7 +53,7 @@ class SettingsRoutingViewModel(val settingsViewModel: SettingsViewModel, applica
 
     init {
         viewModelScope.launch {
-            settingsViewModel.activeEngineSettingFlow.collect { setting ->
+            activeEngineSettingFlow.collect { setting ->
                 _domainStrategyFlow.value = setting.routing.domainStrategy
                 _enableAutoDetachmentFlow.value = setting.routing.enableAutoDetachment
                 _ruleListFlow.value = setting.routing.rules
@@ -32,9 +62,12 @@ class SettingsRoutingViewModel(val settingsViewModel: SettingsViewModel, applica
     }
 
     fun updateRoutingSetting(update: (ConfigRoutingItem) -> ConfigRoutingItem) {
-        settingsViewModel.updateActiveEngineSetting { currentState ->
-            currentState.copy(
-                routing = update(currentState.routing)
+        viewModelScope.launch {
+            val currentSetting = activeEngineSettingFlow.value
+            configRepository.updateEngineSettingItem(
+                currentSetting.copy(
+                    routing = update(currentSetting.routing)
+                )
             )
         }
     }
