@@ -1,5 +1,6 @@
 package com.clearpath.xray_compose.viewmodel
 
+import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clearpath.xray_compose.data.ConfigSubItem
@@ -14,6 +15,8 @@ import com.clearpath.xray_compose.utils.LogUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,8 +29,11 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 data class ProfileWithTest(
     val profile: ProfileModel,
@@ -79,7 +85,9 @@ class ProfileListViewModel @Inject constructor(
             else combine(flows) { it.toMap() }
         }.flowOn(Dispatchers.Default)
 
-    val allProfilesFlow: StateFlow<Map<String?, List<ProfileModel>>> = combine(
+    private val _manualProfiles = MutableStateFlow<Map<String?, List<ProfileModel>>>(emptyMap())
+
+    private val dbProfilesFlow = combine(
         windowProfilesFlow,
         _activeSubIdFlow
     ) { windowData, activeId ->
@@ -90,7 +98,13 @@ class ProfileListViewModel @Inject constructor(
         merged.filterKeys { it in newHistory || it in new.keys } to newHistory
     }.map { it.first }
         .flowOn(Dispatchers.Default)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
+
+    val allProfilesFlow: StateFlow<Map<String?, List<ProfileModel>>> = combine(
+        dbProfilesFlow,
+        _manualProfiles
+    ) { db, manual ->
+        db + manual
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
 
     val allProfileTestsFlow = profileRepository.observeAllProfileTests()
         .map { list -> list.associateBy { it.id.toString() } }
@@ -100,12 +114,15 @@ class ProfileListViewModel @Inject constructor(
         allProfilesFlow,
         allProfileTestsFlow
     ) { allProfiles, allTests ->
+        allProfiles to allTests
+    }.map { (allProfiles, allTests) ->
         allProfiles.mapValues { (_, profiles) ->
             profiles.map { profile ->
                 ProfileWithTest(profile, allTests[profile.id])
             }
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
+    }.flowOn(Dispatchers.Default)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
 
     val isTestingFlow = engineTesterRepository.isTestingFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
@@ -132,6 +149,16 @@ class ProfileListViewModel @Inject constructor(
         viewModelScope.launch {
             prefsActiveSubIdFlow.collect { subId ->
                 _activeSubIdFlow.value = subId
+            }
+        }
+        viewModelScope.launch {
+            dbProfilesFlow.collect { dbMap ->
+                _manualProfiles.update { manualMap ->
+                    manualMap.filter { (subId, manualList) ->
+                        val dbList = dbMap[subId] ?: emptyList()
+                        dbList.map { it.id } != manualList.map { it.id }
+                    }
+                }
             }
         }
     }
@@ -219,5 +246,85 @@ class ProfileListViewModel @Inject constructor(
 
     fun clearError() {
         _errorMessage.value = null
+    }
+
+    private var reorderJob: Job? = null
+    private val pendingUpdates = mutableMapOf<String, ProfileModel>()
+    private var needsRebalance = false
+
+    fun reorderProfiles(from: LazyListItemInfo, to: LazyListItemInfo) {
+        val currentSubId = _activeSubIdFlow.value
+        val profileList = allProfilesFlow.value[currentSubId] ?: return
+
+        if (profileList.getOrNull(from.index)?.id != from.key ||
+            profileList.getOrNull(to.index)?.id != to.key
+        ) {
+            LogUtil.e("ProfileListViewModel Failed to reorder profiles: Index mismatch")
+            return
+        }
+
+        val fromIndex = profileList.indexOfFirst { it.id == from.key }
+        val toIndex = profileList.indexOfFirst { it.id == to.key }
+        if (fromIndex == -1 || toIndex == -1) {
+            LogUtil.e("ProfileListViewModel Failed to reorder profiles: Key not found")
+            return
+        }
+
+        val fromProfile = profileList[fromIndex]
+        val toProfile = profileList[toIndex]
+        val isDown = fromIndex < toIndex
+        val toNearbyIndex = if (isDown) toIndex + 1 else toIndex - 1
+        val toNearbyProfile = profileList.getOrNull(toNearbyIndex)
+
+        val newOrder = if (toNearbyProfile != null) {
+            (toProfile.sortOrder + toNearbyProfile.sortOrder) / 2.0
+        } else {
+            toProfile.sortOrder + if (isDown) 1 else -1
+        }
+
+        val updatedProfile = fromProfile.copy(sortOrder = newOrder)
+
+        // Optimistic UI update - order is preserved by list sequence
+        val newList = profileList.toMutableList()
+        newList.removeAt(from.index)
+        newList.add(to.index, updatedProfile)
+        _manualProfiles.update { it + (currentSubId to newList) }
+
+        // Check if the precision gap is too small to trigger background rebalance.
+        // At timestamp scale (10^12), Double precision limit is ~0.0002.
+        // We trigger at 0.1 to stay well within safe bounds.
+        val gap = if (toNearbyProfile != null) {
+            val diff = toProfile.sortOrder - toNearbyProfile.sortOrder
+            (if (diff < 0) -diff else diff) / 2.0
+        } else {
+            1.0
+        }
+        if (gap < 0.1) {
+            needsRebalance = true
+        }
+
+        // Debounced DB update
+        pendingUpdates[updatedProfile.id] = updatedProfile
+        reorderJob?.cancel()
+        reorderJob = viewModelScope.launch {
+            delay(500.milliseconds)
+            val updates = pendingUpdates.values.toList()
+            val shouldRebalance = needsRebalance
+            pendingUpdates.clear()
+            needsRebalance = false
+
+            withContext(Dispatchers.IO) {
+                try {
+                    profileRepository.upsertProfiles(updates)
+                    if (shouldRebalance) {
+                        profileRepository.rebalanceProfiles(currentSubId)
+                    }
+                } catch (e: Exception) {
+                    if (e is kotlinx.coroutines.CancellationException) throw e
+                    LogUtil.e("ProfileListViewModel Failed to update profiles in DB", e)
+                    _manualProfiles.update { it - currentSubId }
+                }
+            }
+        }
     }
 }
