@@ -56,6 +56,30 @@ class ProfileRepository @Inject constructor(private val profileDao: ProfileDao) 
         profileDao.upsertProfiles(ProfileSanitizer.sanitize(profiles).map { it.toProfileItem() })
     }
 
+    suspend fun rebalanceProfiles(subId: String?) {
+        val profiles = if (subId == null) {
+            profileDao.getAllProfilesOrdered()
+        } else {
+            profileDao.getAllProfilesBySubidOrdered(subId)
+        }
+        if (profiles.size <= 1) return
+
+        val firstOrder = profiles.first().sortOrder
+        val lastOrder = profiles.last().sortOrder
+
+        // Calculate step based on extreme values, ensuring a minimum total spread 
+        // of 1 second per item to maintain double precision at timestamp scales.
+        val minSpread = (profiles.size - 1) * 1000.0
+        val actualSpread = lastOrder - firstOrder
+        val spread = if (actualSpread < minSpread) minSpread else actualSpread
+        val step = spread / (profiles.size - 1)
+
+        val rebalanced = profiles.mapIndexed { index, item ->
+            item.copy(sortOrder = firstOrder + (index * step))
+        }
+        profileDao.upsertProfiles(rebalanced)
+    }
+
     suspend fun deleteProfile(profile: ProfileModel) {
         val profileItem = profile.toProfileItem()
         profileDao.deleteProfile(profileItem)
