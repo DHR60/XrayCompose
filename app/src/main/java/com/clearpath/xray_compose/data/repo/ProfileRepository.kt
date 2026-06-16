@@ -45,11 +45,11 @@ class ProfileRepository @Inject constructor(private val profileDao: ProfileDao) 
     }
 
     suspend fun updateProfile(profile: ProfileModel) {
-        profileDao.updateProfile(profile.toProfileItem())
+        profileDao.updateProfile(ProfileSanitizer.sanitize(profile).toProfileItem())
     }
 
     suspend fun upsertProfile(profile: ProfileModel) {
-        profileDao.upsertProfile(profile.toProfileItem())
+        profileDao.upsertProfile(ProfileSanitizer.sanitize(profile).toProfileItem())
     }
 
     suspend fun upsertProfiles(profiles: List<ProfileModel>) {

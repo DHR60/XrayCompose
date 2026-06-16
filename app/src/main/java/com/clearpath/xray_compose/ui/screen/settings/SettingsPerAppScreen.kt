@@ -178,14 +178,18 @@ fun SettingsPerAppScreen() {
             }
             if (errorMessage != null) {
                 OutlinedCard(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = errorMessage ?: "",
-                            modifier = Modifier.weight(1f).padding(16.dp)
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(16.dp)
                         )
                         IconButton(onClick = { viewModel.clearError() }) {
                             Icon(

@@ -351,31 +351,21 @@ object FmtUtils {
 
     private fun parseSecurityParams(params: StringValues, baseItem: ProfileModel): ProfileModel {
         var item = baseItem
-        if (!params.contains("security")) {
-            return item
-        }
         val securityType = params["security"] ?: ""
         item = item.copy(
             streamSecurity = securityType,
             sni = params["sni"] ?: "",
             utlsFingerprint = params["fp"] ?: "",
+            alpn = params["alpn"] ?: "",
+            allowInsecure = if (params["insecure"] == "1" || params["allowInsecure"] == "1") GlobalConst.trueStr else GlobalConst.falseStr,
+            echConfigList = params["ech"] ?: "",
+            certVerifyName = params["vcn"] ?: "",
+            certSha = params["pcs"] ?: "",
+            realityPublicKey = params["pbk"] ?: "",
+            realityShortId = params["sid"] ?: "",
+            realitySpiderX = params["spx"] ?: "",
+            realityMldsa65Verify = params["pqv"] ?: "",
         )
-        if (securityType == GlobalConst.transportSecurityTls) {
-            item = item.copy(
-                alpn = params["alpn"] ?: "",
-                allowInsecure = if (params.contains("allowInsecure") && params["allowInsecure"] == "1") GlobalConst.trueStr else GlobalConst.falseStr,
-                echConfigList = params["ech"] ?: "",
-                certVerifyName = params["vcn"] ?: "",
-                certSha = params["pcs"] ?: "",
-            )
-        } else if (securityType == GlobalConst.transportSecurityReality) {
-            item = item.copy(
-                realityPublicKey = params["pbk"] ?: "",
-                realityShortId = params["sid"] ?: "",
-                realitySpiderX = params["spx"] ?: "",
-                realityMldsa65Verify = params["pqv"] ?: "",
-            )
-        }
         return item
     }
 }

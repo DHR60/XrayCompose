@@ -102,6 +102,15 @@ object GlobalConst {
         "stream-one",
     )
 
+    val kcpHeaderMap = mapOf(
+        "srtp" to "srtp",
+        "utp" to "utp",
+        "wechat-video" to "wechat",
+        "dtls" to "dtls",
+        "wireguard" to "wireguard",
+        "dns" to "dns",
+    )
+
     const val transportSecurityTls = "tls"
     const val transportSecurityReality = "reality"
 

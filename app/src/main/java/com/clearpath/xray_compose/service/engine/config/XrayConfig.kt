@@ -322,6 +322,8 @@ data class XrayConfig(
                     data class MaskSettingsBean(
                         val password: String? = null,
                         val domain: String? = null,
+                        val header: String? = null,
+                        val value: String? = null,
                         // fragment
                         val packets: String? = null,
                         val length: String? = null,

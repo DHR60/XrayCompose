@@ -6,6 +6,8 @@ import com.clearpath.xray_compose.enums.ETransport
 import com.clearpath.xray_compose.service.engine.config.XrayConfig
 import com.clearpath.xray_compose.service.engine.context.EngineConfigContext
 import com.clearpath.xray_compose.utils.JsonUtil
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 
 class XrayConfigOutboundProcessor(
@@ -82,6 +84,27 @@ class XrayConfigOutboundProcessor(
                 outboundBean.mux = buildMuxBean(muxEnabled, muxEnabled)
             } else {
                 outboundBean.mux = buildMuxBean(tcpMux = false, udpMux = muxEnabled)
+            }
+        } else if (ecContext.node.configType == EConfigType.HYSTERIA2) {
+            outboundBean.settings = XrayConfig.OutboundBean.OutSettingsBean(
+                version = 2,
+                address = JsonPrimitive(ecContext.node.address),
+                port = ecContext.node.port,
+                vnext = null,
+                servers = null,
+            )
+        } else if (ecContext.node.configType == EConfigType.TROJAN) {
+            val serverItem = XrayConfig.OutboundBean.OutSettingsBean.ServersBean(
+                address = ecContext.node.address,
+                port = ecContext.node.port,
+                password = ecContext.node.password,
+                level = GlobalConst.defaultLevel,
+            )
+            outboundBean.settings = XrayConfig.OutboundBean.OutSettingsBean(
+                servers = listOf(serverItem)
+            )
+            if (muxEnabled) {
+                outboundBean.mux = buildMuxBean(tcpMux = true, udpMux = false)
             }
         }
 
@@ -194,7 +217,90 @@ class XrayConfigOutboundProcessor(
                     XrayConfig.OutboundBean.StreamSettingsBean.KcpSettingsBean(
                         mtu = transportExtra.kcpMtu?.toIntOrNull() ?: 1350,
                     )
+                val udpMaskList =
+                    mutableListOf<XrayConfig.OutboundBean.StreamSettingsBean.FinalMaskBean.MaskBean>()
+                val headerTypeValue = GlobalConst.kcpHeaderMap[transportExtra.kcpHeaderType]
+                if (headerTypeValue != null) {
+                    udpMaskList.add(
+                        XrayConfig.OutboundBean.StreamSettingsBean.FinalMaskBean.MaskBean(
+                            type = "mkcp-legacy",
+                            settings = XrayConfig.OutboundBean.StreamSettingsBean.FinalMaskBean.MaskBean.MaskSettingsBean(
+                                header = headerTypeValue
+                            )
+                        )
+                    )
+                }
+                if (transportExtra.kcpSeed.isNullOrEmpty()) {
+                    udpMaskList.add(
+                        XrayConfig.OutboundBean.StreamSettingsBean.FinalMaskBean.MaskBean(
+                            type = "mkcp-legacy"
+                        )
+                    )
+                } else {
+                    udpMaskList.add(
+                        XrayConfig.OutboundBean.StreamSettingsBean.FinalMaskBean.MaskBean(
+                            type = "mkcp-legacy",
+                            settings = XrayConfig.OutboundBean.StreamSettingsBean.FinalMaskBean.MaskBean.MaskSettingsBean(
+                                value = transportExtra.kcpSeed
+                            )
+                        )
+                    )
+                }
+                streamSettings.finalmask = JsonUtil.defaultJson.encodeToJsonElement(
+                    XrayConfig.OutboundBean.StreamSettingsBean.FinalMaskBean(
+                        udp = udpMaskList
+                    )
+                )
             }
+
+            "hysteria" -> {
+                val protocolExtra = ecContext.node.protocolExtra
+                val ports = protocolExtra.ports ?: ""
+                val hopInterval = protocolExtra.hopInterval ?: ""
+                val upMbps = protocolExtra.upMbps?.toIntOrNull() ?: 0
+                val downMbps = protocolExtra.downMbps?.toIntOrNull() ?: 0
+                // quicParams
+                val quicParams =
+                    XrayConfig.OutboundBean.StreamSettingsBean.FinalMaskBean.QuicParamsBean()
+                if (listOf(":", "-", ",").any { ports.contains(it) }) {
+                    quicParams.udpHop =
+                        XrayConfig.OutboundBean.StreamSettingsBean.FinalMaskBean.QuicParamsBean.UdpHopBean(
+                            ports = ports.replace(":", "-"),
+                            interval = hopInterval.ifEmpty { "30" }
+                        )
+                }
+                if (upMbps > 0 || downMbps > 0) {
+                    quicParams.congestion = "brutal"
+                    quicParams.brutalUp = if (upMbps > 0) "${upMbps}mbps" else null
+                    quicParams.brutalDown = if (downMbps > 0) "${downMbps}mbps" else null
+                } else {
+                    quicParams.congestion = "bbr"
+                }
+                streamSettings.finalmask = JsonUtil.defaultJson.encodeToJsonElement(
+                    XrayConfig.OutboundBean.StreamSettingsBean.FinalMaskBean(
+                        udp = if (!protocolExtra.salamanderPass.isNullOrEmpty()) {
+                            // salamander
+                            listOf(
+                                XrayConfig.OutboundBean.StreamSettingsBean.FinalMaskBean.MaskBean(
+                                    type = "salamander",
+                                    settings = XrayConfig.OutboundBean.StreamSettingsBean.FinalMaskBean.MaskBean.MaskSettingsBean(
+                                        value = protocolExtra.salamanderPass
+                                    )
+                                )
+                            )
+                        } else {
+                            null
+                        },
+                        quicParams = quicParams
+                    )
+                )
+            }
+        }
+
+        if (ecContext.node.finalmask.isNotEmpty()) {
+            streamSettings.finalmask = JsonUtil.defaultJson.parseToJsonElement(
+                ecContext.node.finalmask
+            )
         }
 
         return streamSettings

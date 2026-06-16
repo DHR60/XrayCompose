@@ -381,10 +381,103 @@ fun ProfileEditorScreen(
                                     activeDialogContext = FormBottomSheetContext(
                                         fieldKey = "hysteria2SalamanderPassword",
                                         title = "Edit Salamander Password",
-                                        initialValue = profileModel.password,
+                                        initialValue = protoExtra.salamanderPass ?: "",
                                         onConfirm = { newValue ->
                                             viewModel.updateProtocolExtra { currentState ->
                                                 currentState.copy(salamanderPass = newValue)
+                                            }
+                                        }
+                                    )
+                                }
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                EditableTrailingIconField(
+                                    value = protoExtra.upMbps ?: "",
+                                    onValueChange = { newValue ->
+                                        viewModel.updateProtocolExtra { currentState ->
+                                            currentState.copy(upMbps = newValue)
+                                        }
+                                    },
+                                    label = { Text("Bandwidth up (Mbps/s)") },
+                                    modifier = Modifier.weight(1f),
+                                    onEditIconClick = {
+                                        activeDialogContext = FormBottomSheetContext(
+                                            fieldKey = "hysteria2UpMbps",
+                                            title = "Edit Bandwidth up (Mbps/s)",
+                                            initialValue = protoExtra.upMbps ?: "",
+                                            onConfirm = { newValue ->
+                                                viewModel.updateProtocolExtra { currentState ->
+                                                    currentState.copy(upMbps = newValue)
+                                                }
+                                            }
+                                        )
+                                    }
+                                )
+                                EditableTrailingIconField(
+                                    value = protoExtra.downMbps ?: "",
+                                    onValueChange = { newValue ->
+                                        viewModel.updateProtocolExtra { currentState ->
+                                            currentState.copy(downMbps = newValue)
+                                        }
+                                    },
+                                    label = { Text("Bandwidth down (Mbps/s)") },
+                                    modifier = Modifier.weight(1f),
+                                    onEditIconClick = {
+                                        activeDialogContext = FormBottomSheetContext(
+                                            fieldKey = "hysteria2DownMbps",
+                                            title = "Edit Bandwidth down (Mbps/s)",
+                                            initialValue = protoExtra.downMbps ?: "",
+                                            onConfirm = { newValue ->
+                                                viewModel.updateProtocolExtra { currentState ->
+                                                    currentState.copy(downMbps = newValue)
+                                                }
+                                            }
+                                        )
+                                    }
+                                )
+                            }
+                            EditableTrailingIconField(
+                                value = protoExtra.ports ?: "",
+                                onValueChange = { newValue ->
+                                    viewModel.updateProtocolExtra { currentState ->
+                                        currentState.copy(ports = newValue)
+                                    }
+                                },
+                                label = { Text("Port Hopping") },
+                                modifier = Modifier.fillMaxWidth(),
+                                onEditIconClick = {
+                                    activeDialogContext = FormBottomSheetContext(
+                                        fieldKey = "hysteria2Ports",
+                                        title = "Edit Port Hopping",
+                                        initialValue = protoExtra.ports ?: "",
+                                        onConfirm = { newValue ->
+                                            viewModel.updateProtocolExtra { currentState ->
+                                                currentState.copy(ports = newValue)
+                                            }
+                                        }
+                                    )
+                                }
+                            )
+                            EditableTrailingIconField(
+                                value = protoExtra.hopInterval ?: "",
+                                onValueChange = { newValue ->
+                                    viewModel.updateProtocolExtra { currentState ->
+                                        currentState.copy(hopInterval = newValue)
+                                    }
+                                },
+                                label = { Text("Port Hopping Interval") },
+                                modifier = Modifier.fillMaxWidth(),
+                                onEditIconClick = {
+                                    activeDialogContext = FormBottomSheetContext(
+                                        fieldKey = "hysteria2PortsHoppingInterval",
+                                        title = "Edit Port Hopping Interval",
+                                        initialValue = protoExtra.hopInterval ?: "",
+                                        onConfirm = { newValue ->
+                                            viewModel.updateProtocolExtra { currentState ->
+                                                currentState.copy(hopInterval = newValue)
                                             }
                                         }
                                     )
@@ -622,6 +715,42 @@ fun ProfileEditorScreen(
                                     }
                                 )
                             } else if (transportNetwork == ETransport.GRPC) {
+                                var grpcModeExpanded by remember { mutableStateOf(false) }
+                                ExposedDropdownMenuBox(
+                                    expanded = grpcModeExpanded,
+                                    onExpandedChange = { grpcModeExpanded = it }
+                                ) {
+                                    OutlinedTextField(
+                                        value = if (transportExtra.grpcMode.isNullOrEmpty()) GlobalConst.defaultGrpcMode else transportExtra.grpcMode!!,
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text("GRPC Mode") },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                                        trailingIcon = {
+                                            TrailingIcon(
+                                                expanded = grpcModeExpanded
+                                            )
+                                        }
+                                    )
+                                    ExposedDropdownMenu(
+                                        expanded = grpcModeExpanded,
+                                        onDismissRequest = { grpcModeExpanded = false }
+                                    ) {
+                                        GlobalConst.grpcModeList.forEach { grpcOption ->
+                                            DropdownMenuItem(
+                                                text = { Text(grpcOption) },
+                                                onClick = {
+                                                    viewModel.updateTransportExtra { currentState ->
+                                                        currentState.copy(grpcMode = grpcOption)
+                                                    }
+                                                    grpcModeExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 EditableTrailingIconField(
                                     value = transportExtra.grpcAuthority ?: "",
                                     onValueChange = { newValue ->
@@ -667,6 +796,45 @@ fun ProfileEditorScreen(
                                     }
                                 )
                             } else if (transportNetwork == ETransport.KCP) {
+                                var kcpHeaderExpanded by remember { mutableStateOf(false) }
+                                ExposedDropdownMenuBox(
+                                    expanded = kcpHeaderExpanded,
+                                    onExpandedChange = { kcpHeaderExpanded = it }
+                                ) {
+                                    OutlinedTextField(
+                                        value = if (transportExtra.kcpSeed.isNullOrEmpty()) "Select KCP Header" else transportExtra.kcpSeed!!,
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        label = { Text("KCP Header") },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                                        trailingIcon = {
+                                            TrailingIcon(
+                                                expanded = kcpHeaderExpanded
+                                            )
+                                        },
+                                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
+                                            unfocusedTextColor = if (transportExtra.kcpSeed.isNullOrEmpty()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                                        )
+                                    )
+                                    ExposedDropdownMenu(
+                                        expanded = kcpHeaderExpanded,
+                                        onDismissRequest = { kcpHeaderExpanded = false }
+                                    ) {
+                                        GlobalConst.kcpHeaderMap.forEach { kcpHeaderOption ->
+                                            DropdownMenuItem(
+                                                text = { Text(kcpHeaderOption.key) },
+                                                onClick = {
+                                                    viewModel.updateTransportExtra { currentState ->
+                                                        currentState.copy(kcpHeaderType = kcpHeaderOption.key)
+                                                    }
+                                                    kcpHeaderExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
                                 EditableTrailingIconField(
                                     value = transportExtra.kcpSeed ?: "",
                                     onValueChange = { newValue ->

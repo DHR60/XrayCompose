@@ -8,6 +8,8 @@ object ProfileSanitizer {
     fun sanitize(profile: ProfileModel): ProfileModel {
         return when (profile.configType) {
             EConfigType.VLESS -> sanitizeVless(profile)
+            EConfigType.HYSTERIA2 -> sanitizeHysteria2(profile)
+            EConfigType.TROJAN -> sanitizeTrojan(profile)
             else -> sanitizeCommon(profile)
         }
     }
@@ -34,6 +36,33 @@ object ProfileSanitizer {
                 vlessEncryption = (sanProfile.protocolExtra.vlessEncryption ?: "").trim()
                     .ifEmpty { GlobalConst.none },
             ).toJsonString()
+        )
+        return sanProfile
+    }
+
+    private fun sanitizeHysteria2(profile: ProfileModel): ProfileModel {
+        var sanProfile = sanitizeCommon(profile)
+        sanProfile = sanProfile.copy(
+            network = GlobalConst.defaultTransportNetwork,
+            streamSecurity = sanProfile.streamSecurity.ifEmpty {
+                GlobalConst.transportSecurityTls
+            },
+            alpn = "",
+            protoExtraRaw = sanProfile.protocolExtra.copy(
+                salamanderPass = (sanProfile.protocolExtra.salamanderPass ?: "").trim(),
+                ports = (sanProfile.protocolExtra.ports ?: "").trim(),
+                hopInterval = (sanProfile.protocolExtra.hopInterval ?: "").trim(),
+            ).toJsonString()
+        )
+        return sanProfile
+    }
+
+    private fun sanitizeTrojan(profile: ProfileModel): ProfileModel {
+        var sanProfile = sanitizeCommon(profile)
+        sanProfile = sanProfile.copy(
+            streamSecurity = sanProfile.streamSecurity.ifEmpty {
+                GlobalConst.transportSecurityTls
+            }
         )
         return sanProfile
     }
