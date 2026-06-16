@@ -1,5 +1,6 @@
 package com.clearpath.xray_compose.viewmodel
 
+import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clearpath.xray_compose.data.ConfigSubItem
@@ -9,10 +10,14 @@ import com.clearpath.xray_compose.service.ProfileImportInteractor
 import com.clearpath.xray_compose.utils.LogUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class SettingsSubViewModel @Inject constructor(
@@ -96,6 +101,43 @@ class SettingsSubViewModel @Inject constructor(
                 LogUtil.e("SettingsSubViewModel Error updating sub for network", e)
                 _subListFlow.value = _subListFlow.value.map {
                     if (it.config.id == subId) it.copy(isUpdating = false) else it
+                }
+            }
+        }
+    }
+
+    private var reorderJob: Job? = null
+
+    fun reorderSubItems(from: LazyListItemInfo, to: LazyListItemInfo) {
+        val currentUiList = _subListFlow.value
+        val fromIndex = from.index
+        val toIndex = to.index
+
+        val fromItem = currentUiList.getOrNull(fromIndex)
+        val toItem = currentUiList.getOrNull(toIndex)
+
+        if (fromItem?.config?.id != from.key || toItem?.config?.id != to.key) {
+            LogUtil.e("SettingsSubViewModel Failed to reorder sub items: Index mismatch")
+            return
+        }
+
+        val updatedUiList = currentUiList.toMutableList()
+        updatedUiList.removeAt(fromIndex)
+        updatedUiList.add(toIndex, fromItem)
+        _subListFlow.value = updatedUiList
+
+        reorderJob?.cancel()
+        reorderJob = viewModelScope.launch {
+            delay(500.milliseconds)
+            val finalList = _subListFlow.value.map { it.config }
+            withContext(Dispatchers.IO) {
+                try {
+                    configRepository.updateSubList {
+                        finalList
+                    }
+                } catch (e: Exception) {
+                    if (e is kotlinx.coroutines.CancellationException) throw e
+                    LogUtil.e("SettingsSubViewModel Error updating sub list", e)
                 }
             }
         }

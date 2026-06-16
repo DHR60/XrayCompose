@@ -1,19 +1,24 @@
 package com.clearpath.xray_compose.ui.screen.settings
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,6 +29,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -33,6 +40,8 @@ import com.clearpath.xray_compose.ui.navigation.LocalNavigator
 import com.clearpath.xray_compose.ui.navigation.SettingsSubEditor
 import com.clearpath.xray_compose.ui.screen.LocalRootInnerPadding
 import com.clearpath.xray_compose.viewmodel.SettingsSubViewModel
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun SettingsSubScreen() {
@@ -42,6 +51,14 @@ fun SettingsSubScreen() {
     val viewModel: SettingsSubViewModel = hiltViewModel()
 
     val subList by viewModel.subListFlow.collectAsState()
+
+    val hapticFeedback = LocalHapticFeedback.current
+
+    val lazyListState = rememberLazyListState()
+    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        viewModel.reorderSubItems(from, to)
+        hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
+    }
 
     Scaffold(
         modifier = Modifier.padding(rootInnerPadding),
@@ -75,54 +92,94 @@ fun SettingsSubScreen() {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
+                .padding(innerPadding),
+            state = lazyListState,
         ) {
             items(
-                count = subList.size,
-                key = { index -> subList[index].config.id }
-            ) { index ->
-                val uiState = subList[index]
-                val subItem = uiState.config
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    tonalElevation = 2.dp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp)
-                        .height(96.dp)
-                ) {
-                    ListItem(
-                        headlineContent = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = subItem.remark,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.weight(1f, fill = false)
+                subList,
+                key = { uiState -> uiState.config.id }
+            ) { uiState ->
+                ReorderableItem(
+                    key = uiState.config.id,
+                    state = reorderableLazyListState
+                ) { isDragging ->
+                    val elevation by animateDpAsState(if (isDragging) 4.dp else 0.dp)
+                    val subItem = uiState.config
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        shadowElevation = elevation,
+                        tonalElevation = 2.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Drag Handle
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .longPressDraggableHandle(
+                                        onDragStarted = {
+                                            hapticFeedback.performHapticFeedback(
+                                                HapticFeedbackType.GestureThresholdActivate
+                                            )
+                                        },
+                                        onDragStopped = {
+                                            hapticFeedback.performHapticFeedback(
+                                                HapticFeedbackType.GestureEnd
+                                            )
+                                        },
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_drag_handle),
+                                    contentDescription = "Drag Handle",
+                                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                                if (uiState.count > 0) {
-                                    Surface(
-                                        color = androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer,
-                                        shape = RoundedCornerShape(12.dp),
-                                        modifier = Modifier.padding(start = 8.dp)
-                                    ) {
-                                        Text(
-                                            text = uiState.count.toString(),
-                                            modifier = Modifier.padding(
-                                                horizontal = 6.dp,
-                                                vertical = 2.dp
-                                            ),
-                                            style = androidx.compose.material3.MaterialTheme.typography.labelSmall
-                                        )
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            // Main Content
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = subItem.remark,
+                                        style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f, fill = false)
+                                    )
+                                    if (uiState.count > 0) {
+                                        Surface(
+                                            color = androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer,
+                                            shape = RoundedCornerShape(8.dp),
+                                            modifier = Modifier.padding(start = 8.dp)
+                                        ) {
+                                            Text(
+                                                text = uiState.count.toString(),
+                                                modifier = Modifier.padding(
+                                                    horizontal = 6.dp,
+                                                    vertical = 2.dp
+                                                ),
+                                                style = androidx.compose.material3.MaterialTheme.typography.labelSmall
+                                            )
+                                        }
                                     }
                                 }
-                            }
-                        },
-                        supportingContent = {
-                            Column {
                                 if (subItem.url.isNotEmpty()) {
                                     Text(
-                                        text = "URL: ${subItem.url}",
+                                        text = subItem.url,
+                                        style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -132,52 +189,59 @@ fun SettingsSubScreen() {
                                         "yyyy-MM-dd HH:mm:ss",
                                         java.util.Locale.US
                                     ).format(java.util.Date(subItem.lastUpdate))
-                                    Text("Last Updated: $lastUpdateStr")
+                                    Text(
+                                        text = "Updated: $lastUpdateStr",
+                                        style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+                                        color = androidx.compose.material3.MaterialTheme.colorScheme.outline
+                                    )
                                 }
                             }
-                        },
-                        trailingContent = {
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            // Actions
                             Column(horizontalAlignment = Alignment.End) {
                                 Row {
                                     IconButton(
-                                        onClick = {
-                                            navigator.navigate(
-                                                SettingsSubEditor(subItem.id)
-                                            )
-                                        },
-                                        modifier = Modifier.size(42.dp)
+                                        onClick = { navigator.navigate(SettingsSubEditor(subItem.id)) },
+                                        modifier = Modifier.size(40.dp)
                                     ) {
                                         Icon(
                                             painter = painterResource(R.drawable.ic_edit),
-                                            contentDescription = "Edit Rule"
+                                            contentDescription = "Edit",
+                                            modifier = Modifier.size(20.dp)
                                         )
                                     }
                                     IconButton(
-                                        onClick = {
-                                            viewModel.removeSubItem(subItem.id)
-                                        },
-                                        modifier = Modifier.size(42.dp)
+                                        onClick = { viewModel.removeSubItem(subItem.id) },
+                                        modifier = Modifier.size(40.dp)
                                     ) {
                                         Icon(
                                             painter = painterResource(R.drawable.ic_delete),
-                                            contentDescription = "Delete Rule"
+                                            contentDescription = "Delete",
+                                            modifier = Modifier.size(20.dp)
                                         )
                                     }
                                 }
                                 if (subItem.url.isNotEmpty()) {
                                     if (uiState.isUpdating) {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier.size(24.dp),
-                                            strokeWidth = 2.dp
-                                        )
+                                        Box(
+                                            modifier = Modifier
+                                                .size(40.dp)
+                                                .padding(8.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(20.dp),
+                                                strokeWidth = 2.dp
+                                            )
+                                        }
                                     } else {
                                         TextButton(
-                                            onClick = {
-                                                viewModel.updateSubForNetwork(subItem.id)
-                                            },
-                                            modifier = Modifier.height(36.dp),
+                                            onClick = { viewModel.updateSubForNetwork(subItem.id) },
+                                            modifier = Modifier.height(32.dp),
                                             contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                                                horizontal = 12.dp,
+                                                horizontal = 8.dp,
                                                 vertical = 0.dp
                                             )
                                         ) {
@@ -190,7 +254,7 @@ fun SettingsSubScreen() {
                                 }
                             }
                         }
-                    )
+                    }
                 }
             }
         }

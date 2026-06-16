@@ -235,22 +235,16 @@ class ProfileListViewModel @Inject constructor(
         val currentSubId = _activeSubIdFlow.value
         val profileList = allProfilesFlow.value[currentSubId] ?: return
 
-        if (profileList.getOrNull(from.index)?.id != from.key ||
-            profileList.getOrNull(to.index)?.id != to.key
-        ) {
+        val fromIndex = from.index
+        val toIndex = to.index
+        val fromProfile = profileList.getOrNull(fromIndex)
+        val toProfile = profileList.getOrNull(toIndex)
+
+        if (fromProfile?.id != from.key || toProfile?.id != to.key) {
             LogUtil.e("ProfileListViewModel Failed to reorder profiles: Index mismatch")
             return
         }
 
-        val fromIndex = profileList.indexOfFirst { it.id == from.key }
-        val toIndex = profileList.indexOfFirst { it.id == to.key }
-        if (fromIndex == -1 || toIndex == -1) {
-            LogUtil.e("ProfileListViewModel Failed to reorder profiles: Key not found")
-            return
-        }
-
-        val fromProfile = profileList[fromIndex]
-        val toProfile = profileList[toIndex]
         val isDown = fromIndex < toIndex
         val toNearbyIndex = if (isDown) toIndex + 1 else toIndex - 1
         val toNearbyProfile = profileList.getOrNull(toNearbyIndex)
@@ -265,8 +259,8 @@ class ProfileListViewModel @Inject constructor(
 
         // Optimistic UI update - order is preserved by list sequence
         val newList = profileList.toMutableList()
-        newList.removeAt(from.index)
-        newList.add(to.index, updatedProfile)
+        newList.removeAt(fromIndex)
+        newList.add(toIndex, updatedProfile)
         _manualProfiles.update { it + (currentSubId to newList) }
 
         // Check if the precision gap is too small to trigger background rebalance.
