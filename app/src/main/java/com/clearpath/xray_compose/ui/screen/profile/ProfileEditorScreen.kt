@@ -142,15 +142,15 @@ fun ProfileEditorScreen(
                                 contentDescription = "Save"
                             )
                         }
-                        TextButton(
-                            onClick = {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("Proto Extra: $protoExtra\nTransport Extra: $transportExtra")
-                                }
-                            }
-                        ) {
-                            Text("Test")
-                        }
+                        // TextButton(
+                        //     onClick = {
+                        //         scope.launch {
+                        //             snackbarHostState.showSnackbar("Proto Extra: $protoExtra\nTransport Extra: $transportExtra")
+                        //         }
+                        //     }
+                        // ) {
+                        //     Text("Test")
+                        // }
                     }
                 },
                 windowInsets = WindowInsets(0.dp)
