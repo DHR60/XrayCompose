@@ -22,9 +22,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
@@ -65,57 +63,38 @@ class ProfileListViewModel @Inject constructor(
     val subItemsFlow: StateFlow<List<ConfigSubItem>> = configRepository.subListFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val windowProfilesFlow = combine(
-        _activeSubIdFlow,
-        subItemsFlow
-    ) { activeId, subs ->
-        val ids = listOf(null) + subs.map { it.id }
-        val idx = ids.indexOf(activeId).coerceAtLeast(0)
-        val range = (idx - 1)..(idx + 1)
-        ids.filterIndexed { index, _ -> index in range }.toSet()
-    }.distinctUntilChanged()
-        .flatMapLatest { targetIds ->
-            val flows = targetIds.map { id ->
-                val flow = if (id == null) profileRepository.observeAllProfilesOrdered()
-                else profileRepository.observeAllProfilesBySubidOrdered(id)
-                flow.map { id to it }
-            }
-            if (flows.isEmpty()) flowOf(emptyMap())
-            else combine(flows) { it.toMap() }
-        }.flowOn(Dispatchers.Default)
-
     private val _manualProfiles = MutableStateFlow<Map<String?, List<ProfileModel>>>(emptyMap())
 
-    private val dbProfilesFlow = combine(
-        windowProfilesFlow,
-        _activeSubIdFlow
-    ) { windowData, activeId ->
-        windowData to activeId
-    }.scan(emptyMap<String?, List<ProfileModel>>() to listOf<String?>()) { (oldMap, history), (new, activeId) ->
-        val merged = oldMap + new
-        val newHistory = (listOf(activeId) + history).distinct().take(10)
-        merged.filterKeys { it in newHistory || it in new.keys } to newHistory
-    }.map { it.first }
-        .flowOn(Dispatchers.Default)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val dbProfilesFlow = _activeSubIdFlow.flatMapLatest { subId ->
+        val flow = if (subId == null) {
+            profileRepository.observeAllProfilesOrdered()
+        } else {
+            profileRepository.observeAllProfilesBySubidOrdered(subId)
+        }
+        flow.map { subId to it }
+    }.scan(emptyMap<String?, List<ProfileModel>>()) { acc, (subId, list) ->
+        acc + (subId to list)
+    }.flowOn(Dispatchers.Default)
 
     val allProfilesFlow: StateFlow<Map<String?, List<ProfileModel>>> = combine(
         dbProfilesFlow,
         _manualProfiles
-    ) { db, manual ->
-        db + manual
+    ) { dbMap, manualMap ->
+        val merged = dbMap.toMutableMap()
+        manualMap.forEach { (subId, manualList) ->
+            val dbSubList = dbMap[subId] ?: emptyList()
+            if (manualList.map { it.id } != dbSubList.map { it.id }) {
+                merged[subId] = manualList
+            }
+        }
+        merged
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
-
-    val allProfileTestsFlow = profileRepository.observeAllProfileTests()
-        .map { list -> list.associateBy { it.id.toString() } }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
 
     val profilesWithTestFlow: StateFlow<Map<String?, List<ProfileWithTest>>> = combine(
         allProfilesFlow,
-        allProfileTestsFlow
+        profileRepository.observeAllProfileTests().map { list -> list.associateBy { it.id.toString() } }
     ) { allProfiles, allTests ->
-        allProfiles to allTests
-    }.map { (allProfiles, allTests) ->
         allProfiles.mapValues { (_, profiles) ->
             profiles.map { profile ->
                 ProfileWithTest(profile, allTests[profile.id])
