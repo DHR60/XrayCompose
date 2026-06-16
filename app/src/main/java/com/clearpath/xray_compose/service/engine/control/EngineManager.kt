@@ -41,7 +41,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import libv2ray.CoreCallbackHandler
 import libv2ray.CoreController
 import libv2ray.ProcessFinder
@@ -177,11 +176,28 @@ class EngineManager @Inject constructor(
         }
     }
 
+    suspend fun buildConfigContext() {
+        val configContextResult = configContextBuilder.buildActiveProfile()
+        if (!configContextResult.success) {
+            val errorMessage = configContextResult.errors.joinToString("; ")
+            LogUtil.e("StartEngine-Manager: Failed to build config context: $errorMessage")
+            error(errorMessage)
+        }
+        currentConfigContext = configContextResult.ecContext ?: run {
+            error("Engine config context is null")
+        }
+    }
+
+    fun getCurrentConfigContext(): EngineConfigContext {
+        return currentConfigContext ?: error("Call buildConfigContext() first")
+    }
+
     fun startActiveProfile(): Boolean = try {
         changeState(EngineState.STARTING)
         doStartActiveProfile()
         true
     } catch (e: Exception) {
+        LogUtil.e("StartEngine-Manager: Failed to start active profile", e)
         notifyError(e.message ?: e.javaClass.simpleName)
         stopCoreLoop()
         false
@@ -193,35 +209,7 @@ class EngineManager @Inject constructor(
             LogUtil.w("StartEngine-Manager: Engine already running")
             return
         }
-        val quickCheckResult = runBlocking {
-            configContextBuilder.quickCheck()
-        }
-        if (quickCheckResult.isNotEmpty()) {
-            val errorMessage = quickCheckResult.joinToString("; ")
-            LogUtil.e(
-                "StartEngine-Manager: Engine config quick check failed: $errorMessage"
-            )
-            error(errorMessage)
-        }
-
-        val configContextResult = runBlocking {
-            configContextBuilder.buildActiveProfile()
-        }
-
-        if (!configContextResult.success) {
-            val errorMessage = configContextResult.errors.joinToString("; ")
-            LogUtil.e(
-                "StartEngine-Manager: Failed to build engine config context: $errorMessage"
-            )
-            error(errorMessage)
-        }
-
-        val configContext = configContextResult.ecContext ?: run {
-            LogUtil.e("StartEngine-Manager: Engine config context is null")
-            error("Engine config context is null")
-        }
-
-        currentConfigContext = configContext
+        val configContext = getCurrentConfigContext()
 
         LogUtil.i("StartEngine-Manager: Starting engine with config context node: ${configContext.node.remark}")
 
@@ -294,9 +282,8 @@ class EngineManager @Inject constructor(
     }
 
     fun isVpnMode(): Boolean {
-        val vpnMode = runBlocking {
-            configContextBuilder.isVpnMode()
-        }
+        val configContext = getCurrentConfigContext()
+        val vpnMode = configContext.engineConfig.inbound.tun.enable
         return vpnMode
     }
 

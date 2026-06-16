@@ -13,6 +13,7 @@ import com.clearpath.xray_compose.ui.screen.profile.ProfileEditScreen
 import com.clearpath.xray_compose.ui.screen.profile.ProfileListShareScreen
 import com.clearpath.xray_compose.ui.screen.settings.SettingsDnsScreen
 import com.clearpath.xray_compose.ui.screen.settings.SettingsInboundScreen
+import com.clearpath.xray_compose.ui.screen.settings.SettingsPerAppScreen
 import com.clearpath.xray_compose.ui.screen.settings.SettingsRoutingScreen
 import com.clearpath.xray_compose.ui.screen.settings.SettingsRuleScreen
 import com.clearpath.xray_compose.ui.screen.settings.SettingsSubEditorScreen
@@ -108,6 +109,13 @@ fun EntryProviderScope<NavKey>.settingsSection() {
         )
     ) { args ->
         SettingsSubEditorScreen(args.id)
+    }
+    entry<SettingsPerApp>(
+        metadata = SharedViewModelStoreNavEntryDecorator.parent(
+            Settings.toContentKey()
+        )
+    ) {
+        SettingsPerAppScreen()
     }
     entry<Logcat>(
         metadata = SharedViewModelStoreNavEntryDecorator.parent(

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -91,9 +92,7 @@ fun ProfileListScreen() {
             TopAppBar(
                 title = { Text("Profile List") },
                 actions = {
-                    Row(
-                        modifier = Modifier.padding(end = 16.dp)
-                    ) {
+                    Row {
                         var addProfileMenuExpanded by remember { mutableStateOf(false) }
                         Box {
                             IconButton(
@@ -209,8 +208,13 @@ fun ProfileListScreen() {
         ) {
             if (isBusy) {
                 LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
                 )
+            } else {
+                // padding
+                Spacer(modifier = Modifier.height(4.dp))
             }
             if (isTesting) {
                 Column(
@@ -243,7 +247,7 @@ fun ProfileListScreen() {
                     .padding(
                         start = 16.dp,
                         end = 16.dp,
-                        top = if (isBusy || isTesting) 4.dp else 8.dp,
+                        top = 4.dp,
                         bottom = 4.dp
                     ),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)

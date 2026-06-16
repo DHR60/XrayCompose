@@ -41,17 +41,26 @@ class ProfileImporter(
     private fun doParse(data: String): List<ProfileModel> {
         val orderedList = mutableListOf<Pair<Int, ProfileModel>>()
         val unorderedList = mutableListOf<ProfileModel>()
+
+        var count = 0
         if (Base64Util.isBase64String(data, true)) {
-            orderedList.addAll(parseCommonShareUrl(Base64Util.decodeBase64(data)))
-        } else {
+            val list = parseCommonShareUrl(Base64Util.decodeBase64(data))
+            orderedList.addAll(list)
+            count += list.size
+        }
+        if (count <= 0)
+        {
             val list = parseCommonShareUrl(data)
             orderedList.addAll(list)
-            if (list.isEmpty()) {
-                val decodedBytes = Base64Util.decodeBase64WithMaxTolerance(data)
-                if (decodedBytes.isNotEmpty()) {
-                    val decodedString = String(decodedBytes, Charsets.UTF_8)
-                    unorderedList.addAll(parseCommonShareUrl(decodedString).map { it.second })
-                }
+            count += list.size
+        }
+        if (count <= 0) {
+            val decodedBytes = Base64Util.decodeBase64WithMaxTolerance(data)
+            if (decodedBytes.isNotEmpty()) {
+                val decodedString = String(decodedBytes, Charsets.UTF_8)
+                val list = parseCommonShareUrl(decodedString)
+                orderedList.addAll(list)
+                count += list.size
             }
         }
         // order by line number, then append unordered list

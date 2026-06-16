@@ -21,13 +21,13 @@ class XrayConfigDnsProcessor(
         ecContext.engineConfig.routing.rules.forEach {
             if (it.ruleType != ERuleType.DNS) return@forEach
             if (it.outboundTag == GlobalConst.directTag) {
-                directDomains.add(it.domain)
+                directDomains.addAll(it.domain)
             } else if (it.outboundTag == GlobalConst.blockTag
                 || it.outboundTag.isEmpty()
             ) {
                 return@forEach
             } else {
-                proxyDomains.add(it.domain)
+                proxyDomains.addAll(it.domain)
             }
         }
 

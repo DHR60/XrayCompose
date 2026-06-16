@@ -27,9 +27,9 @@ class XrayConfigRoutingProcessor(
                 }
                 ruleList.add(
                     XrayConfig.RoutingBean.RulesBean(
-                        ip = it.ip.split(",").map(String::trim).filter(String::isNotEmpty)
+                        ip = it.ip.map(String::trim).filter(String::isNotEmpty)
                             .ifEmpty { null },
-                        domain = it.domain.split(",").map(String::trim).filter(String::isNotEmpty)
+                        domain = it.domain.map(String::trim).filter(String::isNotEmpty)
                             .ifEmpty { null },
                         outboundTag = it.outboundTag,
                     )
@@ -41,9 +41,9 @@ class XrayConfigRoutingProcessor(
                     return@forEach
                 }
                 val rule = XrayConfig.RoutingBean.RulesBean(
-                    ip = it.ip.split(",").map(String::trim).filter(String::isNotEmpty)
+                    ip = it.ip.map(String::trim).filter(String::isNotEmpty)
                         .ifEmpty { null },
-                    domain = it.domain.split(",").map(String::trim).filter(String::isNotEmpty)
+                    domain = it.domain.map(String::trim).filter(String::isNotEmpty)
                         .ifEmpty { null },
                     outboundTag = it.outboundTag,
                 )

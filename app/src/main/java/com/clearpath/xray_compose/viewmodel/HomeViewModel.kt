@@ -154,7 +154,7 @@ class HomeViewModel @Inject constructor(
         // NOTE: some rom (e.g. MIUI) may enable "pseudo permission" for QUERY_ALL_PACKAGES
         val testPackages = listOf(
             "com.android.settings",
-            "com.google.android.gms",
+            "com.google.android.webview",
         )
         var matchCount = 0
         try {

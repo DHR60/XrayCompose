@@ -9,10 +9,10 @@ import android.net.NetworkRequest
 import android.net.VpnService
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
-import com.clearpath.xray_compose.BuildConfig
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.utils.LogUtil
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -60,7 +60,7 @@ class EngineVpnService : VpnService(), IEngineService {
         engineManager.initialize()
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
+    override fun onBind(intent: Intent?): IBinder {
         super.onBind(intent)
         return engineManager.getBinder()
     }
@@ -93,6 +93,9 @@ class EngineVpnService : VpnService(), IEngineService {
     override fun getService() = this
 
     override fun startService() {
+        runBlocking {
+            engineManager.buildConfigContext()
+        }
         if (engineManager.isVpnMode()) {
             setupVpnService()
         }
@@ -160,12 +163,36 @@ class EngineVpnService : VpnService(), IEngineService {
     }
 
     private fun configureNetworkSettings(builder: Builder) {
+        val configContext = engineManager.getCurrentConfigContext()
+        val tunConfig = configContext.engineConfig.inbound.tun
         builder.setSession(GlobalConst.appName)
-        builder.addAddress("10.0.1.1", 24)
+        if (tunConfig.addressCIDRList.isNotEmpty()) {
+            for (address in tunConfig.addressCIDRList) {
+                val parts = address.split("/")
+                if (parts.size != 2) continue
+                builder.addAddress(parts[0], parts[1].toInt())
+            }
+        } else {
+            builder.addAddress("10.0.1.1", 24)
+        }
         builder.addRoute("0.0.0.0", 0)
-        builder.addDnsServer("1.1.1.1")
-        builder.addDnsServer("8.8.8.8")
-        builder.setMtu(1500)
+        // TODO
+        // for (exclude in tunConfig.excludeCIDRList) {
+        //     builder.excludeRoute(IpPrefix(exclude))
+        // }
+        if (tunConfig.dnsList.isNotEmpty()) {
+            for (dns in tunConfig.dnsList) {
+                builder.addDnsServer(dns)
+            }
+        } else {
+            builder.addDnsServer("1.1.1.1")
+            builder.addDnsServer("8.8.8.8")
+        }
+        if (tunConfig.mtu in 1000..65535) {
+            builder.setMtu(tunConfig.mtu)
+        } else {
+            builder.setMtu(1500)
+        }
     }
 
     private fun configurePlatformFeatures(builder: Builder) {
@@ -180,7 +207,30 @@ class EngineVpnService : VpnService(), IEngineService {
     }
 
     private fun configurePerAppProxy(builder: Builder) {
-        val selfPackageName = BuildConfig.APPLICATION_ID
-        builder.addDisallowedApplication(selfPackageName)
+        val configContext = engineManager.getCurrentConfigContext()
+        val perAppConfig = configContext.engineConfig.perApp
+        val selfPackageName = GlobalConst.appId
+        if (!perAppConfig.enable) {
+            builder.addDisallowedApplication(selfPackageName)
+            return
+        }
+        val selectedAppList = perAppConfig.packageList.toMutableList()
+        if (perAppConfig.bypass) {
+            selectedAppList.add(selfPackageName)
+        } else {
+            selectedAppList.remove(selfPackageName)
+        }
+        val distinctList = selectedAppList.distinct()
+        for (packageName in distinctList) {
+            try {
+                if (perAppConfig.bypass) {
+                    builder.addDisallowedApplication(packageName)
+                } else {
+                    builder.addAllowedApplication(packageName)
+                }
+            } catch (e: Exception) {
+                LogUtil.w("Failed to configure per-app proxy for $packageName", e)
+            }
+        }
     }
 }

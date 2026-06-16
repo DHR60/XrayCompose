@@ -63,16 +63,20 @@ class SettingsRoutingViewModel @Inject constructor(
 
     fun updateRoutingSetting(update: (ConfigRoutingItem) -> ConfigRoutingItem) {
         viewModelScope.launch {
-            val config = configRepository.getConfig()
             val activeId = preferencesRepository.getActiveEngineSettingId()
-            val currentSetting = config.engineSettingList.find { it.id == activeId }
-                ?: config.engineSettingList.firstOrNull()
-                ?: return@launch
-            configRepository.updateEngineSettingItem(
-                currentSetting.copy(
-                    routing = update(currentSetting.routing)
-                )
-            )
+            configRepository.updateConfig { config ->
+                val targetId = activeId ?: config.engineSettingList.firstOrNull()?.id
+                if (targetId == null) return@updateConfig config
+
+                val newList = config.engineSettingList.map { item ->
+                    if (item.id == targetId) {
+                        item.copy(routing = update(item.routing))
+                    } else {
+                        item
+                    }
+                }
+                config.copy(engineSettingList = newList)
+            }
         }
     }
 

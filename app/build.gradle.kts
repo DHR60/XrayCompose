@@ -93,6 +93,7 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.room3.runtime)
     implementation(libs.androidx.sqlite.bundled)
+    implementation(libs.coil.compose)
     implementation(libs.google.hilt.android)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.client.core)

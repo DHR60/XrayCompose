@@ -37,6 +37,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -46,6 +49,7 @@ import com.clearpath.xray_compose.ui.navigation.LocalNavigator
 import com.clearpath.xray_compose.ui.navigation.Logcat
 import com.clearpath.xray_compose.ui.navigation.SettingsDns
 import com.clearpath.xray_compose.ui.navigation.SettingsInbound
+import com.clearpath.xray_compose.ui.navigation.SettingsPerApp
 import com.clearpath.xray_compose.ui.navigation.SettingsRouting
 import com.clearpath.xray_compose.ui.navigation.SettingsSub
 import com.clearpath.xray_compose.viewmodel.SettingsViewModel
@@ -257,7 +261,7 @@ fun SettingsScreen() {
                         Icon(painterResource(R.drawable.ic_arrow_right), contentDescription = null)
                     },
                     modifier = Modifier.clickable {
-                        // TODO
+                        navigator.navigate(SettingsPerApp)
                     }
                 )
             }
@@ -281,9 +285,15 @@ fun SettingsScreen() {
                     trailingContent = {
                         Icon(painterResource(R.drawable.ic_arrow_right), contentDescription = null)
                     },
-                    modifier = Modifier.clickable {
-                        // TODO
-                    }
+                    modifier = Modifier
+                        .graphicsLayer {
+                            val matrix = ColorMatrix().apply { setToSaturation(0f) }
+                            colorFilter = ColorFilter.colorMatrix(matrix)
+                            alpha = 0.5f
+                        }
+                        .clickable {
+                            // TODO
+                        }
                 )
                 ListItem(
                     headlineContent = { Text("Subscription Settings") },
@@ -307,9 +317,15 @@ fun SettingsScreen() {
                     trailingContent = {
                         Icon(painterResource(R.drawable.ic_arrow_right), contentDescription = null)
                     },
-                    modifier = Modifier.clickable {
-                        // TODO
-                    }
+                    modifier = Modifier
+                        .graphicsLayer {
+                            val matrix = ColorMatrix().apply { setToSaturation(0f) }
+                            colorFilter = ColorFilter.colorMatrix(matrix)
+                            alpha = 0.5f
+                        }
+                        .clickable {
+                            // TODO
+                        }
                 )
             }
 

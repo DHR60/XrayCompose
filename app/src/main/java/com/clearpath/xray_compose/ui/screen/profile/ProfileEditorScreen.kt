@@ -111,7 +111,7 @@ fun ProfileEditorScreen(
                     }
                 },
                 actions = {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row {
                         if (!isNew) {
                             IconButton(onClick = {
                                 viewModel.deleteProfile(onSuccess = {

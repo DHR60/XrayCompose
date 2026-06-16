@@ -51,27 +51,27 @@ class ConfigRepository @Inject constructor(private val dataStore: DataStore<Conf
             ConfigRuleItem(
                 remark = "绕过局域网 IP",
                 outboundTag = GlobalConst.directTag,
-                ip = "geoip:private"
+                ip = listOf("geoip:private")
             ),
             ConfigRuleItem(
                 remark = "绕过局域网域名",
                 outboundTag = GlobalConst.directTag,
-                domain = "geosite:private"
+                domain = listOf("geosite:private")
             ),
             ConfigRuleItem(
                 remark = "代理 Google",
                 outboundTag = GlobalConst.proxyTag,
-                domain = "geosite:google"
+                domain = listOf("geosite:google")
             ),
             ConfigRuleItem(
                 remark = "国内直连IP",
                 outboundTag = GlobalConst.directTag,
-                ip = GlobalConst.geoipCN
+                ip = listOf(GlobalConst.geoipCN)
             ),
             ConfigRuleItem(
                 remark = "国内直连域名",
                 outboundTag = GlobalConst.directTag,
-                domain = GlobalConst.geositeCN
+                domain = listOf(GlobalConst.geositeCN)
             )
         )
 
@@ -110,9 +110,7 @@ class ConfigRepository @Inject constructor(private val dataStore: DataStore<Conf
     }
 
     suspend fun updateSubList(transform: suspend (List<ConfigSubItem>) -> List<ConfigSubItem>) {
-        val currentConfig = getConfig()
-        val subList = transform(currentConfig.subList)
-        updateConfig { it.copy(subList = subList) }
+        updateConfig { it.copy(subList = transform(it.subList)) }
     }
 
     suspend fun addSubItem(item: ConfigSubItem) {

@@ -45,7 +45,7 @@ fun EditableTrailingIconField(
         value = value,
         onValueChange = onValueChange,
         label = label,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         keyboardOptions = keyboardOptions,
         enabled = enabled,
         readOnly = readOnly,

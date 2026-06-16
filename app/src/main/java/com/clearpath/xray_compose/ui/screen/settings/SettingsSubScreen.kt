@@ -58,7 +58,7 @@ fun SettingsSubScreen() {
                     }
                 },
                 actions = {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row {
                         IconButton(onClick = {
                             viewModel.createNewSubItem()
                         }) {

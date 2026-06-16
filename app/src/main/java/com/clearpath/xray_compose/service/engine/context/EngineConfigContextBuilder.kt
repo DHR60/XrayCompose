@@ -88,7 +88,7 @@ class EngineConfigContextBuilder @Inject constructor(
                 node = profileModel,
                 engineConfig = activeEngineSetting,
                 allProxiesMap = allProxiesMap,
-                isTunEnabled = !activeEngineSetting.inbound.disableTun,
+                isTunEnabled = activeEngineSetting.inbound.tun.enable,
             ),
             errors = errors,
             warnings = warnings,
@@ -111,11 +111,5 @@ class EngineConfigContextBuilder @Inject constructor(
         }
 
         return errors
-    }
-
-    suspend fun isVpnMode(): Boolean {
-        return !(configRepository.getConfig().engineSettingList
-            .firstOrNull()?.inbound?.disableTun
-            ?: false)
     }
 }

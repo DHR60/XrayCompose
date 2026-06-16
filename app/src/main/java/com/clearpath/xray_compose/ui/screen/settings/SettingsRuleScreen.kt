@@ -26,6 +26,7 @@ import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.ui.components.EditableTrailingIconField
 import com.clearpath.xray_compose.ui.components.FormBottomSheetContext
 import com.clearpath.xray_compose.ui.components.ReusableFormBottomSheet
+import com.clearpath.xray_compose.ui.components.StringListEditor
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
 import com.clearpath.xray_compose.ui.navigation.sharedviewmodel.LocalSharedViewModelStoreOwner
 import com.clearpath.xray_compose.ui.screen.LocalRootInnerPadding
@@ -122,52 +123,72 @@ fun SettingsRuleScreen(
                 )
             }
             item {
-                EditableTrailingIconField(
-                    value = rule.domain,
-                    onValueChange = { newDomain ->
+                StringListEditor(
+                    label = "Domain",
+                    items = rule.domain,
+                    onItemsChange = { newDomainList ->
                         viewModel.updateRule { currentRule ->
-                            currentRule.copy(domain = newDomain)
+                            currentRule.copy(domain = newDomainList)
                         }
                     },
-                    label = { Text("Domain") },
-                    modifier = Modifier.fillMaxWidth(),
-                    onEditIconClick = {
-                        activeDialogContext = FormBottomSheetContext(
-                            fieldKey = "domain",
-                            title = "Edit Domain",
-                            initialValue = rule.domain,
-                            onConfirm = { newDomain ->
-                                viewModel.updateRule { currentRule ->
-                                    currentRule.copy(domain = newDomain)
-                                }
-                            }
-                        )
-                    }
+                    modifier = Modifier.fillMaxWidth()
                 )
-            }
-            item {
-                EditableTrailingIconField(
-                    value = rule.ip,
-                    onValueChange = { newIP ->
+                StringListEditor(
+                    label = "IP",
+                    items = rule.ip,
+                    onItemsChange = { newIPList ->
                         viewModel.updateRule { currentRule ->
-                            currentRule.copy(ip = newIP)
+                            currentRule.copy(ip = newIPList)
                         }
                     },
-                    label = { Text("IP") },
-                    modifier = Modifier.fillMaxWidth(),
-                    onEditIconClick = {
-                        activeDialogContext = FormBottomSheetContext(
-                            fieldKey = "ip",
-                            title = "Edit IP",
-                            initialValue = rule.ip,
-                            onConfirm = { newIP ->
-                                viewModel.updateRule { currentRule ->
-                                    currentRule.copy(ip = newIP)
-                                }
-                            }
-                        )
-                    }
+                    modifier = Modifier.fillMaxWidth()
                 )
+            //     EditableTrailingIconField(
+            //         value = rule.domain,
+            //         onValueChange = { newDomain ->
+            //             viewModel.updateRule { currentRule ->
+            //                 currentRule.copy(domain = newDomain)
+            //             }
+            //         },
+            //         label = { Text("Domain") },
+            //         modifier = Modifier.fillMaxWidth(),
+            //         onEditIconClick = {
+            //             activeDialogContext = FormBottomSheetContext(
+            //                 fieldKey = "domain",
+            //                 title = "Edit Domain",
+            //                 initialValue = rule.domain,
+            //                 onConfirm = { newDomain ->
+            //                     viewModel.updateRule { currentRule ->
+            //                         currentRule.copy(domain = newDomain)
+            //                     }
+            //                 }
+            //             )
+            //         }
+            //     )
+            // }
+            // item {
+            //     EditableTrailingIconField(
+            //         value = rule.ip,
+            //         onValueChange = { newIP ->
+            //             viewModel.updateRule { currentRule ->
+            //                 currentRule.copy(ip = newIP)
+            //             }
+            //         },
+            //         label = { Text("IP") },
+            //         modifier = Modifier.fillMaxWidth(),
+            //         onEditIconClick = {
+            //             activeDialogContext = FormBottomSheetContext(
+            //                 fieldKey = "ip",
+            //                 title = "Edit IP",
+            //                 initialValue = rule.ip,
+            //                 onConfirm = { newIP ->
+            //                     viewModel.updateRule { currentRule ->
+            //                         currentRule.copy(ip = newIP)
+            //                     }
+            //                 }
+            //             )
+            //         }
+            //     )
             }
         }
     }

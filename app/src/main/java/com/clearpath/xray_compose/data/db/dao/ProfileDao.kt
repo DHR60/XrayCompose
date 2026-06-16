@@ -6,6 +6,7 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Update
+import androidx.room3.Upsert
 import com.clearpath.xray_compose.data.db.entities.ProfileItem
 import com.clearpath.xray_compose.data.db.entities.ProfileStatsItem
 import com.clearpath.xray_compose.data.db.entities.ProfileTestItem
@@ -22,6 +23,12 @@ interface ProfileDao {
 
     @Update
     suspend fun updateProfile(profile: ProfileItem)
+
+    @Upsert
+    suspend fun upsertProfile(profile: ProfileItem)
+
+    @Upsert
+    suspend fun upsertProfiles(profiles: List<ProfileItem>)
 
     @Delete
     suspend fun deleteProfile(profile: ProfileItem)

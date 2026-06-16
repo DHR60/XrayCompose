@@ -44,9 +44,17 @@ class ProfileRepository @Inject constructor(private val profileDao: ProfileDao) 
         profileDao.insertProfiles(ProfileSanitizer.sanitize(profiles).map { it.toProfileItem() })
     }
 
-    // suspend fun updateProfile(profile: ProfileModel) {
-    //     profileDao.updateProfile(profile.toProfileItem())
-    // }
+    suspend fun updateProfile(profile: ProfileModel) {
+        profileDao.updateProfile(profile.toProfileItem())
+    }
+
+    suspend fun upsertProfile(profile: ProfileModel) {
+        profileDao.upsertProfile(profile.toProfileItem())
+    }
+
+    suspend fun upsertProfiles(profiles: List<ProfileModel>) {
+        profileDao.upsertProfiles(ProfileSanitizer.sanitize(profiles).map { it.toProfileItem() })
+    }
 
     suspend fun deleteProfile(profile: ProfileModel) {
         val profileItem = profile.toProfileItem()

@@ -137,7 +137,7 @@ class ProfileEditorViewModel @AssistedInject constructor(
         viewModelScope.launch {
             try {
                 val profileItem = currentState.toProfileModel()
-                profileRepository.insertProfile(profileItem)
+                profileRepository.upsertProfile(profileItem)
                 onSuccess()
             } catch (e: Exception) {
                 onError(e.message ?: "Unknown error")

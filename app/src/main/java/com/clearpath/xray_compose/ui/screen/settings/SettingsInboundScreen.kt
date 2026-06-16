@@ -177,18 +177,20 @@ fun SettingsInboundScreen() {
 
             item {
                 ListItem(
-                    headlineContent = { Text("Disable TUN") },
-                    supportingContent = { Text("Disable transparent proxy via TUN interface") },
+                    headlineContent = { Text("Enable TUN") },
+                    supportingContent = { Text("Enable transparent proxy via TUN interface") },
                     trailingContent = {
-                        Switch(checked = inbound.disableTun, onCheckedChange = null)
+                        Switch(checked = inbound.tun.enable, onCheckedChange = null)
                     },
                     modifier = Modifier.toggleable(
-                        value = inbound.disableTun,
+                        value = inbound.tun.enable,
                         onValueChange = { newValue ->
                             parentViewModel.updateActiveEngineSetting {
                                 it.copy(
                                     inbound = it.inbound.copy(
-                                        disableTun = newValue
+                                        tun = it.inbound.tun.copy(
+                                            enable = newValue
+                                        )
                                     )
                                 )
                             }

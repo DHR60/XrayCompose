@@ -28,6 +28,8 @@ data class ConfigEngineItem(
     val routing: ConfigRoutingItem = ConfigRoutingItem(),
     val inbound: ConfigInboundItem = ConfigInboundItem(),
     val dns: ConfigDnsItem = ConfigDnsItem(),
+    val perApp: ConfigPerAppItem = ConfigPerAppItem(),
+    val misc: ConfigMiscItem = ConfigMiscItem(),
 )
 
 
@@ -46,8 +48,8 @@ data class ConfigRuleItem(
     val ruleType: ERuleType = ERuleType.ALL,
     val outboundTag: String = "",
     val enable: Boolean = true,
-    val ip: String = "",
-    val domain: String = "",
+    val ip: List<String> = emptyList(),
+    val domain: List<String> = emptyList(),
 )
 
 @Serializable
@@ -56,8 +58,17 @@ data class ConfigInboundItem(
     val sniff: Boolean = true,
     val sniffOverrideDest: Boolean = false,
     val allowLan: Boolean = false,
-    val disableTun: Boolean = false,
-)
+    val tun: ConfigTunInboundItem = ConfigTunInboundItem(),
+) {
+    @Serializable
+    data class ConfigTunInboundItem(
+        val enable: Boolean = true,
+        val mtu: Int = 1500,
+        val addressCIDRList: List<String> = emptyList(),
+        val dnsList: List<String> = emptyList(),
+        val excludeCIDRList: List<String> = emptyList(),
+    )
+}
 
 @Serializable
 data class ConfigDnsItem(
@@ -68,3 +79,21 @@ data class ConfigDnsItem(
     val serveStale: Boolean = false,
     val parallelQuery: Boolean = false,
 )
+
+@Serializable
+data class ConfigPerAppItem(
+    val enable: Boolean = false,
+    val bypass: Boolean = false,
+    val packageList: List<String> = emptyList(),
+)
+
+@Serializable
+data class ConfigMiscItem(
+    val test: ConfigTestItem = ConfigTestItem(),
+) {
+    @Serializable
+    data class ConfigTestItem(
+        val testUrl: String = "",
+        val testBatchSize: Int = 10,
+    )
+}

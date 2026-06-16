@@ -184,9 +184,9 @@ fun SettingsRoutingScreen() {
                             Column {
                                 Text("Type: ${rule.ruleType}")
                                 Text("Outbound Tag: ${rule.outboundTag}")
-                                if (rule.domain.isNotBlank()) {
+                                if (rule.domain.isNotEmpty()) {
                                     Text("Domain: ${rule.domain}")
-                                } else if (rule.ip.isNotBlank()) {
+                                } else if (rule.ip.isNotEmpty()) {
                                     Text("IP: ${rule.ip}")
                                 }
                             }
