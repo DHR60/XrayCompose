@@ -276,7 +276,6 @@ data class XrayConfig(
                 var echConfigList: String? = null,
                 var pinnedPeerCertSha256: String? = null,
                 // REALITY settings
-                val show: Boolean = false,
                 var publicKey: String? = null,
                 var shortId: String? = null,
                 var spiderX: String? = null,
