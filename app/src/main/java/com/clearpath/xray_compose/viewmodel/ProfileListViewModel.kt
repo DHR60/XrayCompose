@@ -155,8 +155,8 @@ class ProfileListViewModel @Inject constructor(
             dbProfilesFlow.collect { dbMap ->
                 _manualProfiles.update { manualMap ->
                     manualMap.filter { (subId, manualList) ->
-                        val dbList = dbMap[subId]
-                        dbList?.map { it.id } != manualList.map { it.id }
+                        val dbList = dbMap[subId] ?: emptyList()
+                        dbList.map { it.id } != manualList.map { it.id }
                     }
                 }
             }
@@ -263,10 +263,17 @@ class ProfileListViewModel @Inject constructor(
             return
         }
 
-        val fromProfile = profileList[from.index]
-        val toProfile = profileList[to.index]
-        val isDown = from.index < to.index
-        val toNearbyIndex = if (isDown) to.index + 1 else to.index - 1
+        val fromIndex = profileList.indexOfFirst { it.id == from.key }
+        val toIndex = profileList.indexOfFirst { it.id == to.key }
+        if (fromIndex == -1 || toIndex == -1) {
+            LogUtil.e("ProfileListViewModel Failed to reorder profiles: Key not found")
+            return
+        }
+
+        val fromProfile = profileList[fromIndex]
+        val toProfile = profileList[toIndex]
+        val isDown = fromIndex < toIndex
+        val toNearbyIndex = if (isDown) toIndex + 1 else toIndex - 1
         val toNearbyProfile = profileList.getOrNull(toNearbyIndex)
 
         val newOrder = if (toNearbyProfile != null) {
@@ -313,6 +320,7 @@ class ProfileListViewModel @Inject constructor(
                         profileRepository.rebalanceProfiles(currentSubId)
                     }
                 } catch (e: Exception) {
+                    if (e is kotlinx.coroutines.CancellationException) throw e
                     LogUtil.e("ProfileListViewModel Failed to update profiles in DB", e)
                     _manualProfiles.update { it - currentSubId }
                 }
