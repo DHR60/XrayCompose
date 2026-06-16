@@ -76,9 +76,9 @@ object FmtUtils {
         remark: String
     ): String {
         return buildUri(
-            GlobalConst.protocolSchemeMap[configType] ?: error(
+            (GlobalConst.protocolSchemeMap[configType] ?: error(
                 "Invalid config type: $configType"
-            ), authority, "", query, remark
+            )).removeSuffix("://"), authority, "", query, remark
         )
     }
 

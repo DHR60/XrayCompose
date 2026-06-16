@@ -98,6 +98,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
+    implementation(libs.qrose)
     implementation(libs.uuid.creator)
     ksp(libs.androidx.room3.compiler)
     ksp(libs.google.hilt.android.compiler)

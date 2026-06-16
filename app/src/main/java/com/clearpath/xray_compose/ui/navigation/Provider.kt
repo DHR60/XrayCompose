@@ -10,7 +10,7 @@ import com.clearpath.xray_compose.ui.screen.ProfileListScreen
 import com.clearpath.xray_compose.ui.screen.SettingsScreen
 import com.clearpath.xray_compose.ui.screen.profile.ProfileCreateScreen
 import com.clearpath.xray_compose.ui.screen.profile.ProfileEditScreen
-import com.clearpath.xray_compose.ui.screen.profile.ProfileListShareScreen
+import com.clearpath.xray_compose.ui.screen.profile.ProfileListShareBottomSheet
 import com.clearpath.xray_compose.ui.screen.settings.SettingsDnsScreen
 import com.clearpath.xray_compose.ui.screen.settings.SettingsInboundScreen
 import com.clearpath.xray_compose.ui.screen.settings.SettingsPerAppScreen
@@ -42,7 +42,7 @@ fun EntryProviderScope<NavKey>.profileSection() {
                     )
         }
     ) { args ->
-        ProfileListShareScreen(args.id)
+        ProfileListShareBottomSheet(args.id)
     }
 
     entry<ProfileEdit>(

@@ -298,7 +298,7 @@ class XrayConfigOutboundProcessor(
         }
 
         if (ecContext.node.finalmask.isNotEmpty()) {
-            streamSettings.finalmask = JsonUtil.defaultJson.parseToJsonElement(
+            streamSettings.finalmask = JsonUtil.lenientJson.parseToJsonElement(
                 ecContext.node.finalmask
             )
         }
