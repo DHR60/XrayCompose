@@ -48,8 +48,7 @@ class ProfileImporter(
             orderedList.addAll(list)
             count += list.size
         }
-        if (count <= 0)
-        {
+        if (count <= 0) {
             val list = parseCommonShareUrl(data)
             orderedList.addAll(list)
             count += list.size

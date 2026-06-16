@@ -67,7 +67,9 @@ fun StringListEditor(
                 ) {
                     Text(
                         item,
-                        modifier = Modifier.weight(1f).padding(16.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(16.dp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )

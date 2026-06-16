@@ -143,52 +143,52 @@ fun SettingsRuleScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
-            //     EditableTrailingIconField(
-            //         value = rule.domain,
-            //         onValueChange = { newDomain ->
-            //             viewModel.updateRule { currentRule ->
-            //                 currentRule.copy(domain = newDomain)
-            //             }
-            //         },
-            //         label = { Text("Domain") },
-            //         modifier = Modifier.fillMaxWidth(),
-            //         onEditIconClick = {
-            //             activeDialogContext = FormBottomSheetContext(
-            //                 fieldKey = "domain",
-            //                 title = "Edit Domain",
-            //                 initialValue = rule.domain,
-            //                 onConfirm = { newDomain ->
-            //                     viewModel.updateRule { currentRule ->
-            //                         currentRule.copy(domain = newDomain)
-            //                     }
-            //                 }
-            //             )
-            //         }
-            //     )
-            // }
-            // item {
-            //     EditableTrailingIconField(
-            //         value = rule.ip,
-            //         onValueChange = { newIP ->
-            //             viewModel.updateRule { currentRule ->
-            //                 currentRule.copy(ip = newIP)
-            //             }
-            //         },
-            //         label = { Text("IP") },
-            //         modifier = Modifier.fillMaxWidth(),
-            //         onEditIconClick = {
-            //             activeDialogContext = FormBottomSheetContext(
-            //                 fieldKey = "ip",
-            //                 title = "Edit IP",
-            //                 initialValue = rule.ip,
-            //                 onConfirm = { newIP ->
-            //                     viewModel.updateRule { currentRule ->
-            //                         currentRule.copy(ip = newIP)
-            //                     }
-            //                 }
-            //             )
-            //         }
-            //     )
+                //     EditableTrailingIconField(
+                //         value = rule.domain,
+                //         onValueChange = { newDomain ->
+                //             viewModel.updateRule { currentRule ->
+                //                 currentRule.copy(domain = newDomain)
+                //             }
+                //         },
+                //         label = { Text("Domain") },
+                //         modifier = Modifier.fillMaxWidth(),
+                //         onEditIconClick = {
+                //             activeDialogContext = FormBottomSheetContext(
+                //                 fieldKey = "domain",
+                //                 title = "Edit Domain",
+                //                 initialValue = rule.domain,
+                //                 onConfirm = { newDomain ->
+                //                     viewModel.updateRule { currentRule ->
+                //                         currentRule.copy(domain = newDomain)
+                //                     }
+                //                 }
+                //             )
+                //         }
+                //     )
+                // }
+                // item {
+                //     EditableTrailingIconField(
+                //         value = rule.ip,
+                //         onValueChange = { newIP ->
+                //             viewModel.updateRule { currentRule ->
+                //                 currentRule.copy(ip = newIP)
+                //             }
+                //         },
+                //         label = { Text("IP") },
+                //         modifier = Modifier.fillMaxWidth(),
+                //         onEditIconClick = {
+                //             activeDialogContext = FormBottomSheetContext(
+                //                 fieldKey = "ip",
+                //                 title = "Edit IP",
+                //                 initialValue = rule.ip,
+                //                 onConfirm = { newIP ->
+                //                     viewModel.updateRule { currentRule ->
+                //                         currentRule.copy(ip = newIP)
+                //                     }
+                //                 }
+                //             )
+                //         }
+                //     )
             }
         }
     }

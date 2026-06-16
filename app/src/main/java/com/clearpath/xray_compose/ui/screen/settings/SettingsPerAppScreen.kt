@@ -1,6 +1,5 @@
 package com.clearpath.xray_compose.ui.screen.settings
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -25,8 +23,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -43,8 +41,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -181,19 +177,22 @@ fun SettingsPerAppScreen() {
                 Spacer(modifier = Modifier.height(4.dp))
             }
             if (errorMessage != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.Center
+                OutlinedCard(
+                    modifier = Modifier.fillMaxWidth().padding(8.dp)
                 ) {
-                    Text(errorMessage ?: "")
-                    Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { viewModel.clearError() }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_close),
-                            contentDescription = "Clear Error"
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = errorMessage ?: "",
+                            modifier = Modifier.weight(1f).padding(16.dp)
                         )
+                        IconButton(onClick = { viewModel.clearError() }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_close),
+                                contentDescription = "Clear Error"
+                            )
+                        }
                     }
                 }
             }

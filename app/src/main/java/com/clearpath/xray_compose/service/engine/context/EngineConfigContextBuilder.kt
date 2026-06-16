@@ -6,7 +6,6 @@ import com.clearpath.xray_compose.data.repo.ConfigRepository
 import com.clearpath.xray_compose.data.repo.PreferencesRepository
 import com.clearpath.xray_compose.data.repo.ProfileRepository
 import com.clearpath.xray_compose.data.tempstore.TempStore
-import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
