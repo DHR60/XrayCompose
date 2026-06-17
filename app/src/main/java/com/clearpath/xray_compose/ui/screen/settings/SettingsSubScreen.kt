@@ -1,8 +1,9 @@
 package com.clearpath.xray_compose.ui.screen.settings
 
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -16,9 +17,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -93,6 +97,11 @@ fun SettingsSubScreen() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
+            contentPadding = PaddingValues(
+                horizontal = 16.dp,
+                vertical = 8.dp
+            ),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             state = lazyListState,
         ) {
             items(
@@ -103,15 +112,16 @@ fun SettingsSubScreen() {
                     key = uiState.config.id,
                     state = reorderableLazyListState
                 ) { isDragging ->
-                    val elevation by animateDpAsState(if (isDragging) 4.dp else 0.dp)
                     val subItem = uiState.config
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        shadowElevation = elevation,
-                        tonalElevation = 2.dp,
+                    OutlinedCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                            .animateItem(),
+                        colors = CardDefaults.outlinedCardColors(
+                            containerColor = if (isDragging) MaterialTheme.colorScheme.surfaceVariant
+                            else MaterialTheme.colorScheme.surface
+                        ),
+                        border = CardDefaults.outlinedCardBorder(enabled = !isDragging)
                     ) {
                         Row(
                             modifier = Modifier
@@ -140,7 +150,7 @@ fun SettingsSubScreen() {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_drag_handle),
                                     contentDescription = "Drag Handle",
-                                    tint = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
 
@@ -153,14 +163,14 @@ fun SettingsSubScreen() {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Text(
                                         text = subItem.remark,
-                                        style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
+                                        style = MaterialTheme.typography.titleMedium,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                         modifier = Modifier.weight(1f, fill = false)
                                     )
                                     if (uiState.count > 0) {
                                         Surface(
-                                            color = androidx.compose.material3.MaterialTheme.colorScheme.secondaryContainer,
+                                            color = MaterialTheme.colorScheme.secondaryContainer,
                                             shape = RoundedCornerShape(8.dp),
                                             modifier = Modifier.padding(start = 8.dp)
                                         ) {
@@ -170,7 +180,7 @@ fun SettingsSubScreen() {
                                                     horizontal = 6.dp,
                                                     vertical = 2.dp
                                                 ),
-                                                style = androidx.compose.material3.MaterialTheme.typography.labelSmall
+                                                style = MaterialTheme.typography.labelSmall
                                             )
                                         }
                                     }
@@ -178,8 +188,8 @@ fun SettingsSubScreen() {
                                 if (subItem.url.isNotEmpty()) {
                                     Text(
                                         text = subItem.url,
-                                        style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
-                                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis
                                     )
@@ -191,8 +201,8 @@ fun SettingsSubScreen() {
                                     ).format(java.util.Date(subItem.lastUpdate))
                                     Text(
                                         text = "Updated: $lastUpdateStr",
-                                        style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
-                                        color = androidx.compose.material3.MaterialTheme.colorScheme.outline
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.outline
                                     )
                                 }
                             }
@@ -240,14 +250,14 @@ fun SettingsSubScreen() {
                                         TextButton(
                                             onClick = { viewModel.updateSubForNetwork(subItem.id) },
                                             modifier = Modifier.height(32.dp),
-                                            contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                                            contentPadding = PaddingValues(
                                                 horizontal = 8.dp,
                                                 vertical = 0.dp
                                             )
                                         ) {
                                             Text(
                                                 "Update",
-                                                style = androidx.compose.material3.MaterialTheme.typography.labelLarge
+                                                style = MaterialTheme.typography.labelLarge
                                             )
                                         }
                                     }

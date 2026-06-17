@@ -93,7 +93,8 @@ class ProfileListViewModel @Inject constructor(
 
     val profilesWithTestFlow: StateFlow<Map<String?, List<ProfileWithTest>>> = combine(
         allProfilesFlow,
-        profileRepository.observeAllProfileTests().map { list -> list.associateBy { it.id.toString() } }
+        profileRepository.observeAllProfileTests()
+            .map { list -> list.associateBy { it.id.toString() } }
     ) { allProfiles, allTests ->
         allProfiles.mapValues { (_, profiles) ->
             profiles.map { profile ->
