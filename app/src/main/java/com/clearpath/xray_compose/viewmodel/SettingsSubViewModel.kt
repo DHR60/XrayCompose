@@ -110,20 +110,20 @@ class SettingsSubViewModel @Inject constructor(
 
     fun reorderSubItems(from: LazyListItemInfo, to: LazyListItemInfo) {
         val currentUiList = _subListFlow.value
-        val fromIndex = from.index
-        val toIndex = to.index
+        val fromIndex = currentUiList.indexOfFirst { it.config.id == from.key }
+        val toIndex = currentUiList.indexOfFirst { it.config.id == to.key }
 
-        val fromItem = currentUiList.getOrNull(fromIndex)
-        val toItem = currentUiList.getOrNull(toIndex)
-
-        if (fromItem?.config?.id != from.key || toItem?.config?.id != to.key) {
+        if (fromIndex == -1 || toIndex == -1) {
             LogUtil.e("SettingsSubViewModel Failed to reorder sub items: Index mismatch")
             return
         }
 
-        val updatedUiList = currentUiList.toMutableList()
-        updatedUiList.removeAt(fromIndex)
-        updatedUiList.add(toIndex, fromItem)
+        val fromItem = currentUiList[fromIndex]
+
+        val updatedUiList = currentUiList.toMutableList().apply {
+            removeAt(fromIndex)
+            add(toIndex, fromItem)
+        }
         _subListFlow.value = updatedUiList
 
         reorderJob?.cancel()

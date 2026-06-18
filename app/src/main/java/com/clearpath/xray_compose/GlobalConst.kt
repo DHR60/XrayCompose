@@ -74,6 +74,12 @@ object GlobalConst {
 
     val configTypeHumanFyReverseMap = configTypeHumanFyMap.entries.associate { (k, v) -> v to k }
 
+    val supportConfigTypeList = listOf(
+        EConfigType.VLESS,
+        EConfigType.HYSTERIA2,
+        EConfigType.TROJAN,
+    )
+
     val configTypeProtocolMap = mapOf(
         EConfigType.VLESS to "vless",
         EConfigType.SHADOWSOCKS to "shadowsocks",

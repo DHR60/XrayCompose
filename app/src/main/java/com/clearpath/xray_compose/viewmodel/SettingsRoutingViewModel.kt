@@ -1,5 +1,6 @@
 package com.clearpath.xray_compose.viewmodel
 
+import androidx.compose.foundation.lazy.LazyListItemInfo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clearpath.xray_compose.GlobalConst
@@ -8,14 +9,20 @@ import com.clearpath.xray_compose.data.ConfigRoutingItem
 import com.clearpath.xray_compose.data.ConfigRuleItem
 import com.clearpath.xray_compose.data.repo.ConfigRepository
 import com.clearpath.xray_compose.data.repo.PreferencesRepository
+import com.clearpath.xray_compose.utils.LogUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class SettingsRoutingViewModel @Inject constructor(
@@ -143,5 +150,57 @@ class SettingsRoutingViewModel @Inject constructor(
     fun removeRule(ruleId: String) {
         val newList = _ruleListFlow.value.filterNot { it.id == ruleId }
         updateRuleList(newList)
+    }
+
+    private var reorderJob: Job? = null
+
+    fun reorderRules(from: LazyListItemInfo, to: LazyListItemInfo) {
+        val currentUiList = _ruleListFlow.value
+        val fromIndex = currentUiList.indexOfFirst { it.id == from.key }
+        val toIndex = currentUiList.indexOfFirst { it.id == to.key }
+
+        if (fromIndex == -1 || toIndex == -1) {
+            LogUtil.e("SettingsRoutingViewModel Failed to reorder rules: Index mismatch")
+            return
+        }
+
+        val fromItem = currentUiList[fromIndex]
+
+        val updatedUiList = currentUiList.toMutableList().apply {
+            removeAt(fromIndex)
+            add(toIndex, fromItem)
+        }
+        _ruleListFlow.value = updatedUiList
+
+        reorderJob?.cancel()
+        reorderJob = viewModelScope.launch {
+            delay(500.milliseconds)
+            val finalList = _ruleListFlow.value
+            withContext(Dispatchers.IO) {
+                try {
+                    val activeId = preferencesRepository.getActiveEngineSettingId()
+                    configRepository.updateConfig { config ->
+                        val targetId = activeId ?: config.engineSettingList.firstOrNull()?.id
+                        if (targetId == null) return@updateConfig config
+
+                        val newList = config.engineSettingList.map { item ->
+                            if (item.id == targetId) {
+                                item.copy(
+                                    routing = item.routing.copy(
+                                        rules = finalList
+                                    )
+                                )
+                            } else {
+                                item
+                            }
+                        }
+                        config.copy(engineSettingList = newList)
+                    }
+                } catch (e: Exception) {
+                    if (e is kotlinx.coroutines.CancellationException) throw e
+                    LogUtil.e("SettingsRoutingViewModel Error reordering rules", e)
+                }
+            }
+        }
     }
 }
