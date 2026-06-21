@@ -1,15 +1,15 @@
 package com.clearpath.xray_compose.data.db.converter
 
-import androidx.room3.TypeConverter
+import androidx.room3.ColumnTypeConverter
 import com.clearpath.xray_compose.enums.EConfigType
 
 class EConfigTypeConverter {
-    @TypeConverter
+    @ColumnTypeConverter
     fun fromEConfigType(value: EConfigType?): Int? {
         return value?.value
     }
 
-    @TypeConverter
+    @ColumnTypeConverter
     fun toEConfigType(value: Int?): EConfigType? {
         return value?.let { EConfigType.fromValue(it) }
     }
