@@ -68,104 +68,46 @@ fun ProfileListShareBottomSheet(id: String) {
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .navigationBarsPadding()
     ) {
-        Column(
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp)
+        )
+        SecondaryScrollableTabRow(
+            selectedTabIndex = selectedIndex,
+            edgePadding = 0.dp,
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
             modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .clip(RoundedCornerShape(100.dp)),
+            indicator = {},
+            divider = {},
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(16.dp)
-            )
-            SecondaryScrollableTabRow(
-                selectedTabIndex = selectedIndex,
-                edgePadding = 0.dp,
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .clip(RoundedCornerShape(100.dp)),
-                indicator = {},
-                divider = {},
-            ) {
-                options.forEachIndexed { index, option ->
-                    val isSelected = index == selectedIndex
-                    Tab(
-                        selected = isSelected,
-                        onClick = { selectedIndex = index },
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .clip(RoundedCornerShape(100.dp))
-                            .background(
-                                if (isSelected) MaterialTheme.colorScheme.primary
-                                else Color.Transparent
-                            ),
-                        text = {
-                            Text(
-                                text = option,
-                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary
-                                else MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1
-                            )
-                        }
-                    )
-                }
-            }
-            SelectionContainer {
-                Column(
+            options.forEachIndexed { index, option ->
+                val isSelected = index == selectedIndex
+                Tab(
+                    selected = isSelected,
+                    onClick = { selectedIndex = index },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .animateContentSize(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    when (selectedIndex) {
-                        0 -> {
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth(0.6f)
-                                        .aspectRatio(1f)
-                                        .background(Color.White, RoundedCornerShape(16.dp))
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Image(
-                                        painter = rememberQrCodePainter(shareUrl),
-                                        contentDescription = "Share URL QR Code",
-                                        modifier = Modifier.fillMaxSize()
-                                    )
-                                }
-                                Text(
-                                    text = shareUrl,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        }
-
-                        1 -> {
-                            Text(
-                                text = fullConfig,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-
-                        2 -> {
-                            Text(
-                                text = proxyOutbounds,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
+                        .padding(4.dp)
+                        .clip(RoundedCornerShape(100.dp))
+                        .background(
+                            if (isSelected) MaterialTheme.colorScheme.primary
+                            else Color.Transparent
+                        ),
+                    text = {
+                        Text(
+                            text = option,
+                            color = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1
+                        )
                     }
-                }
+                )
             }
         }
         Row(
@@ -212,6 +154,62 @@ fun ProfileListShareBottomSheet(id: String) {
                 )
                 Spacer(Modifier.size(8.dp))
                 Text("Share")
+            }
+        }
+        SelectionContainer(
+            modifier = Modifier.weight(1f, fill = false)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp)
+                    .animateContentSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                when (selectedIndex) {
+                    0 -> {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.6f)
+                                    .aspectRatio(1f)
+                                    .background(Color.White, RoundedCornerShape(16.dp))
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = rememberQrCodePainter(shareUrl),
+                                    contentDescription = "Share URL QR Code",
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                            Text(
+                                text = shareUrl,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+
+                    1 -> {
+                        Text(
+                            text = fullConfig,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    2 -> {
+                        Text(
+                            text = proxyOutbounds,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             }
         }
     }

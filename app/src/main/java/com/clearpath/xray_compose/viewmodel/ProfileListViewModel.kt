@@ -5,13 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.clearpath.xray_compose.data.ConfigSubItem
 import com.clearpath.xray_compose.data.ProfileModel
-import com.clearpath.xray_compose.data.db.entities.ProfileTestItem
 import com.clearpath.xray_compose.data.repo.ConfigRepository
 import com.clearpath.xray_compose.data.repo.PreferencesRepository
 import com.clearpath.xray_compose.data.repo.ProfileRepository
 import com.clearpath.xray_compose.service.ProfileImportInteractor
 import com.clearpath.xray_compose.service.engine.control.tester.EngineTesterRepository
 import com.clearpath.xray_compose.utils.LogUtil
+import com.clearpath.xray_compose.viewmodel.uistate.ProfileWithTest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,18 +25,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
-
-data class ProfileWithTest(
-    val profile: ProfileModel,
-    val test: ProfileTestItem? = null
-)
 
 @HiltViewModel
 class ProfileListViewModel @Inject constructor(
@@ -63,46 +56,39 @@ class ProfileListViewModel @Inject constructor(
     val subItemsFlow: StateFlow<List<ConfigSubItem>> = configRepository.subListFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val _manualProfiles = MutableStateFlow<Map<String?, List<ProfileModel>>>(emptyMap())
+    private val _manualProfiles = MutableStateFlow<List<ProfileModel>?>(null)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val dbProfilesFlow = _activeSubIdFlow.flatMapLatest { subId ->
-        val flow = if (subId == null) {
+        if (subId == null) {
             profileRepository.observeAllProfilesOrdered()
         } else {
             profileRepository.observeAllProfilesBySubidOrdered(subId)
         }
-        flow.map { subId to it }
-    }.scan(emptyMap<String?, List<ProfileModel>>()) { acc, (subId, list) ->
-        acc + (subId to list)
     }.flowOn(Dispatchers.Default)
 
-    val allProfilesFlow: StateFlow<Map<String?, List<ProfileModel>>> = combine(
+    val allProfilesFlow: StateFlow<List<ProfileModel>> = combine(
         dbProfilesFlow,
         _manualProfiles
-    ) { dbMap, manualMap ->
-        val merged = dbMap.toMutableMap()
-        manualMap.forEach { (subId, manualList) ->
-            val dbSubList = dbMap[subId] ?: emptyList()
-            if (manualList.map { it.id } != dbSubList.map { it.id }) {
-                merged[subId] = manualList
-            }
+    ) { dbList, manualList ->
+        if (manualList != null && manualList.map { it.id }.toSet() == dbList.map { it.id }
+                .toSet()) {
+            manualList
+        } else {
+            dbList
         }
-        merged
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val profilesWithTestFlow: StateFlow<Map<String?, List<ProfileWithTest>>> = combine(
+    val profilesWithTestFlow: StateFlow<List<ProfileWithTest>> = combine(
         allProfilesFlow,
         profileRepository.observeAllProfileTests()
             .map { list -> list.associateBy { it.id.toString() } }
     ) { allProfiles, allTests ->
-        allProfiles.mapValues { (_, profiles) ->
-            profiles.map { profile ->
-                ProfileWithTest(profile, allTests[profile.id])
-            }
+        allProfiles.map { profile ->
+            ProfileWithTest(profile, allTests[profile.id])
         }
     }.flowOn(Dispatchers.Default)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val isTestingFlow = engineTesterRepository.isTestingFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
@@ -132,13 +118,8 @@ class ProfileListViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            dbProfilesFlow.collect { dbMap ->
-                _manualProfiles.update { manualMap ->
-                    manualMap.filter { (subId, manualList) ->
-                        val dbList = dbMap[subId] ?: emptyList()
-                        dbList.map { it.id } != manualList.map { it.id }
-                    }
-                }
+            _activeSubIdFlow.collect {
+                _manualProfiles.value = null
             }
         }
     }
@@ -159,10 +140,7 @@ class ProfileListViewModel @Inject constructor(
 
     fun testCurrentSubProfiles() {
         viewModelScope.launch {
-            val currentSubId = _activeSubIdFlow.value
-            val profileIds =
-                profilesWithTestFlow.value[currentSubId]?.map { it.profile.id } ?: emptyList()
-
+            val profileIds = profilesWithTestFlow.value.map { it.profile.id }
             if (profileIds.isNotEmpty()) {
                 engineTesterRepository.startTestProfiles(profileIds)
             }
@@ -233,8 +211,7 @@ class ProfileListViewModel @Inject constructor(
     private var needsRebalance = false
 
     fun reorderProfiles(from: LazyListItemInfo, to: LazyListItemInfo) {
-        val currentSubId = _activeSubIdFlow.value
-        val profileList = allProfilesFlow.value[currentSubId] ?: return
+        val profileList = allProfilesFlow.value
 
         val fromIndex = from.index
         val toIndex = to.index
@@ -262,11 +239,9 @@ class ProfileListViewModel @Inject constructor(
         val newList = profileList.toMutableList()
         newList.removeAt(fromIndex)
         newList.add(toIndex, updatedProfile)
-        _manualProfiles.update { it + (currentSubId to newList) }
+        _manualProfiles.value = newList
 
         // Check if the precision gap is too small to trigger background rebalance.
-        // At timestamp scale (10^12), Double precision limit is ~0.0002.
-        // We trigger at 0.1 to stay well within safe bounds.
         val gap = if (toNearbyProfile != null) {
             val diff = toProfile.sortOrder - toNearbyProfile.sortOrder
             (if (diff < 0) -diff else diff) / 2.0
@@ -284,6 +259,7 @@ class ProfileListViewModel @Inject constructor(
             delay(500.milliseconds)
             val updates = pendingUpdates.values.toList()
             val shouldRebalance = needsRebalance
+            val currentSubId = activeSubIdFlow.value
             pendingUpdates.clear()
             needsRebalance = false
 
@@ -296,7 +272,7 @@ class ProfileListViewModel @Inject constructor(
                 } catch (e: Exception) {
                     if (e is kotlinx.coroutines.CancellationException) throw e
                     LogUtil.e("ProfileListViewModel Failed to update profiles in DB", e)
-                    _manualProfiles.update { it - currentSubId }
+                    _manualProfiles.value = null
                 }
             }
         }

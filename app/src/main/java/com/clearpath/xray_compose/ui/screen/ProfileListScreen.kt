@@ -1,6 +1,5 @@
 package com.clearpath.xray_compose.ui.screen
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -59,7 +58,6 @@ import com.clearpath.xray_compose.ui.navigation.LocalNavigator
 import com.clearpath.xray_compose.ui.navigation.ProfileCreate
 import com.clearpath.xray_compose.ui.navigation.ProfileEdit
 import com.clearpath.xray_compose.ui.navigation.ProfileListShare
-import com.clearpath.xray_compose.ui.theme.AppAnimation
 import com.clearpath.xray_compose.viewmodel.ProfileListViewModel
 import com.clearpath.xray_compose.viewmodel.uistate.ProfileUiState
 import sh.calvin.reorderable.ReorderableItem
@@ -282,214 +280,195 @@ fun ProfileListScreen() {
             }
 
             // Profile List
-            AnimatedContent(
-                targetState = activeSubId,
-                label = "ProfileListTransition",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                transitionSpec = {
-                    val initialIdx = allSubIds.indexOf(initialState)
-                    val targetIdx = allSubIds.indexOf(targetState)
-                    val baseTransition = if (targetIdx > initialIdx) {
-                        AppAnimation.ForwardTransition
-                    } else {
-                        AppAnimation.PopTransition
-                    }
-                    baseTransition.using(null)
-                }
-            ) { targetSubId ->
-                val profiles = profilesWithTest[targetSubId] ?: emptyList()
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(
-                        horizontal = 16.dp,
-                        vertical = 8.dp
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    state = lazyListState,
-                ) {
-                    items(profiles, key = { it.profile.id }) { item ->
-                        ReorderableItem(
-                            state = reorderableLazyListState,
-                            key = item.profile.id
-                        ) { isDragging ->
-                            val profile = item.profile
-                            val test = item.test
-                            val isActive = activeProfileId == profile.id
-                            var menuExpanded by remember { mutableStateOf(false) }
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    horizontal = 16.dp,
+                    vertical = 8.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                state = lazyListState,
+            ) {
+                items(profilesWithTest, key = { it.profile.id }) { item ->
+                    ReorderableItem(
+                        state = reorderableLazyListState,
+                        key = item.profile.id
+                    ) { isDragging ->
+                        val profile = item.profile
+                        val test = item.test
+                        val isActive = activeProfileId == profile.id
+                        var menuExpanded by remember { mutableStateOf(false) }
 
-                            OutlinedCard(
+                        OutlinedCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .animateItem()
+                                .clickable {
+                                    viewModel.switchActiveProfileId(profile.id)
+                                },
+                            colors = CardDefaults.outlinedCardColors(
+                                containerColor = if (isActive) MaterialTheme.colorScheme.secondaryContainer
+                                else if (isDragging) MaterialTheme.colorScheme.surfaceVariant
+                                else MaterialTheme.colorScheme.surface
+                            ),
+                            border = if (isActive) BorderStroke(
+                                2.dp,
+                                MaterialTheme.colorScheme.primary
+                            )
+                            else CardDefaults.outlinedCardBorder(enabled = !isDragging)
+                        ) {
+                            Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .animateItem()
-                                    .clickable {
-                                        viewModel.switchActiveProfileId(profile.id)
-                                    },
-                                colors = CardDefaults.outlinedCardColors(
-                                    containerColor = if (isActive) MaterialTheme.colorScheme.secondaryContainer
-                                    else if (isDragging) MaterialTheme.colorScheme.surfaceVariant
-                                    else MaterialTheme.colorScheme.surface
-                                ),
-                                border = if (isActive) BorderStroke(
-                                    2.dp,
-                                    MaterialTheme.colorScheme.primary
-                                )
-                                else CardDefaults.outlinedCardBorder(enabled = !isDragging)
+                                    .padding(horizontal = 12.dp, vertical = 16.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_drag_handle),
+                                    contentDescription = "Drag Handle",
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 12.dp, vertical = 16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_drag_handle),
-                                        contentDescription = "Drag Handle",
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .longPressDraggableHandle(
-                                                onDragStarted = {
-                                                    hapticFeedback.performHapticFeedback(
-                                                        HapticFeedbackType.GestureThresholdActivate
-                                                    )
-                                                },
-                                                onDragStopped = {
-                                                    hapticFeedback.performHapticFeedback(
-                                                        HapticFeedbackType.GestureEnd
-                                                    )
-                                                },
-                                            ),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                            alpha = 0.6f
-                                        )
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = profile.remark,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                        )
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(
-                                                text = GlobalConst.configTypeHumanFyReverseMap[profile.configType]
-                                                    ?: profile.configType.toString(),
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                maxLines = 1,
-                                            )
-                                            if (test != null) {
-                                                Text(
-                                                    text = if (test.delay > 0) "${test.delay} ms" else if (test.message.contains(
-                                                            ": "
-                                                        )
-                                                    ) test.message.substringAfterLast(": ") else test.message,
-                                                    style = MaterialTheme.typography.bodySmall,
-                                                    color = if (test.delay > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis,
-                                                    textAlign = TextAlign.End,
-                                                    modifier = Modifier
-                                                        .weight(1f)
-                                                        .padding(start = 8.dp)
+                                        .size(20.dp)
+                                        .longPressDraggableHandle(
+                                            onDragStarted = {
+                                                hapticFeedback.performHapticFeedback(
+                                                    HapticFeedbackType.GestureThresholdActivate
                                                 )
-                                            }
+                                            },
+                                            onDragStopped = {
+                                                hapticFeedback.performHapticFeedback(
+                                                    HapticFeedbackType.GestureEnd
+                                                )
+                                            },
+                                        ),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                        alpha = 0.6f
+                                    )
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = profile.remark,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                    )
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = GlobalConst.configTypeHumanFyReverseMap[profile.configType]
+                                                ?: profile.configType.toString(),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            maxLines = 1,
+                                        )
+                                        if (test != null) {
+                                            Text(
+                                                text = if (test.delay > 0) "${test.delay} ms" else if (test.message.contains(
+                                                        ": "
+                                                    )
+                                                ) test.message.substringAfterLast(": ") else test.message,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = if (test.delay > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                                textAlign = TextAlign.End,
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .padding(start = 8.dp)
+                                            )
                                         }
                                     }
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    IconButton(
+                                        modifier = Modifier.size(40.dp),
+                                        onClick = {
+                                            val profileUiState =
+                                                ProfileUiState.fromProfileModel(profile)
+                                            val id = TempStore.put(profileUiState)
+                                            navigator.navigate(ProfileEdit(id))
+                                        }
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_edit),
+                                            contentDescription = "Edit Profile",
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+                                    Box {
                                         IconButton(
                                             modifier = Modifier.size(40.dp),
                                             onClick = {
-                                                val profileUiState =
-                                                    ProfileUiState.fromProfileModel(profile)
-                                                val id = TempStore.put(profileUiState)
-                                                navigator.navigate(ProfileEdit(id))
+                                                menuExpanded = true
                                             }
                                         ) {
                                             Icon(
-                                                painter = painterResource(R.drawable.ic_edit),
-                                                contentDescription = "Edit Profile",
+                                                painter = painterResource(R.drawable.ic_more_vert),
+                                                contentDescription = "More Actions",
                                                 modifier = Modifier.size(20.dp)
                                             )
                                         }
-                                        Box {
-                                            IconButton(
-                                                modifier = Modifier.size(40.dp),
+                                        DropdownMenu(
+                                            expanded = menuExpanded,
+                                            onDismissRequest = { menuExpanded = false }
+                                        ) {
+                                            DropdownMenuItem(
+                                                text = { Text("Set Active") },
+                                                leadingIcon = {
+                                                    Icon(
+                                                        painter = painterResource(R.drawable.ic_check),
+                                                        contentDescription = "Set Active"
+                                                    )
+                                                },
                                                 onClick = {
-                                                    menuExpanded = true
+                                                    menuExpanded = false
+                                                    viewModel.switchActiveProfileId(profile.id)
                                                 }
-                                            ) {
-                                                Icon(
-                                                    painter = painterResource(R.drawable.ic_more_vert),
-                                                    contentDescription = "More Actions",
-                                                    modifier = Modifier.size(20.dp)
-                                                )
-                                            }
-                                            DropdownMenu(
-                                                expanded = menuExpanded,
-                                                onDismissRequest = { menuExpanded = false }
-                                            ) {
-                                                DropdownMenuItem(
-                                                    text = { Text("Set Active") },
-                                                    leadingIcon = {
-                                                        Icon(
-                                                            painter = painterResource(R.drawable.ic_check),
-                                                            contentDescription = "Set Active"
-                                                        )
-                                                    },
-                                                    onClick = {
-                                                        menuExpanded = false
-                                                        viewModel.switchActiveProfileId(profile.id)
-                                                    }
-                                                )
-                                                DropdownMenuItem(
-                                                    text = { Text("Share") },
-                                                    leadingIcon = {
-                                                        Icon(
-                                                            painter = painterResource(R.drawable.ic_share),
-                                                            contentDescription = "Share Profile"
-                                                        )
-                                                    },
-                                                    onClick = {
-                                                        menuExpanded = false
-                                                        val id = TempStore.put(profile)
-                                                        navigator.navigate(ProfileListShare(id))
-                                                    }
-                                                )
-                                                DropdownMenuItem(
-                                                    text = { Text("Test Real Ping Delay") },
-                                                    leadingIcon = {
-                                                        Icon(
-                                                            painter = painterResource(R.drawable.ic_network_ping),
-                                                            contentDescription = "Test Profile"
-                                                        )
-                                                    },
-                                                    onClick = {
-                                                        menuExpanded = false
-                                                        viewModel.testProfile(profile)
-                                                    }
-                                                )
-                                                HorizontalDivider()
-                                                DropdownMenuItem(
-                                                    text = { Text("Delete") },
-                                                    leadingIcon = {
-                                                        Icon(
-                                                            painter = painterResource(R.drawable.ic_delete),
-                                                            contentDescription = "Delete Profile"
-                                                        )
-                                                    },
-                                                    onClick = {
-                                                        menuExpanded = false
-                                                        viewModel.deleteProfile(profile)
-                                                    }
-                                                )
-                                            }
+                                            )
+                                            DropdownMenuItem(
+                                                text = { Text("Share") },
+                                                leadingIcon = {
+                                                    Icon(
+                                                        painter = painterResource(R.drawable.ic_share),
+                                                        contentDescription = "Share Profile"
+                                                    )
+                                                },
+                                                onClick = {
+                                                    menuExpanded = false
+                                                    val id = TempStore.put(profile)
+                                                    navigator.navigate(ProfileListShare(id))
+                                                }
+                                            )
+                                            DropdownMenuItem(
+                                                text = { Text("Test Real Ping Delay") },
+                                                leadingIcon = {
+                                                    Icon(
+                                                        painter = painterResource(R.drawable.ic_network_ping),
+                                                        contentDescription = "Test Profile"
+                                                    )
+                                                },
+                                                onClick = {
+                                                    menuExpanded = false
+                                                    viewModel.testProfile(profile)
+                                                }
+                                            )
+                                            HorizontalDivider()
+                                            DropdownMenuItem(
+                                                text = { Text("Delete") },
+                                                leadingIcon = {
+                                                    Icon(
+                                                        painter = painterResource(R.drawable.ic_delete),
+                                                        contentDescription = "Delete Profile"
+                                                    )
+                                                },
+                                                onClick = {
+                                                    menuExpanded = false
+                                                    viewModel.deleteProfile(profile)
+                                                }
+                                            )
                                         }
                                     }
                                 }
