@@ -316,7 +316,14 @@ class EngineManager @Inject constructor(
     }
 
     fun measureHttpDelay(): Long {
-        return measureHttpDelayWithUrl("https://www.google.com/generate_204")
+        try {
+            val testUrl = getCurrentConfigContext()
+                .engineConfig.misc.test.getTestUrlOrDefault()
+            return measureHttpDelayWithUrl(testUrl)
+        } catch (e: Exception) {
+            LogUtil.e("StartEngine-Manager: Failed to check engine running state", e)
+            return -1L
+        }
     }
 
     fun measureHttpDelayWithUrl(url: String): Long {

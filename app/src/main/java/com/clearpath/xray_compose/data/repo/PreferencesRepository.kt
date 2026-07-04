@@ -21,17 +21,6 @@ import javax.inject.Singleton
 class PreferencesRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
     private val repositoryScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    val configState: StateFlow<StateItem> = dataStore.data
-        .map { preferences ->
-            StateItem(
-                activeProfileId = preferences[PreferencesKeys.ACTIVE_PROFILE_ID],
-                activeSubId = preferences[PreferencesKeys.ACTIVE_SUB_ID],
-                activeEngineSettingId = preferences[PreferencesKeys.ACTIVE_ENGINE_SETTING_ID]
-            )
-        }
-        .distinctUntilChanged()
-        .stateIn(repositoryScope, SharingStarted.Eagerly, StateItem())
-
     val activeProfileIdFlow: StateFlow<String?> = dataStore.data
         .map { it[PreferencesKeys.ACTIVE_PROFILE_ID] }
         .distinctUntilChanged()

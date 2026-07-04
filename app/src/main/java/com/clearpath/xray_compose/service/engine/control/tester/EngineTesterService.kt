@@ -8,8 +8,7 @@ import com.clearpath.xray_compose.IEngineTesterCallback
 import com.clearpath.xray_compose.IEngineTesterService
 import com.clearpath.xray_compose.data.ProfileModel
 import com.clearpath.xray_compose.data.db.entities.ProfileTestItem
-import com.clearpath.xray_compose.data.repo.PreferencesRepository
-import com.clearpath.xray_compose.data.repo.ProfileRepository
+import com.clearpath.xray_compose.data.repo.StoreRepository
 import com.clearpath.xray_compose.service.engine.config.XrayConfigService
 import com.clearpath.xray_compose.service.engine.connect.EngineNativeManager
 import com.clearpath.xray_compose.service.engine.context.EngineConfigContextBuilder
@@ -22,6 +21,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -35,10 +35,7 @@ class EngineTesterService : Service() {
     }
 
     @Inject
-    lateinit var preferencesRepository: PreferencesRepository
-
-    @Inject
-    lateinit var profileRepository: ProfileRepository
+    lateinit var storeRepository: StoreRepository
 
     @Inject
     lateinit var configContextBuilder: EngineConfigContextBuilder
@@ -55,7 +52,7 @@ class EngineTesterService : Service() {
             val targetSubId = subId ?: run {
                 // Fallback to activeSubId if subId is null
                 serviceScope.launch {
-                    val activeId = preferencesRepository.getActiveSubId()
+                    val activeId = storeRepository.preferencesRepository.getActiveSubId()
                     if (activeId != null) {
                         doStartSubTest(activeId)
                     } else {
@@ -104,7 +101,9 @@ class EngineTesterService : Service() {
         testJob = serviceScope.launch {
             try {
                 val profiles =
-                    this@EngineTesterService.profileRepository.getAllProfilesBySubid(subId)
+                    this@EngineTesterService.storeRepository.profileRepository.getAllProfilesBySubid(
+                        subId
+                    )
                 runTest(profiles, subId)
             } catch (e: Exception) {
                 LogUtil.e("EngineTesterService: Error loading sub profiles", e)
@@ -121,7 +120,7 @@ class EngineTesterService : Service() {
         testJob = serviceScope.launch {
             try {
                 val profiles = profileIds.mapNotNull { id ->
-                    profileRepository.getProfileById(id)
+                    storeRepository.profileRepository.getProfileById(id)
                 }
                 runTest(profiles, "custom_list")
             } catch (e: Exception) {
@@ -229,7 +228,7 @@ class EngineTesterService : Service() {
             try {
                 realPingDelay = EngineNativeManager.measureOutboundDelay(
                     configContent,
-                    "https://www.google.com/generate_204"
+                    storeRepository.activeEngineSettingFlow.first().misc.test.getTestUrlOrDefault()
                 )
                 if (realPingDelay < 0) {
                     errorMessage = "timeout"
@@ -239,16 +238,16 @@ class EngineTesterService : Service() {
             }
         }
         val profileTestItem =
-            profileRepository.getProfileTestById(profile.id)
+            storeRepository.profileRepository.getProfileTestById(profile.id)
         if (profileTestItem != null) {
-            profileRepository.updateProfileTest(
+            storeRepository.profileRepository.updateProfileTest(
                 profileTestItem.copy(
                     delay = realPingDelay.toInt(),
                     message = errorMessage
                 )
             )
         } else {
-            profileRepository.insertProfileTest(
+            storeRepository.profileRepository.insertProfileTest(
                 ProfileTestItem(
                     id = UuidCreator.fromString(profile.id),
                     delay = realPingDelay.toInt(),

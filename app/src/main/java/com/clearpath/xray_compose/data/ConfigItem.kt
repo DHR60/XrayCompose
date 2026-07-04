@@ -93,7 +93,15 @@ data class ConfigMiscItem(
 ) {
     @Serializable
     data class ConfigTestItem(
-        val testUrl: String = "",
+        val testUrl: String = "https://www.google.com/generate_204",
         val testBatchSize: Int = 10,
-    )
+    ) {
+        fun getTestUrlOrDefault(): String {
+            return testUrl.ifBlank { "https://www.google.com/generate_204" }
+        }
+
+        fun getTestBatchSizeOrDefault(): Int {
+            return testBatchSize.takeIf { it > 0 } ?: 10
+        }
+    }
 }

@@ -100,7 +100,7 @@ object EngineNativeManager {
         return Libv2ray.measureOutboundDelay(config, testUrl)
     }
 
-    fun measureOutboundDelayOrTimeout(config: String, testUrl: String): Long {
+    fun measureOutboundDelaySafe(config: String, testUrl: String): Long {
         return try {
             measureOutboundDelay(config, testUrl)
         } catch (e: Exception) {

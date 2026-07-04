@@ -1,11 +1,9 @@
 package com.clearpath.xray_compose.service.engine.context
 
-import com.clearpath.xray_compose.data.ConfigEngineItem
 import com.clearpath.xray_compose.data.ProfileModel
-import com.clearpath.xray_compose.data.repo.ConfigRepository
-import com.clearpath.xray_compose.data.repo.PreferencesRepository
-import com.clearpath.xray_compose.data.repo.ProfileRepository
+import com.clearpath.xray_compose.data.repo.StoreRepository
 import com.clearpath.xray_compose.data.tempstore.TempStore
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,23 +18,14 @@ data class EngineConfigContextBuilderResult(
 
 @Singleton
 class EngineConfigContextBuilder @Inject constructor(
-    private val preferencesRepository: PreferencesRepository,
-    private val profileRepository: ProfileRepository,
-    private val configRepository: ConfigRepository
+    private val storeRepository: StoreRepository,
 ) {
-
     suspend fun buildActiveProfile(): EngineConfigContextBuilderResult {
-        val activeProfileId = preferencesRepository.getActiveProfileId()
-            ?: return EngineConfigContextBuilderResult(
-                ecContext = null,
-                errors = listOf("No active profile ID found in preferences."),
-                warnings = emptyList(),
-            )
         val activeProfile =
-            profileRepository.getProfileById(activeProfileId) ?: run {
+            storeRepository.activeProfileFlow.first() ?: run {
                 return EngineConfigContextBuilderResult(
                     ecContext = null,
-                    errors = listOf("Active profile with ID $activeProfileId not found."),
+                    errors = listOf("No active profile found."),
                     warnings = emptyList(),
                 )
             }
@@ -46,7 +35,7 @@ class EngineConfigContextBuilder @Inject constructor(
 
     suspend fun build(profileId: String): EngineConfigContextBuilderResult {
         val profile = TempStore.consume(profileId)
-            ?: profileRepository.getProfileById(profileId)
+            ?: storeRepository.profileRepository.getProfileById(profileId)
             ?: run {
                 return EngineConfigContextBuilderResult(
                     ecContext = null,
@@ -63,20 +52,7 @@ class EngineConfigContextBuilder @Inject constructor(
         val errors = mutableListOf<String>()
         val warnings = mutableListOf<String>()
 
-        val activeEngineSettingId = preferencesRepository.getActiveEngineSettingId()
-
-        val engineSettingList = configRepository.getConfig().engineSettingList
-
-        val activeEngineSetting = if (activeEngineSettingId != null) {
-            engineSettingList.find { it.id == activeEngineSettingId } ?: run {
-                errors.add("Active engine setting with ID $activeEngineSettingId not found.")
-                null
-            }
-        } else {
-            warnings.add("No active engine setting ID found in preferences.")
-            null
-        } ?: engineSettingList.firstOrNull()
-        ?: ConfigEngineItem()
+        val activeEngineSetting = storeRepository.activeEngineSettingFlow.first()
 
         val allProxiesMap = mapOf(
             profileModel.id to profileModel
@@ -92,23 +68,5 @@ class EngineConfigContextBuilder @Inject constructor(
             errors = errors,
             warnings = warnings,
         )
-    }
-
-    suspend fun quickCheck(): List<String> {
-        val errors = mutableListOf<String>()
-
-        val activeProfileId = preferencesRepository.getActiveProfileId()
-        if (activeProfileId == null) {
-            errors.add("No active profile ID found in preferences.")
-            return errors
-        }
-
-        val activeProfile = profileRepository.getProfileById(activeProfileId)
-        if (activeProfile == null) {
-            errors.add("Active profile with ID $activeProfileId not found.")
-            return errors
-        }
-
-        return errors
     }
 }
