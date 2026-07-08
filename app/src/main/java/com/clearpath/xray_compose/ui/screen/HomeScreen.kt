@@ -66,6 +66,7 @@ fun HomeScreen() {
     val activeEngineSetting by viewModel.activeEngineSettingFlow.collectAsState()
     val isNotificationGranted by viewModel.isNotificationPermissionGrantedFlow.collectAsStateWithLifecycle()
     val isQueryAllPackagesGranted by viewModel.isQueryAllPackagesPermissionGrantedFlow.collectAsStateWithLifecycle()
+    val isAccessLocalNetworkGranted by viewModel.isAccessLocalNetworkPermissionGrantedFlow.collectAsStateWithLifecycle()
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -75,6 +76,11 @@ fun HomeScreen() {
         } else {
             true
         }?.let { viewModel.setNotificationPermissionGranted(it) }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            permissionsMap[Manifest.permission.ACCESS_LOCAL_NETWORK]
+        } else {
+            true
+        }?.let { viewModel.setAccessLocalNetworkPermissionGranted(it) }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             permissionsMap[Manifest.permission.QUERY_ALL_PACKAGES]
         } else {
@@ -91,6 +97,7 @@ fun HomeScreen() {
 
     LifecycleResumeEffect(Unit) {
         viewModel.checkNotificationPermission()
+        viewModel.checkAccessLocalNetworkPermission()
         onPauseOrDispose {}
     }
 
@@ -124,6 +131,10 @@ fun HomeScreen() {
                     if (!isNotificationGranted && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)) {
                         requestPermissionList.add(Manifest.permission.POST_NOTIFICATIONS)
                     }
+                    // Not necessary
+                    // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                    //     requestPermissionList.add(Manifest.permission.ACCESS_LOCAL_NETWORK)
+                    // }
                     if (requestPermissionList.isNotEmpty()) {
                         permissionLauncher.launch(requestPermissionList.toTypedArray())
                         return@FloatingActionButton
@@ -344,6 +355,36 @@ fun HomeScreen() {
                             )
                             Text(
                                 text = "Query All Packages Permission",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
+                                maxLines = 1
+                            )
+                        }
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                            horizontalAlignment = Alignment.Start,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                                        permissionLauncher.launch(
+                                            arrayOf(
+                                                Manifest.permission.ACCESS_LOCAL_NETWORK
+                                            )
+                                        )
+                                    }
+                                }
+                        ) {
+                            Text(
+                                text = if (isAccessLocalNetworkGranted) "Granted" else "Not Granted",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = if (isAccessLocalNetworkGranted) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.error,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = "Access Local Network Permission",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
                                 maxLines = 1

@@ -91,6 +91,10 @@ class HomeViewModel @Inject constructor(
     val isQueryAllPackagesPermissionGrantedFlow = _isQueryAllPackagesPermissionGrantedFlow
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
 
+    private val _isAccessLocalNetworkPermissionGrantedFlow = MutableStateFlow(false)
+    val isAccessLocalNetworkPermissionGrantedFlow = _isAccessLocalNetworkPermissionGrantedFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     fun startProxyCore() {
         viewModelScope.launch {
             engineRepository.startActiveProfileEngine()
@@ -178,5 +182,20 @@ class HomeViewModel @Inject constructor(
             // For granted, we need to double-check if it's really granted due to some rom may enable "pseudo permission"
             checkQueryAllPackagesPermissionReallyGranted()
         }
+    }
+
+    fun checkAccessLocalNetworkPermission() {
+        viewModelScope.launch {
+            val granted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+                ContextCompat.checkSelfPermission(
+                    context, Manifest.permission.ACCESS_LOCAL_NETWORK
+                ) == PackageManager.PERMISSION_GRANTED
+            } else true
+            _isAccessLocalNetworkPermissionGrantedFlow.value = granted
+        }
+    }
+
+    fun setAccessLocalNetworkPermissionGranted(isGranted: Boolean) {
+        _isAccessLocalNetworkPermissionGrantedFlow.value = isGranted
     }
 }
