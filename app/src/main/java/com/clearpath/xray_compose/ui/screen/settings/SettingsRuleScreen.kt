@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -28,6 +30,7 @@ import com.clearpath.xray_compose.ui.components.FormBottomSheetContext
 import com.clearpath.xray_compose.ui.components.ReusableFormBottomSheet
 import com.clearpath.xray_compose.ui.components.StringListEditor
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
+import com.clearpath.xray_compose.ui.navigation.SettingsRuleAppSelector
 import com.clearpath.xray_compose.ui.navigation.SettingsRuleProfileSelector
 import com.clearpath.xray_compose.ui.navigation.sharedviewmodel.LocalSharedViewModelStoreOwner
 import com.clearpath.xray_compose.ui.screen.LocalRootInnerPadding
@@ -124,13 +127,46 @@ fun SettingsRuleScreen(
                 )
             }
             item {
-                EditableTrailingIconField(
+                OutlinedTextField(
                     value = rule.customOutboundRemark,
+                    onValueChange = {},
                     readOnly = true,
                     label = { Text("Custom Outbound Remark") },
                     modifier = Modifier.fillMaxWidth(),
-                    onEditIconClick = {
-                        navigator.navigate(SettingsRuleProfileSelector(id))
+                    trailingIcon = {
+                        IconButton(
+                            onClick = {
+                                navigator.navigate(SettingsRuleProfileSelector(id))
+                            },
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_select),
+                                contentDescription = "Select",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                )
+            }
+            item {
+                OutlinedTextField(
+                    value = rule.process.joinToString(",\n"),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Process") },
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = {
+                        IconButton(
+                            onClick = {
+                                navigator.navigate(SettingsRuleAppSelector(id))
+                            },
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_apps),
+                                contentDescription = "Select",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 )
             }

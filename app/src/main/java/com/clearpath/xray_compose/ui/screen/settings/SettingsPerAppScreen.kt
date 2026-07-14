@@ -52,8 +52,8 @@ import coil3.request.crossfade
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
 import com.clearpath.xray_compose.ui.screen.LocalRootInnerPadding
-import com.clearpath.xray_compose.viewmodel.AppItemInfo
 import com.clearpath.xray_compose.viewmodel.SettingsPerAppViewModel
+import com.clearpath.xray_compose.viewmodel.uistate.AppItemInfo
 
 @Composable
 fun SettingsPerAppScreen() {
@@ -256,6 +256,7 @@ fun SettingsPerAppScreen() {
         }
     }
 }
+
 
 @Composable
 fun AppListItem(

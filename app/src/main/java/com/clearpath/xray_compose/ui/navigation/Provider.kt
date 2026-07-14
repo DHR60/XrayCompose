@@ -15,6 +15,7 @@ import com.clearpath.xray_compose.ui.screen.settings.SettingsDnsScreen
 import com.clearpath.xray_compose.ui.screen.settings.SettingsInboundScreen
 import com.clearpath.xray_compose.ui.screen.settings.SettingsPerAppScreen
 import com.clearpath.xray_compose.ui.screen.settings.SettingsRoutingScreen
+import com.clearpath.xray_compose.ui.screen.settings.SettingsRuleAppSelectorBottomSheet
 import com.clearpath.xray_compose.ui.screen.settings.SettingsRuleProfileSelectorBottomSheet
 import com.clearpath.xray_compose.ui.screen.settings.SettingsRuleScreen
 import com.clearpath.xray_compose.ui.screen.settings.SettingsSubEditorScreen
@@ -106,6 +107,16 @@ fun EntryProviderScope<NavKey>.settingsSection() {
         }
     ) {
         SettingsRuleProfileSelectorBottomSheet()
+    }
+    entry<SettingsRuleAppSelector>(
+        metadata = { key ->
+            BottomSheetSceneStrategy.bottomSheet() +
+                    SharedViewModelStoreNavEntryDecorator.parent(
+                        SettingsRule(key.id).toContentKey()
+                    )
+        }
+    ) {
+        SettingsRuleAppSelectorBottomSheet()
     }
     entry<SettingsSub>(
         metadata = SharedViewModelStoreNavEntryDecorator.parent(

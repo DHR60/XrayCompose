@@ -51,6 +51,7 @@ data class ConfigRuleItem(
     val enable: Boolean = true,
     val ip: List<String> = emptyList(),
     val domain: List<String> = emptyList(),
+    val process: List<String> = emptyList(),
 )
 
 @Serializable

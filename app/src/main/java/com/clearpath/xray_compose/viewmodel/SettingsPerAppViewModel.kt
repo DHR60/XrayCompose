@@ -16,6 +16,7 @@ import com.clearpath.xray_compose.data.repo.ConfigRepository
 import com.clearpath.xray_compose.data.repo.PreferencesRepository
 import com.clearpath.xray_compose.utils.LogUtil
 import com.clearpath.xray_compose.utils.Utils
+import com.clearpath.xray_compose.viewmodel.uistate.AppItemInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -26,15 +27,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class AppItemInfo(
-    val appName: String,
-    val packageName: String,
-    // For app icon
-    val applicationInfo: ApplicationInfo,
-    // val appIcon: Drawable,
-    val isSystemApp: Boolean
-)
 
 @HiltViewModel
 class SettingsPerAppViewModel @Inject constructor(

@@ -22,26 +22,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.clearpath.xray_compose.R
-import com.clearpath.xray_compose.ui.components.ProfileSelector
+import com.clearpath.xray_compose.ui.components.AppSelector
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
 import com.clearpath.xray_compose.ui.navigation.sharedviewmodel.LocalSharedViewModelStoreOwner
-import com.clearpath.xray_compose.viewmodel.SettingsRuleProfileSelectorViewModel
+import com.clearpath.xray_compose.viewmodel.SettingsRuleAppSelectorViewModel
 import com.clearpath.xray_compose.viewmodel.SettingsRuleViewModel
 
 @Composable
-fun SettingsRuleProfileSelectorBottomSheet() {
+fun SettingsRuleAppSelectorBottomSheet() {
     val parentViewModel = hiltViewModel<SettingsRuleViewModel>(
         viewModelStoreOwner = LocalSharedViewModelStoreOwner.current
     )
-    val selectorViewModel = hiltViewModel<SettingsRuleProfileSelectorViewModel>()
+    val selectorViewModel = hiltViewModel<SettingsRuleAppSelectorViewModel>()
     val navigator = LocalNavigator.current
 
     val rule by parentViewModel.ruleFlow.collectAsState()
-    val ruleCustomOutboundRemark = rule.customOutboundRemark
-    val selectedProfileRemark by selectorViewModel.selectedProfileRemark.collectAsState()
+    val ruleProcess = rule.process
+    val selectedAppPackageList by selectorViewModel.selectedAppPackageList.collectAsState()
 
-    LaunchedEffect(ruleCustomOutboundRemark) {
-        selectorViewModel.setSelectedProfileRemark(ruleCustomOutboundRemark)
+    LaunchedEffect(ruleProcess) {
+        selectorViewModel.setSelectedAppPackageList(ruleProcess)
     }
 
     Column(
@@ -49,24 +49,12 @@ fun SettingsRuleProfileSelectorBottomSheet() {
             .fillMaxWidth()
             .navigationBarsPadding()
     ) {
-        // Row(
-        //     modifier = Modifier
-        //         .fillMaxWidth()
-        //         .padding(16.dp),
-        //     horizontalArrangement = Arrangement.spacedBy(12.dp)
-        // ) {
-        //     Text(
-        //         text = "Select Profile",
-        //         style = MaterialTheme.typography.titleLarge,
-        //         maxLines = 1,
-        //     )
-        //     Spacer(modifier = Modifier.weight(1f))
-        // }
         Text(
-            text = "Select Profile",
+            text = "Select App",
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(16.dp)
         )
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -78,10 +66,10 @@ fun SettingsRuleProfileSelectorBottomSheet() {
                     // set null
                     parentViewModel.updateRule { rule ->
                         rule.copy(
-                            customOutboundRemark = ""
+                            process = emptyList()
                         )
                     }
-                    selectorViewModel.setSelectedProfileRemark("")
+                    selectorViewModel.setSelectedAppPackageList(emptyList())
                     navigator.goBack()
                 },
                 modifier = Modifier.weight(1f)
@@ -99,12 +87,12 @@ fun SettingsRuleProfileSelectorBottomSheet() {
                     // set selected
                     parentViewModel.updateRule { rule ->
                         rule.copy(
-                            customOutboundRemark = selectedProfileRemark
+                            process = selectedAppPackageList
                         )
                     }
                     navigator.goBack()
                 },
-                enabled = selectedProfileRemark.isNotEmpty(),
+                enabled = selectedAppPackageList.isNotEmpty(),
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(
@@ -116,12 +104,11 @@ fun SettingsRuleProfileSelectorBottomSheet() {
                 Text("Select")
             }
         }
-        ProfileSelector(
-            selectedProfileRemarks = if (selectedProfileRemark.isNotEmpty()) listOf(
-                selectedProfileRemark
-            ) else emptyList(),
-            onProfileClicked = { profile ->
-                selectorViewModel.setSelectedProfileRemark(profile.remark)
+
+        AppSelector(
+            selectedPackageName = selectedAppPackageList,
+            onSelectedChanged = { list ->
+                selectorViewModel.setSelectedAppPackageList(list)
             },
             modifier = Modifier
                 .fillMaxWidth()
