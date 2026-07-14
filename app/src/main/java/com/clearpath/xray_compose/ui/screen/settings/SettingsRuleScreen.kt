@@ -133,6 +133,8 @@ fun SettingsRuleScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
+            }
+            item {
                 StringListEditor(
                     label = "IP",
                     items = rule.ip,

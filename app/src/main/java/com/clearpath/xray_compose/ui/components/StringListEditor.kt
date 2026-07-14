@@ -1,16 +1,18 @@
 package com.clearpath.xray_compose.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -32,48 +35,57 @@ fun StringListEditor(
 ) {
     var input by remember { mutableStateOf("") }
 
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
-        OutlinedTextField(
-            value = input,
-            onValueChange = { input = it },
-            label = { Text(label) },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth(),
-            trailingIcon = {
-                IconButton(onClick = {
-                    if (input.isEmpty()) return@IconButton
-                    val newItems = items.toMutableList()
-                    newItems.add(input)
-                    onItemsChange(newItems)
-                    input = ""
-                }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_add),
-                        contentDescription = "Add",
-                        tint = if (input.isNotEmpty()) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.outline
-                    )
+        Column(modifier = Modifier.fillMaxWidth()) {
+            TextField(
+                value = input,
+                onValueChange = { input = it },
+                label = { Text(label) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                trailingIcon = {
+                    IconButton(onClick = {
+                        if (input.isBlank()) return@IconButton
+                        val newItems = items.toMutableList()
+                        newItems.add(input.trim())
+                        onItemsChange(newItems)
+                        input = ""
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_add),
+                            contentDescription = "Add",
+                            tint = if (input.isNotBlank()) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.outline
+                        )
+                    }
                 }
-            }
-        )
-        items.forEachIndexed { index, item ->
-            OutlinedCard {
+            )
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            items.forEachIndexed { index, item ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        item,
+                        text = item,
                         modifier = Modifier
                             .weight(1f)
-                            .padding(16.dp),
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    // Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = {
                         val newItems = items.toMutableList()
                         newItems.removeAt(index)
@@ -85,6 +97,10 @@ fun StringListEditor(
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
+                }
+
+                if (index < items.lastIndex) {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 }
             }
         }
