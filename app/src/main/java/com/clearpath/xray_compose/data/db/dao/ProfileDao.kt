@@ -107,11 +107,17 @@ interface ProfileDao {
     @Query("SELECT * FROM profile_test WHERE id = :id")
     suspend fun getProfileTestById(id: UUID): ProfileTestItem?
 
+    @Query("SELECT * FROM profile_test WHERE id IN (:idList)")
+    suspend fun getExistingProfileTestsByIds(idList: List<UUID>): List<ProfileTestItem>
+
     @Query("SELECT * FROM profile_test WHERE id = :id")
     fun observeProfileTestById(id: UUID): Flow<ProfileTestItem?>
 
     @Query("SELECT * FROM profile_test")
     fun observeAllProfileTests(): Flow<List<ProfileTestItem>>
+
+    @Query("SELECT * FROM profile_test WHERE id IN (:idList)")
+    fun observeProfileTestsByIds(idList: List<UUID>): Flow<List<ProfileTestItem>>
 
     @Query("DELETE FROM profile_test WHERE id NOT IN (SELECT id FROM profiles)")
     suspend fun cleanOldProfileTests()

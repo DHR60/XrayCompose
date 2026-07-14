@@ -157,11 +157,21 @@ class ProfileRepository @Inject constructor(private val profileDao: ProfileDao) 
         return profileDao.getProfileTestById(UuidCreator.fromString(id))
     }
 
+    suspend fun getExistingProfileTestsByIds(ids: List<String>): List<ProfileTestItem> {
+        val uuidList = ids.map { UuidCreator.fromString(it) }
+        return profileDao.getExistingProfileTestsByIds(uuidList)
+    }
+
     fun observeProfileTestById(id: String): Flow<ProfileTestItem?> {
         return profileDao.observeProfileTestById(UuidCreator.fromString(id))
     }
 
     fun observeAllProfileTests(): Flow<List<ProfileTestItem>> {
         return profileDao.observeAllProfileTests()
+    }
+
+    fun observeProfileTestsByIds(ids: List<String>): Flow<List<ProfileTestItem>> {
+        val uuidList = ids.map { UuidCreator.fromString(it) }
+        return profileDao.observeProfileTestsByIds(uuidList)
     }
 }

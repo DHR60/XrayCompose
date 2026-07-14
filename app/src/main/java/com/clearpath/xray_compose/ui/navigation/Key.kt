@@ -35,6 +35,9 @@ data object SettingsRouting : NavKey
 data class SettingsRule(val id: String) : NavKey
 
 @Serializable
+data class SettingsRuleProfileSelector(val id: String) : NavKey
+
+@Serializable
 data object SettingsSub : NavKey
 
 @Serializable

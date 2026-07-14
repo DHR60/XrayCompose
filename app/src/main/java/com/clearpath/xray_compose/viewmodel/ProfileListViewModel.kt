@@ -12,6 +12,7 @@ import com.clearpath.xray_compose.service.ProfileImportInteractor
 import com.clearpath.xray_compose.service.engine.control.tester.EngineTesterRepository
 import com.clearpath.xray_compose.utils.LogUtil
 import com.clearpath.xray_compose.viewmodel.uistate.ProfileWithTest
+import com.github.f4b6a3.uuid.UuidCreator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -79,15 +80,29 @@ class ProfileListViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val profilesWithTestFlow: StateFlow<List<ProfileWithTest>> = combine(
-        allProfilesFlow,
-        profileRepository.observeAllProfileTests()
-            .map { list -> list.associateBy { it.id.toString() } }
-    ) { allProfiles, allTests ->
-        allProfiles.map { profile ->
-            ProfileWithTest(profile, allTests[profile.id])
-        }
-    }.flowOn(Dispatchers.Default)
+    // val profilesWithTestFlow: StateFlow<List<ProfileWithTest>> = combine(
+    //     allProfilesFlow,
+    //     profileRepository.observeAllProfileTests()
+    //         .map { list -> list.associateBy { it.id.toString() } }
+    // ) { allProfiles, allTests ->
+    //     allProfiles.map { profile ->
+    //         ProfileWithTest(profile, allTests[profile.id])
+    //     }
+    // }.flowOn(Dispatchers.Default)
+    //     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val profilesWithTestFlow: StateFlow<List<ProfileWithTest>> = allProfilesFlow
+        .flatMapLatest { profiles ->
+            val idList = profiles.map { it.id }
+            profileRepository.observeProfileTestsByIds(idList)
+                .map { testList ->
+                    profiles.map { profile ->
+                        val test =
+                            testList.find { test -> test.id == UuidCreator.fromString(profile.id) }
+                        ProfileWithTest(profile, test)
+                    }
+                }
+        }.flowOn(Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val isTestingFlow = engineTesterRepository.isTestingFlow

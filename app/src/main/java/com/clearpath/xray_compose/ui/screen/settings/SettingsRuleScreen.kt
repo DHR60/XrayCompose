@@ -28,6 +28,7 @@ import com.clearpath.xray_compose.ui.components.FormBottomSheetContext
 import com.clearpath.xray_compose.ui.components.ReusableFormBottomSheet
 import com.clearpath.xray_compose.ui.components.StringListEditor
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
+import com.clearpath.xray_compose.ui.navigation.SettingsRuleProfileSelector
 import com.clearpath.xray_compose.ui.navigation.sharedviewmodel.LocalSharedViewModelStoreOwner
 import com.clearpath.xray_compose.ui.screen.LocalRootInnerPadding
 import com.clearpath.xray_compose.viewmodel.SettingsRoutingViewModel
@@ -119,6 +120,17 @@ fun SettingsRuleScreen(
                                 }
                             }
                         )
+                    }
+                )
+            }
+            item {
+                EditableTrailingIconField(
+                    value = rule.customOutboundRemark,
+                    readOnly = true,
+                    label = { Text("Custom Outbound Remark") },
+                    modifier = Modifier.fillMaxWidth(),
+                    onEditIconClick = {
+                        navigator.navigate(SettingsRuleProfileSelector(id))
                     }
                 )
             }

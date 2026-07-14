@@ -31,10 +31,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun EditableTrailingIconField(
     value: String,
-    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    onValueChange: (String) -> Unit = {},
     label: @Composable () -> Unit,
     onEditIconClick: () -> Unit,
-    modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     enabled: Boolean = true,
     readOnly: Boolean = false,

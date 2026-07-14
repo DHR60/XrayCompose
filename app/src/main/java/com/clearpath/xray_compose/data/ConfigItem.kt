@@ -47,6 +47,7 @@ data class ConfigRuleItem(
     val remark: String = "",
     val ruleType: ERuleType = ERuleType.ALL,
     val outboundTag: String = "",
+    val customOutboundRemark: String = "",
     val enable: Boolean = true,
     val ip: List<String> = emptyList(),
     val domain: List<String> = emptyList(),
