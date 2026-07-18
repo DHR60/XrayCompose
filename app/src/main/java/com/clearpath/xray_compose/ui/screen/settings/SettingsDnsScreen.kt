@@ -27,6 +27,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.res.stringResource
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.ui.components.FormBottomSheetContext
 import com.clearpath.xray_compose.ui.components.ReusableFormBottomSheet
@@ -48,16 +49,20 @@ fun SettingsDnsScreen() {
 
     var activeDialogContext by remember { mutableStateOf<FormBottomSheetContext?>(null) }
 
+    val dnsRemoteDnsLabel = stringResource(R.string.dns_remote_dns)
+    val dnsLocalDnsLabel = stringResource(R.string.dns_local_dns)
+    val dnsAdditionalHostsLabel = stringResource(R.string.dns_additional_hosts)
+
     Scaffold(
         modifier = Modifier.padding(rootInnerPadding),
         topBar = {
             TopAppBar(
-                title = { Text("DNS Settings") },
+                title = { Text(stringResource(R.string.dns_settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navigator.goBack() }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.logcat_back)
                         )
                     }
                 },
@@ -72,12 +77,12 @@ fun SettingsDnsScreen() {
         ) {
             item {
                 ListItem(
-                    headlineContent = { Text("Remote DNS") },
+                    headlineContent = { Text(stringResource(R.string.dns_remote_dns)) },
                     supportingContent = {
                         Column {
-                            Text("Comma separated list of remote DNS servers")
+                            Text(stringResource(R.string.dns_remote_dns_desc))
                             Text(
-                                text = dns.remoteDns.ifBlank { "Not Set" },
+                                text = dns.remoteDns.ifBlank { stringResource(R.string.dns_not_set) },
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary,
                                 maxLines = 1,
@@ -88,7 +93,7 @@ fun SettingsDnsScreen() {
                     modifier = Modifier.clickable {
                         activeDialogContext = FormBottomSheetContext(
                             fieldKey = "remote_dns",
-                            title = "Remote DNS",
+                            title = dnsRemoteDnsLabel,
                             initialValue = dns.remoteDns,
                             onConfirm = { newValue ->
                                 parentViewModel.updateActiveEngineSetting {
@@ -106,12 +111,12 @@ fun SettingsDnsScreen() {
 
             item {
                 ListItem(
-                    headlineContent = { Text("Local DNS") },
+                    headlineContent = { Text(stringResource(R.string.dns_local_dns)) },
                     supportingContent = {
                         Column {
-                            Text("Comma separated list of local DNS servers")
+                            Text(stringResource(R.string.dns_local_dns_desc))
                             Text(
-                                text = dns.localDns.ifBlank { "Not Set" },
+                                text = dns.localDns.ifBlank { stringResource(R.string.dns_not_set) },
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary,
                                 maxLines = 1,
@@ -122,7 +127,7 @@ fun SettingsDnsScreen() {
                     modifier = Modifier.clickable {
                         activeDialogContext = FormBottomSheetContext(
                             fieldKey = "local_dns",
-                            title = "Local DNS",
+                            title = dnsLocalDnsLabel,
                             initialValue = dns.localDns,
                             onConfirm = { newValue ->
                                 parentViewModel.updateActiveEngineSetting {
@@ -140,8 +145,8 @@ fun SettingsDnsScreen() {
 
             item {
                 ListItem(
-                    headlineContent = { Text("Enable Fake DNS") },
-                    supportingContent = { Text("Reduces DNS pollution by responding with synthetic IPs") },
+                    headlineContent = { Text(stringResource(R.string.dns_enable_fake_dns)) },
+                    supportingContent = { Text(stringResource(R.string.dns_enable_fake_dns_desc)) },
                     trailingContent = {
                         Switch(checked = dns.enableFakeDns, onCheckedChange = null)
                     },
@@ -163,8 +168,8 @@ fun SettingsDnsScreen() {
 
             item {
                 ListItem(
-                    headlineContent = { Text("Serve Stale") },
-                    supportingContent = { Text("Serve stale DNS records while updating in background") },
+                    headlineContent = { Text(stringResource(R.string.dns_serve_stale)) },
+                    supportingContent = { Text(stringResource(R.string.dns_serve_stale_desc)) },
                     trailingContent = {
                         Switch(checked = dns.serveStale, onCheckedChange = null)
                     },
@@ -186,8 +191,8 @@ fun SettingsDnsScreen() {
 
             item {
                 ListItem(
-                    headlineContent = { Text("Parallel Query") },
-                    supportingContent = { Text("Query multiple DNS servers simultaneously") },
+                    headlineContent = { Text(stringResource(R.string.dns_parallel_query)) },
+                    supportingContent = { Text(stringResource(R.string.dns_parallel_query_desc)) },
                     trailingContent = {
                         Switch(checked = dns.parallelQuery, onCheckedChange = null)
                     },
@@ -209,12 +214,12 @@ fun SettingsDnsScreen() {
 
             item {
                 ListItem(
-                    headlineContent = { Text("Additional Hosts") },
+                    headlineContent = { Text(stringResource(R.string.dns_additional_hosts)) },
                     supportingContent = {
                         Column {
-                            Text("Custom host mappings (Key=Value, line by line)")
+                            Text(stringResource(R.string.dns_additional_hosts_desc))
                             Text(
-                                text = if (dns.additionalHosts.isBlank()) "Not Set" else "${dns.additionalHosts.lines().size} entries",
+                                text = if (dns.additionalHosts.isBlank()) stringResource(R.string.dns_not_set) else stringResource(R.string.dns_entries_count, dns.additionalHosts.lines().size),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.primary,
                                 maxLines = 1,
@@ -225,7 +230,7 @@ fun SettingsDnsScreen() {
                     modifier = Modifier.clickable {
                         activeDialogContext = FormBottomSheetContext(
                             fieldKey = "additional_hosts",
-                            title = "Additional Hosts",
+                            title = dnsAdditionalHostsLabel,
                             initialValue = dns.additionalHosts,
                             onConfirm = { newValue ->
                                 parentViewModel.updateActiveEngineSetting {

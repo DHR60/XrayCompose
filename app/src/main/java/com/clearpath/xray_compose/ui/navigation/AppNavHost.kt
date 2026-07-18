@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -135,10 +136,10 @@ fun AppNavHost() {
                                 icon = {
                                     Icon(
                                         painter = painterResource(value.icon),
-                                        contentDescription = value.description
+                                        contentDescription = stringResource(value.description)
                                     )
                                 },
-                                label = { Text(value.description) }
+                                label = { Text(stringResource(value.description)) }
                             )
                         }
                     }

@@ -27,6 +27,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.res.stringResource
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.ui.components.FormBottomSheetContext
 import com.clearpath.xray_compose.ui.components.ReusableFormBottomSheet
@@ -48,16 +49,18 @@ fun SettingsInboundScreen() {
 
     var activeDialogContext by remember { mutableStateOf<FormBottomSheetContext?>(null) }
 
+    val inboundSocksPortLabel = stringResource(R.string.inbound_socks_port)
+
     Scaffold(
         modifier = Modifier.padding(rootInnerPadding),
         topBar = {
             TopAppBar(
-                title = { Text("Inbound Settings") },
+                title = { Text(stringResource(R.string.inbound_settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navigator.goBack() }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.logcat_back)
                         )
                     }
                 },
@@ -72,10 +75,10 @@ fun SettingsInboundScreen() {
         ) {
             item {
                 ListItem(
-                    headlineContent = { Text("Socks Port") },
+                    headlineContent = { Text(stringResource(R.string.inbound_socks_port)) },
                     supportingContent = {
                         Column {
-                            Text("Port for SOCKS5 proxy")
+                            Text(stringResource(R.string.inbound_socks_port_desc))
                             Text(
                                 text = inbound.port.toString(),
                                 style = MaterialTheme.typography.bodyMedium,
@@ -88,7 +91,7 @@ fun SettingsInboundScreen() {
                     modifier = Modifier.clickable {
                         activeDialogContext = FormBottomSheetContext(
                             fieldKey = "socks_port",
-                            title = "Socks Port",
+                            title = inboundSocksPortLabel,
                             initialValue = inbound.port.toString(),
                             onConfirm = { newValue ->
                                 newValue.toIntOrNull()?.let { port ->
@@ -108,8 +111,8 @@ fun SettingsInboundScreen() {
 
             item {
                 ListItem(
-                    headlineContent = { Text("Sniffing") },
-                    supportingContent = { Text("Enable traffic sniffing for transparent proxy") },
+                    headlineContent = { Text(stringResource(R.string.inbound_sniffing)) },
+                    supportingContent = { Text(stringResource(R.string.inbound_sniffing_desc)) },
                     trailingContent = {
                         Switch(checked = inbound.sniff, onCheckedChange = null)
                     },
@@ -131,8 +134,8 @@ fun SettingsInboundScreen() {
 
             item {
                 ListItem(
-                    headlineContent = { Text("Sniff Override Destination") },
-                    supportingContent = { Text("Override destination with sniffed domain") },
+                    headlineContent = { Text(stringResource(R.string.inbound_sniff_override)) },
+                    supportingContent = { Text(stringResource(R.string.inbound_sniff_override_desc)) },
                     trailingContent = {
                         Switch(checked = inbound.sniffOverrideDest, onCheckedChange = null)
                     },
@@ -154,8 +157,8 @@ fun SettingsInboundScreen() {
 
             item {
                 ListItem(
-                    headlineContent = { Text("Allow LAN") },
-                    supportingContent = { Text("Allow connections from local network") },
+                    headlineContent = { Text(stringResource(R.string.inbound_allow_lan)) },
+                    supportingContent = { Text(stringResource(R.string.inbound_allow_lan_desc)) },
                     trailingContent = {
                         Switch(checked = inbound.allowLan, onCheckedChange = null)
                     },
@@ -177,8 +180,8 @@ fun SettingsInboundScreen() {
 
             item {
                 ListItem(
-                    headlineContent = { Text("Enable TUN") },
-                    supportingContent = { Text("Enable transparent proxy via TUN interface") },
+                    headlineContent = { Text(stringResource(R.string.inbound_enable_tun)) },
+                    supportingContent = { Text(stringResource(R.string.inbound_enable_tun_desc)) },
                     trailingContent = {
                         Switch(checked = inbound.tun.enable, onCheckedChange = null)
                     },

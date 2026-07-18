@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.data.ConfigEngineItem
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
@@ -67,7 +68,7 @@ fun SettingsScreen() {
         modifier = Modifier.padding(rootInnerPadding),
         topBar = {
             TopAppBar(
-                title = { Text("Settings") },
+                title = { Text(stringResource(R.string.settings_title)) },
                 windowInsets = WindowInsets(0.dp)
             )
         }
@@ -83,7 +84,7 @@ fun SettingsScreen() {
             // Configuration Selection Section
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
-                    text = "Engine Configuration",
+                    text = stringResource(R.string.settings_engine_config),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(horizontal = 8.dp)
@@ -103,10 +104,10 @@ fun SettingsScreen() {
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             OutlinedTextField(
-                                value = activeEngineSetting.remark.ifEmpty { "Unnamed" },
+                                value = activeEngineSetting.remark.ifEmpty { stringResource(R.string.settings_unnamed) },
                                 onValueChange = {},
                                 readOnly = true,
-                                label = { Text("Active configuration") },
+                                label = { Text(stringResource(R.string.settings_active_config)) },
                                 trailingIcon = {
                                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                                 },
@@ -121,7 +122,7 @@ fun SettingsScreen() {
                             ) {
                                 engineSettingList.forEach { setting ->
                                     DropdownMenuItem(
-                                        text = { Text(setting.remark.ifEmpty { "Unnamed" }) },
+                                        text = { Text(setting.remark.ifEmpty { stringResource(R.string.settings_unnamed) }) },
                                         onClick = {
                                             viewModel.switchActiveEngineSetting(setting.id)
                                             expanded = false
@@ -139,7 +140,7 @@ fun SettingsScreen() {
                                     activeEngineSetting.copy(remark = it)
                                 )
                             },
-                            label = { Text("Rename") },
+                            label = { Text(stringResource(R.string.settings_rename)) },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true
                         )
@@ -161,7 +162,7 @@ fun SettingsScreen() {
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp)
                                 )
-                                Text("Delete", modifier = Modifier.padding(start = 4.dp))
+                                Text(stringResource(R.string.settings_delete), modifier = Modifier.padding(start = 4.dp))
                             }
 
                             Row(
@@ -187,7 +188,7 @@ fun SettingsScreen() {
                                         contentDescription = null,
                                         modifier = Modifier.size(18.dp)
                                     )
-                                    Text("Copy", modifier = Modifier.padding(start = 4.dp))
+                                    Text(stringResource(R.string.settings_copy), modifier = Modifier.padding(start = 4.dp))
                                 }
                                 FilledTonalButton(
                                     onClick = {
@@ -202,7 +203,7 @@ fun SettingsScreen() {
                                         contentDescription = null,
                                         modifier = Modifier.size(18.dp)
                                     )
-                                    Text("Add", modifier = Modifier.padding(start = 4.dp))
+                                    Text(stringResource(R.string.settings_add), modifier = Modifier.padding(start = 4.dp))
                                 }
                             }
                         }
@@ -213,14 +214,14 @@ fun SettingsScreen() {
             // Sub-module Settings Section
             Column {
                 Text(
-                    text = "Module Settings",
+                    text = stringResource(R.string.settings_module_settings),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                 )
                 ListItem(
-                    headlineContent = { Text("Inbound") },
-                    supportingContent = { Text("Configure inbound traffic rules") },
+                    headlineContent = { Text(stringResource(R.string.settings_inbound)) },
+                    supportingContent = { Text(stringResource(R.string.settings_inbound_desc)) },
                     leadingContent = {
                         Icon(painterResource(R.drawable.ic_login), contentDescription = null)
                     },
@@ -230,8 +231,8 @@ fun SettingsScreen() {
                     modifier = Modifier.clickable { navigator.navigate(SettingsInbound) }
                 )
                 ListItem(
-                    headlineContent = { Text("DNS") },
-                    supportingContent = { Text("Configure DNS servers and rules") },
+                    headlineContent = { Text(stringResource(R.string.settings_dns)) },
+                    supportingContent = { Text(stringResource(R.string.settings_dns_desc)) },
                     leadingContent = {
                         Icon(painterResource(R.drawable.ic_dns), contentDescription = null)
                     },
@@ -241,8 +242,8 @@ fun SettingsScreen() {
                     modifier = Modifier.clickable { navigator.navigate(SettingsDns) }
                 )
                 ListItem(
-                    headlineContent = { Text("Routing") },
-                    supportingContent = { Text("Manage traffic routing and rules") },
+                    headlineContent = { Text(stringResource(R.string.settings_routing)) },
+                    supportingContent = { Text(stringResource(R.string.settings_routing_desc)) },
                     leadingContent = {
                         Icon(painterResource(R.drawable.ic_alt_route), contentDescription = null)
                     },
@@ -252,8 +253,8 @@ fun SettingsScreen() {
                     modifier = Modifier.clickable { navigator.navigate(SettingsRouting) }
                 )
                 ListItem(
-                    headlineContent = { Text("Per-app settings") },
-                    supportingContent = { Text("Configure VPN per-app settings") },
+                    headlineContent = { Text(stringResource(R.string.settings_per_app)) },
+                    supportingContent = { Text(stringResource(R.string.settings_per_app_desc)) },
                     leadingContent = {
                         Icon(painterResource(R.drawable.ic_apps), contentDescription = null)
                     },
@@ -271,14 +272,14 @@ fun SettingsScreen() {
             // App Settings Section
             Column {
                 Text(
-                    text = "App Settings",
+                    text = stringResource(R.string.settings_app_settings),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                 )
                 ListItem(
-                    headlineContent = { Text("Appearance") },
-                    supportingContent = { Text("Change the appearance of the app") },
+                    headlineContent = { Text(stringResource(R.string.settings_appearance)) },
+                    supportingContent = { Text(stringResource(R.string.settings_appearance_desc)) },
                     leadingContent = {
                         Icon(painterResource(R.drawable.ic_palette), contentDescription = null)
                     },
@@ -296,8 +297,8 @@ fun SettingsScreen() {
                         }
                 )
                 ListItem(
-                    headlineContent = { Text("Subscription Settings") },
-                    supportingContent = { Text("Configure subscription settings") },
+                    headlineContent = { Text(stringResource(R.string.settings_subscription)) },
+                    supportingContent = { Text(stringResource(R.string.settings_subscription_desc)) },
                     leadingContent = {
                         Icon(painterResource(R.drawable.ic_data_table), contentDescription = null)
                     },
@@ -309,8 +310,8 @@ fun SettingsScreen() {
                     }
                 )
                 ListItem(
-                    headlineContent = { Text("Asset files Settings") },
-                    supportingContent = { Text("Configure asset files") },
+                    headlineContent = { Text(stringResource(R.string.settings_asset_files)) },
+                    supportingContent = { Text(stringResource(R.string.settings_asset_files_desc)) },
                     leadingContent = {
                         Icon(painterResource(R.drawable.ic_files), contentDescription = null)
                     },
@@ -334,14 +335,14 @@ fun SettingsScreen() {
             // Tools Section
             Column {
                 Text(
-                    text = "Tools & Diagnostics",
+                    text = stringResource(R.string.settings_tools_diagnostics),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
                 )
                 ListItem(
-                    headlineContent = { Text("Logcat") },
-                    supportingContent = { Text("View system and engine logs") },
+                    headlineContent = { Text(stringResource(R.string.settings_logcat)) },
+                    supportingContent = { Text(stringResource(R.string.settings_logcat_desc)) },
                     leadingContent = {
                         Icon(painterResource(R.drawable.ic_bug_report), contentDescription = null)
                     },

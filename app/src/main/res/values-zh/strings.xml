@@ -1,0 +1,201 @@
+<resources>
+    <string name="app_name">Xray Compose</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">首页</string>
+    <string name="nav_profiles">配置文件</string>
+    <string name="nav_settings">设置</string>
+
+    <!-- Home Screen -->
+    <string name="home_status_stopped">已停止</string>
+    <string name="home_status_running">运行中</string>
+    <string name="home_status_loading">加载中…</string>
+    <string name="home_proxy_core_status">代理核心状态</string>
+    <string name="home_active_profile">当前配置文件</string>
+    <string name="home_active_engine_setting">当前引擎设置</string>
+    <string name="home_permission_granted">已授予</string>
+    <string name="home_permission_not_granted">未授予</string>
+    <string name="home_notification_permission">通知权限</string>
+    <string name="home_query_all_packages_permission">查询所有应用权限</string>
+    <string name="home_access_local_network_permission">访问本地网络权限</string>
+    <string name="home_tap_to_verify">点击以验证</string>
+    <string name="home_denied">已拒绝</string>
+    <string name="home_url_test_delay">URL 测试延迟</string>
+    <string name="home_not_tested">未测试</string>
+    <string name="home_testing">测试中…</string>
+    <string name="home_timeout">超时</string>
+    <string name="home_proxy_up">代理上传</string>
+    <string name="home_proxy_down">代理下载</string>
+    <string name="home_proxy_total">代理总量</string>
+    <string name="home_direct_up">直连上传</string>
+    <string name="home_direct_down">直连下载</string>
+    <string name="home_direct_total">直连总量</string>
+    <string name="home_no_active_profile">无活动的配置文件</string>
+    <string name="home_start">开始</string>
+    <string name="home_stop">停止</string>
+
+    <!-- Profile List Screen -->
+    <string name="profile_list_title">配置文件列表</string>
+    <string name="profile_list_add_profile">添加配置文件</string>
+    <string name="profile_list_import_clipboard">从剪贴板导入</string>
+    <string name="profile_list_add_manual">手动添加</string>
+    <string name="profile_list_more_actions">更多操作</string>
+    <string name="profile_list_test_real_delay">测试真实延迟</string>
+    <string name="profile_list_update_subscription">更新订阅</string>
+    <string name="profile_list_stop_testing">停止测试</string>
+    <string name="profile_list_testing">测试中： %1$d / %2$d</string>
+    <string name="profile_list_tab_all">全部</string>
+    <string name="profile_list_unknown_sub">未知订阅</string>
+    <string name="profile_list_edit_profile">编辑配置文件</string>
+    <string name="profile_list_set_active">激活</string>
+    <string name="profile_list_share">分享</string>
+    <string name="profile_list_test_ping">测试真实 Ping 延迟</string>
+    <string name="profile_list_delete">删除</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">设置</string>
+    <string name="settings_engine_config">引擎配置</string>
+    <string name="settings_active_config">当前配置</string>
+    <string name="settings_unnamed">未命名</string>
+    <string name="settings_rename">重命名</string>
+    <string name="settings_copy">复制</string>
+    <string name="settings_add">添加</string>
+    <string name="settings_delete">删除</string>
+    <string name="settings_module_settings">模块设置</string>
+    <string name="settings_inbound">入站</string>
+    <string name="settings_inbound_desc">配置入站流量规则</string>
+    <string name="settings_dns">DNS</string>
+    <string name="settings_dns_desc">配置 DNS 服务器和规则</string>
+    <string name="settings_routing">路由</string>
+    <string name="settings_routing_desc">管理流量路由和规则</string>
+    <string name="settings_per_app">分应用设置</string>
+    <string name="settings_per_app_desc">配置 VPN 分应用设置</string>
+    <string name="settings_app_settings">应用设置</string>
+    <string name="settings_appearance">外观</string>
+    <string name="settings_appearance_desc">更改应用外观</string>
+    <string name="settings_subscription">订阅设置</string>
+    <string name="settings_subscription_desc">配置订阅设置</string>
+    <string name="settings_asset_files">资源文件设置</string>
+    <string name="settings_asset_files_desc">配置资源文件</string>
+    <string name="settings_tools_diagnostics">工具与诊断</string>
+    <string name="settings_logcat">日志</string>
+    <string name="settings_logcat_desc">查看系统和引擎日志</string>
+
+    <!-- Logcat Screen -->
+    <string name="logcat_title">日志</string>
+    <string name="logcat_back">返回</string>
+
+    <!-- Profile Editor -->
+    <string name="editor_basic_settings">基础设置</string>
+    <string name="editor_remark">别名</string>
+    <string name="editor_address">地址</string>
+    <string name="editor_port">端口</string>
+    <string name="editor_password">密码</string>
+    <string name="editor_id">用户 ID</string>
+    <string name="editor_flow">流控</string>
+    <string name="editor_encryption">VLESS 加密方式</string>
+    <string name="editor_transport_methods">传输方式</string>
+    <string name="editor_transport_security">传输层安全</string>
+    <string name="editor_sni">SNI</string>
+    <string name="editor_utls">uTLS 指纹</string>
+    <string name="editor_alpn">ALPN</string>
+    <string name="editor_allow_insecure">允许不安全连接</string>
+    <string name="editor_reality_public_key">Reality 公钥</string>
+    <string name="editor_reality_short_id">Reality 短 ID</string>
+    <string name="editor_reality_spider_x">Reality SpiderX</string>
+    <string name="editor_reality_mldsa65">Reality mldsa65verify</string>
+    <string name="editor_finalmask">Finalmask</string>
+    <string name="editor_save">保存</string>
+    <string name="editor_delete">删除</string>
+    <string name="editor_select_flow">选择流控</string>
+    <string name="editor_select_transport">选择传输方式</string>
+    <string name="editor_select_security">选择传输层安全</string>
+    <string name="editor_select_utls">选择 uTLS 指纹</string>
+    <string name="editor_select_alpn">选择 ALPN</string>
+    <string name="editor_select_allow_insecure">选择允许不安全连接</string>
+    <string name="editor_xhttp_mode">XHTTP 模式</string>
+    <string name="editor_xhttp_host">XHTTP 域名</string>
+    <string name="editor_xhttp_path">XHTTP 路径</string>
+    <string name="editor_xhttp_extra">XHTTP 额外参数</string>
+    <string name="editor_host">伪装域名</string>
+    <string name="editor_path">路径</string>
+    <string name="editor_grpc_mode">GRPC 模式</string>
+    <string name="editor_grpc_authority">Authority</string>
+    <string name="editor_grpc_service_name">服务名称</string>
+    <string name="editor_kcp_header">KCP 伪装类型</string>
+    <string name="editor_kcp_seed">种子</string>
+    <string name="editor_ech_config">ECH 配置列表</string>
+    <string name="editor_client_cert">客户端证书</string>
+    <string name="editor_verify_peer_name">按名称验证对端证书</string>
+    <string name="editor_cert_sha">客户端证书 SHA-256</string>
+    <string name="editor_bandwidth_up">上行带宽 (Mbps/s)</string>
+    <string name="editor_bandwidth_down">下行带宽 (Mbps/s)</string>
+    <string name="editor_port_hopping">端口跳跃</string>
+    <string name="editor_hop_interval">端口跳跃间隔</string>
+    <string name="editor_salamander_password">Salamander 密码</string>
+
+    <string name="editor_vless_settings">VLESS 设置</string>
+    <string name="editor_hysteria2_settings">HYSTERIA2 设置</string>
+    <string name="editor_trojan_settings">TROJAN 设置</string>
+    <string name="editor_transport_methods_settings">传输方式设置</string>
+    <string name="editor_transport_security_settings">传输层安全设置</string>
+    <string name="editor_finalmask_settings">Finalmask 设置</string>
+
+    <string name="editor_edit_prefix">编辑 %s</string>
+    <string name="editor_error_delete">删除配置文件失败： %s</string>
+    <string name="editor_error_save">保存配置文件失败： %s</string>
+
+    <!-- Validators -->
+    <string name="validator_port_empty">端口不能为空</string>
+    <string name="validator_port_digits">端口必须只包含数字</string>
+    <string name="validator_port_range">端口必须在 1 到 65535 之间</string>
+
+    <!-- DNS Settings -->
+    <string name="dns_settings_title">DNS 设置</string>
+    <string name="dns_remote_dns">远程 DNS</string>
+    <string name="dns_remote_dns_desc">以逗号分隔的远程 DNS 服务器列表</string>
+    <string name="dns_local_dns">本地 DNS</string>
+    <string name="dns_local_dns_desc">以逗号分隔的本地 DNS 服务器列表</string>
+    <string name="dns_not_set">未设置</string>
+    <string name="dns_enable_fake_dns">启用 Fake DNS</string>
+    <string name="dns_enable_fake_dns_desc">通过响应合成 IP 来减少 DNS 污染</string>
+    <string name="dns_serve_stale">允许过期记录</string>
+    <string name="dns_serve_stale_desc">在后台更新时返回过期的 DNS 记录</string>
+    <string name="dns_parallel_query">并行查询</string>
+    <string name="dns_parallel_query_desc">同时查询多个 DNS 服务器</string>
+    <string name="dns_additional_hosts">额外 Hosts</string>
+    <string name="dns_additional_hosts_desc">自定义域名映射（\"Domain IP1 IP2\"，每行一个）</string>
+    <string name="dns_entries_count">%1$d 个条目</string>
+
+    <!-- Inbound Settings -->
+    <string name="inbound_settings_title">入站设置</string>
+    <string name="inbound_socks_port">Socks 端口</string>
+    <string name="inbound_socks_port_desc">SOCKS5 代理端口</string>
+    <string name="inbound_sniffing">流量探测</string>
+    <string name="inbound_sniffing_desc">为透明代理启用流量探测</string>
+    <string name="inbound_sniff_override">探测覆盖目标</string>
+    <string name="inbound_sniff_override_desc">使用探测到的域名覆盖目标地址</string>
+    <string name="inbound_allow_lan">允许局域网连接</string>
+    <string name="inbound_allow_lan_desc">允许来自局域网的连接</string>
+    <string name="inbound_enable_tun">启用 TUN</string>
+    <string name="inbound_enable_tun_desc">通过 TUN 接口启用透明代理</string>
+
+    <!-- Routing Settings -->
+    <string name="routing_settings_title">路由设置</string>
+    <string name="routing_settings_section">路由设置</string>
+    <string name="routing_domain_strategy">域名解析策略</string>
+    <string name="routing_auto_detachment">自动分流</string>
+    <string name="routing_auto_detachment_desc">自动将域名规则和 IP 规则分离为或逻辑</string>
+    <string name="routing_rules">规则</string>
+    <string name="routing_add_rule">添加规则</string>
+    <string name="routing_edit_rule">编辑规则</string>
+    <string name="routing_delete_rule">删除规则</string>
+    <string name="routing_rule_type">类型: %1$s | 出站: %2$s</string>
+    <string name="routing_rule_domain">域名: %s</string>
+    <string name="routing_rule_ip">IP: %s</string>
+
+    <!-- Subscription Screen -->
+    <string name="sub_settings_title">订阅设置</string>
+    <string name="sub_updated_at">更新于： %s</string>
+    <string name="sub_update">更新</string>
+</resources>

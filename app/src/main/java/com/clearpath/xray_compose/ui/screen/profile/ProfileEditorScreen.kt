@@ -34,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -73,13 +74,17 @@ fun ProfileEditorScreen(
 
     var activeDialogContext by remember { mutableStateOf<FormBottomSheetContext?>(null) }
 
+    val portEmptyMsg = stringResource(R.string.validator_port_empty)
+    val portDigitsMsg = stringResource(R.string.validator_port_digits)
+    val portRangeMsg = stringResource(R.string.validator_port_range)
+
     // Port validator
     val portValidator: (String) -> String? = { value ->
         when {
-            value.isEmpty() -> "Port cannot be empty"
-            !value.all { it.isDigit() } -> "Port must contain only digits"
+            value.isEmpty() -> portEmptyMsg
+            !value.all { it.isDigit() } -> portDigitsMsg
             value.toIntOrNull()
-                ?.let { it !in 1..65535 } != false -> "Port must be between 1 and 65535"
+                ?.let { it !in 1..65535 } != false -> portRangeMsg
 
             else -> null
         }
@@ -95,6 +100,56 @@ fun ProfileEditorScreen(
     val isRealityEnabled =
         isTransportSecurityEnabled && profileModel.configType != EConfigType.HYSTERIA2
 
+    val deleteErrorMsgPrefix = stringResource(R.string.editor_error_delete)
+    val saveErrorMsgPrefix = stringResource(R.string.editor_error_save)
+
+    val editorRemarkLabel = stringResource(R.string.editor_remark)
+    val editorAddressLabel = stringResource(R.string.editor_address)
+    val editorPortLabel = stringResource(R.string.editor_port)
+    val editorEditPrefix = stringResource(R.string.editor_edit_prefix)
+
+    val editorIdLabel = stringResource(R.string.editor_id)
+    val editorFlowLabel = stringResource(R.string.editor_flow)
+    val editorEncryptionLabel = stringResource(R.string.editor_encryption)
+    val editorPasswordLabel = stringResource(R.string.editor_password)
+    val editorSalamanderPasswordLabel = stringResource(R.string.editor_salamander_password)
+    val editorBandwidthUpLabel = stringResource(R.string.editor_bandwidth_up)
+    val editorBandwidthDownLabel = stringResource(R.string.editor_bandwidth_down)
+    val editorPortHoppingLabel = stringResource(R.string.editor_port_hopping)
+    val editorHopIntervalLabel = stringResource(R.string.editor_hop_interval)
+    val editorTransportMethodsLabel = stringResource(R.string.editor_transport_methods)
+    val editorXhttpModeLabel = stringResource(R.string.editor_xhttp_mode)
+    val editorXhttpHostLabel = stringResource(R.string.editor_xhttp_host)
+    val editorXhttpPathLabel = stringResource(R.string.editor_xhttp_path)
+    val editorXhttpExtraLabel = stringResource(R.string.editor_xhttp_extra)
+    val editorHostLabel = stringResource(R.string.editor_host)
+    val editorPathLabel = stringResource(R.string.editor_path)
+    val editorGrpcModeLabel = stringResource(R.string.editor_grpc_mode)
+    val editorGrpcAuthorityLabel = stringResource(R.string.editor_grpc_authority)
+    val editorGrpcServiceNameLabel = stringResource(R.string.editor_grpc_service_name)
+    val editorKcpHeaderLabel = stringResource(R.string.editor_kcp_header)
+    val editorKcpSeedLabel = stringResource(R.string.editor_kcp_seed)
+    val editorTransportSecurityLabel = stringResource(R.string.editor_transport_security)
+    val editorSniLabel = stringResource(R.string.editor_sni)
+    val editorUtlsLabel = stringResource(R.string.editor_utls)
+    val editorAlpnLabel = stringResource(R.string.editor_alpn)
+    val editorAllowInsecureLabel = stringResource(R.string.editor_allow_insecure)
+    val editorEchConfigLabel = stringResource(R.string.editor_ech_config)
+    val editorClientCertLabel = stringResource(R.string.editor_client_cert)
+    val editorVerifyPeerNameLabel = stringResource(R.string.editor_verify_peer_name)
+    val editorCertShaLabel = stringResource(R.string.editor_cert_sha)
+    val editorRealityPublicKeyLabel = stringResource(R.string.editor_reality_public_key)
+    val editorRealityShortIdLabel = stringResource(R.string.editor_reality_short_id)
+    val editorRealitySpiderXLabel = stringResource(R.string.editor_reality_spider_x)
+    val editorRealityMldsa65Label = stringResource(R.string.editor_reality_mldsa65)
+    val editorFinalmaskLabel = stringResource(R.string.editor_finalmask)
+    val editorSelectFlow = stringResource(R.string.editor_select_flow)
+    val editorSelectTransport = stringResource(R.string.editor_select_transport)
+    val editorSelectSecurity = stringResource(R.string.editor_select_security)
+    val editorSelectUtls = stringResource(R.string.editor_select_utls)
+    val editorSelectAlpn = stringResource(R.string.editor_select_alpn)
+    val editorSelectAllowInsecure = stringResource(R.string.editor_select_allow_insecure)
+
     Scaffold(
         modifier = Modifier.padding(rootInnerPadding),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -105,7 +160,7 @@ fun ProfileEditorScreen(
                     IconButton(onClick = { navigator.goBack() }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.logcat_back)
                         )
                     }
                 },
@@ -117,13 +172,13 @@ fun ProfileEditorScreen(
                                     navigator.goBack()
                                 }, onError = {
                                     scope.launch {
-                                        snackbarHostState.showSnackbar("Failed to delete profile: $it")
+                                        snackbarHostState.showSnackbar(deleteErrorMsgPrefix.format(it))
                                     }
                                 })
                             }) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_delete),
-                                    contentDescription = "Delete"
+                                    contentDescription = stringResource(R.string.editor_delete)
                                 )
                             }
                         }
@@ -132,13 +187,13 @@ fun ProfileEditorScreen(
                                 navigator.goBack()
                             }, onError = {
                                 scope.launch {
-                                    snackbarHostState.showSnackbar("Failed to save profile: $it")
+                                    snackbarHostState.showSnackbar(saveErrorMsgPrefix.format(it))
                                 }
                             })
                         }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_save),
-                                contentDescription = "Save"
+                                contentDescription = stringResource(R.string.editor_save)
                             )
                         }
                         // TextButton(
@@ -162,7 +217,7 @@ fun ProfileEditorScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item { FormSectionHeader(title = "Basic settings") }
+            item { FormSectionHeader(title = stringResource(R.string.editor_basic_settings)) }
             item {
                 FormCard {
                     Column(
@@ -175,12 +230,12 @@ fun ProfileEditorScreen(
                                     currentState.copy(remark = newRemark)
                                 }
                             },
-                            label = { Text("Remark") },
+                            label = { Text(editorRemarkLabel) },
                             modifier = Modifier.fillMaxWidth(),
                             onEditIconClick = {
                                 activeDialogContext = FormBottomSheetContext(
                                     fieldKey = "remark",
-                                    title = "Edit Remark",
+                                    title = editorEditPrefix.format(editorRemarkLabel),
                                     initialValue = profileModel.remark,
                                     onConfirm = { newRemark ->
                                         viewModel.updateProfileModel { currentState ->
@@ -197,12 +252,12 @@ fun ProfileEditorScreen(
                                     currentState.copy(address = newValue)
                                 }
                             },
-                            label = { Text("Address") },
+                            label = { Text(editorAddressLabel) },
                             modifier = Modifier.fillMaxWidth(),
                             onEditIconClick = {
                                 activeDialogContext = FormBottomSheetContext(
                                     fieldKey = "address",
-                                    title = "Edit Address",
+                                    title = editorEditPrefix.format(editorAddressLabel),
                                     initialValue = profileModel.address,
                                     onConfirm = { newAddress ->
                                         viewModel.updateProfileModel { currentState ->
@@ -223,13 +278,13 @@ fun ProfileEditorScreen(
                                     }
                                 }
                             },
-                            label = { Text("Port") },
+                            label = { Text(editorPortLabel) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             modifier = Modifier.fillMaxWidth(),
                             onEditIconClick = {
                                 activeDialogContext = FormBottomSheetContext(
                                     fieldKey = "port",
-                                    title = "Edit Port",
+                                    title = editorEditPrefix.format(editorPortLabel),
                                     initialValue = profileModel.port.toString(),
                                     onConfirm = { newPort ->
                                         viewModel.updateProfileModel { currentState ->
@@ -246,7 +301,7 @@ fun ProfileEditorScreen(
                 }
             }
             if (profileModel.configType == EConfigType.VLESS) {
-                item { FormSectionHeader(title = "VLESS settings") }
+                item { FormSectionHeader(title = stringResource(R.string.editor_vless_settings)) }
                 item {
                     FormCard {
                         Column(
@@ -259,12 +314,12 @@ fun ProfileEditorScreen(
                                         currentState.copy(password = newValue)
                                     }
                                 },
-                                label = { Text("ID") },
+                                label = { Text(editorIdLabel) },
                                 modifier = Modifier.fillMaxWidth(),
                                 onEditIconClick = {
                                     activeDialogContext = FormBottomSheetContext(
                                         fieldKey = "id",
-                                        title = "Edit ID",
+                                        title = editorEditPrefix.format(editorIdLabel),
                                         initialValue = profileModel.password,
                                         onConfirm = { newId ->
                                             viewModel.updateProfileModel { currentState ->
@@ -280,10 +335,10 @@ fun ProfileEditorScreen(
                                 onExpandedChange = { expanded = it }
                             ) {
                                 OutlinedTextField(
-                                    value = if (protoExtra.flow.isNullOrEmpty()) "Select Flow" else protoExtra.flow!!,
+                                    value = if (protoExtra.flow.isNullOrEmpty()) editorSelectFlow else protoExtra.flow!!,
                                     onValueChange = {},
                                     readOnly = true,
-                                    label = { Text("Flow") },
+                                    label = { Text(editorFlowLabel) },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
@@ -320,12 +375,12 @@ fun ProfileEditorScreen(
                                         currentState.copy(vlessEncryption = newValue)
                                     }
                                 },
-                                label = { Text("VLESS Encryption") },
+                                label = { Text(editorEncryptionLabel) },
                                 modifier = Modifier.fillMaxWidth(),
                                 onEditIconClick = {
                                     activeDialogContext = FormBottomSheetContext(
                                         fieldKey = "vlessEncryption",
-                                        title = "Edit VLESS Encryption",
+                                        title = editorEditPrefix.format(editorEncryptionLabel),
                                         initialValue = if (protoExtra.vlessEncryption.isNullOrEmpty()) GlobalConst.none else protoExtra.vlessEncryption!!,
                                         onConfirm = { newEncryption ->
                                             viewModel.updateProtocolExtra { currentState ->
@@ -339,7 +394,7 @@ fun ProfileEditorScreen(
                     }
                 }
             } else if (profileModel.configType == EConfigType.HYSTERIA2) {
-                item { FormSectionHeader(title = "HYSTERIA2 settings") }
+                item { FormSectionHeader(title = stringResource(R.string.editor_hysteria2_settings)) }
                 item {
                     FormCard {
                         Column(
@@ -352,12 +407,12 @@ fun ProfileEditorScreen(
                                         currentState.copy(password = newValue)
                                     }
                                 },
-                                label = { Text("Password") },
+                                label = { Text(editorPasswordLabel) },
                                 modifier = Modifier.fillMaxWidth(),
                                 onEditIconClick = {
                                     activeDialogContext = FormBottomSheetContext(
                                         fieldKey = "hysteria2Password",
-                                        title = "Edit Password",
+                                        title = editorEditPrefix.format(editorPasswordLabel),
                                         initialValue = profileModel.password,
                                         onConfirm = { newValue ->
                                             viewModel.updateProfileModel { currentState ->
@@ -374,12 +429,12 @@ fun ProfileEditorScreen(
                                         currentState.copy(salamanderPass = newValue)
                                     }
                                 },
-                                label = { Text("Salamander Password") },
+                                label = { Text(editorSalamanderPasswordLabel) },
                                 modifier = Modifier.fillMaxWidth(),
                                 onEditIconClick = {
                                     activeDialogContext = FormBottomSheetContext(
                                         fieldKey = "hysteria2SalamanderPassword",
-                                        title = "Edit Salamander Password",
+                                        title = editorEditPrefix.format(editorSalamanderPasswordLabel),
                                         initialValue = protoExtra.salamanderPass ?: "",
                                         onConfirm = { newValue ->
                                             viewModel.updateProtocolExtra { currentState ->
@@ -400,12 +455,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(upMbps = newValue)
                                         }
                                     },
-                                    label = { Text("Bandwidth up (Mbps/s)") },
+                                    label = { Text(editorBandwidthUpLabel) },
                                     modifier = Modifier.weight(1f),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "hysteria2UpMbps",
-                                            title = "Edit Bandwidth up (Mbps/s)",
+                                            title = editorEditPrefix.format(editorBandwidthUpLabel),
                                             initialValue = protoExtra.upMbps ?: "",
                                             onConfirm = { newValue ->
                                                 viewModel.updateProtocolExtra { currentState ->
@@ -422,12 +477,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(downMbps = newValue)
                                         }
                                     },
-                                    label = { Text("Bandwidth down (Mbps/s)") },
+                                    label = { Text(editorBandwidthDownLabel) },
                                     modifier = Modifier.weight(1f),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "hysteria2DownMbps",
-                                            title = "Edit Bandwidth down (Mbps/s)",
+                                            title = editorEditPrefix.format(editorBandwidthDownLabel),
                                             initialValue = protoExtra.downMbps ?: "",
                                             onConfirm = { newValue ->
                                                 viewModel.updateProtocolExtra { currentState ->
@@ -445,12 +500,12 @@ fun ProfileEditorScreen(
                                         currentState.copy(ports = newValue)
                                     }
                                 },
-                                label = { Text("Port Hopping") },
+                                label = { Text(editorPortHoppingLabel) },
                                 modifier = Modifier.fillMaxWidth(),
                                 onEditIconClick = {
                                     activeDialogContext = FormBottomSheetContext(
                                         fieldKey = "hysteria2Ports",
-                                        title = "Edit Port Hopping",
+                                        title = editorEditPrefix.format(editorPortHoppingLabel),
                                         initialValue = protoExtra.ports ?: "",
                                         onConfirm = { newValue ->
                                             viewModel.updateProtocolExtra { currentState ->
@@ -467,12 +522,12 @@ fun ProfileEditorScreen(
                                         currentState.copy(hopInterval = newValue)
                                     }
                                 },
-                                label = { Text("Port Hopping Interval") },
+                                label = { Text(editorHopIntervalLabel) },
                                 modifier = Modifier.fillMaxWidth(),
                                 onEditIconClick = {
                                     activeDialogContext = FormBottomSheetContext(
                                         fieldKey = "hysteria2PortsHoppingInterval",
-                                        title = "Edit Port Hopping Interval",
+                                        title = editorEditPrefix.format(editorHopIntervalLabel),
                                         initialValue = protoExtra.hopInterval ?: "",
                                         onConfirm = { newValue ->
                                             viewModel.updateProtocolExtra { currentState ->
@@ -486,7 +541,7 @@ fun ProfileEditorScreen(
                     }
                 }
             } else if (profileModel.configType == EConfigType.TROJAN) {
-                item { FormSectionHeader(title = "TROJAN settings") }
+                item { FormSectionHeader(title = stringResource(R.string.editor_trojan_settings)) }
                 item {
                     FormCard {
                         Column(
@@ -519,7 +574,7 @@ fun ProfileEditorScreen(
                 }
             }
             if (isTransportMethodsEnabled) {
-                item { FormSectionHeader(title = "Transport Methods settings") }
+                item { FormSectionHeader(title = stringResource(R.string.editor_transport_methods_settings)) }
                 item {
                     FormCard {
                         Column(
@@ -534,7 +589,7 @@ fun ProfileEditorScreen(
                                     value = transportNetwork.value,
                                     onValueChange = {},
                                     readOnly = true,
-                                    label = { Text("Transport Methods") },
+                                    label = { Text(editorTransportMethodsLabel) },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
@@ -573,7 +628,7 @@ fun ProfileEditorScreen(
                                         value = if (transportExtra.xhttpMode.isNullOrEmpty()) GlobalConst.defaultXhttpMode else transportExtra.xhttpMode!!,
                                         onValueChange = {},
                                         readOnly = true,
-                                        label = { Text("XHTTP Mode") },
+                                        label = { Text(editorXhttpModeLabel) },
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
@@ -607,12 +662,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(host = newValue)
                                         }
                                     },
-                                    label = { Text("XHTTP Host") },
+                                    label = { Text(editorXhttpHostLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "xhttpHost",
-                                            title = "Edit XHTTP Host",
+                                            title = editorEditPrefix.format(editorXhttpHostLabel),
                                             initialValue = transportExtra.host ?: "",
                                             onConfirm = { newHost ->
                                                 viewModel.updateTransportExtra { currentState ->
@@ -629,12 +684,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(path = newValue)
                                         }
                                     },
-                                    label = { Text("XHTTP Path") },
+                                    label = { Text(editorXhttpPathLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "xhttpPath",
-                                            title = "Edit XHTTP Path",
+                                            title = editorEditPrefix.format(editorXhttpPathLabel),
                                             initialValue = transportExtra.path ?: "",
                                             onConfirm = { newPath ->
                                                 viewModel.updateTransportExtra { currentState ->
@@ -651,12 +706,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(xhttpExtra = newValue)
                                         }
                                     },
-                                    label = { Text("XHTTP Extra") },
+                                    label = { Text(editorXhttpExtraLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "xhttpExtra",
-                                            title = "Edit XHTTP Extra",
+                                            title = editorEditPrefix.format(editorXhttpExtraLabel),
                                             initialValue = transportExtra.xhttpExtra ?: "",
                                             onConfirm = { newExtra ->
                                                 viewModel.updateTransportExtra { currentState ->
@@ -676,12 +731,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(host = newValue)
                                         }
                                     },
-                                    label = { Text("Host") },
+                                    label = { Text(editorHostLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "host",
-                                            title = "Edit Host",
+                                            title = editorEditPrefix.format(editorHostLabel),
                                             initialValue = transportExtra.host ?: "",
                                             onConfirm = { newHost ->
                                                 viewModel.updateTransportExtra { currentState ->
@@ -698,12 +753,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(path = newValue)
                                         }
                                     },
-                                    label = { Text("Path") },
+                                    label = { Text(editorPathLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "path",
-                                            title = "Edit Path",
+                                            title = editorEditPrefix.format(editorPathLabel),
                                             initialValue = transportExtra.path ?: "",
                                             onConfirm = { newPath ->
                                                 viewModel.updateTransportExtra { currentState ->
@@ -723,7 +778,7 @@ fun ProfileEditorScreen(
                                         value = if (transportExtra.grpcMode.isNullOrEmpty()) GlobalConst.defaultGrpcMode else transportExtra.grpcMode!!,
                                         onValueChange = {},
                                         readOnly = true,
-                                        label = { Text("GRPC Mode") },
+                                        label = { Text(editorGrpcModeLabel) },
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
@@ -757,12 +812,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(grpcAuthority = newValue)
                                         }
                                     },
-                                    label = { Text("Authority") },
+                                    label = { Text(editorGrpcAuthorityLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "authority",
-                                            title = "Edit Authority",
+                                            title = editorEditPrefix.format(editorGrpcAuthorityLabel),
                                             initialValue = transportExtra.grpcAuthority ?: "",
                                             onConfirm = { newHost ->
                                                 viewModel.updateTransportExtra { currentState ->
@@ -779,12 +834,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(grpcServiceName = newValue)
                                         }
                                     },
-                                    label = { Text("Service Name") },
+                                    label = { Text(editorGrpcServiceNameLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "serviceName",
-                                            title = "Edit Service Name",
+                                            title = editorEditPrefix.format(editorGrpcServiceNameLabel),
                                             initialValue = transportExtra.grpcServiceName ?: "",
                                             onConfirm = { newPath ->
                                                 viewModel.updateTransportExtra { currentState ->
@@ -804,7 +859,7 @@ fun ProfileEditorScreen(
                                         value = if (transportExtra.kcpSeed.isNullOrEmpty()) "Select KCP Header" else transportExtra.kcpSeed!!,
                                         onValueChange = {},
                                         readOnly = true,
-                                        label = { Text("KCP Header") },
+                                        label = { Text(editorKcpHeaderLabel) },
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
@@ -841,12 +896,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(kcpSeed = newValue)
                                         }
                                     },
-                                    label = { Text("Seed") },
+                                    label = { Text(editorKcpSeedLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "seed",
-                                            title = "Edit Seed",
+                                            title = editorEditPrefix.format(editorKcpSeedLabel),
                                             initialValue = transportExtra.kcpSeed ?: "",
                                             onConfirm = { newHost ->
                                                 viewModel.updateTransportExtra { currentState ->
@@ -862,7 +917,7 @@ fun ProfileEditorScreen(
                 }
             }
             if (isTransportSecurityEnabled) {
-                item { FormSectionHeader(title = "Transport Security settings") }
+                item { FormSectionHeader(title = stringResource(R.string.editor_transport_security_settings)) }
                 item {
                     FormCard {
                         Column(
@@ -874,10 +929,10 @@ fun ProfileEditorScreen(
                                 onExpandedChange = { expanded = it }
                             ) {
                                 OutlinedTextField(
-                                    value = profileModel.streamSecurity.ifEmpty { "Select Transport Security" },
+                                    value = profileModel.streamSecurity.ifEmpty { editorSelectSecurity },
                                     onValueChange = {},
                                     readOnly = true,
-                                    label = { Text("Transport Security") },
+                                    label = { Text(editorTransportSecurityLabel) },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
@@ -919,12 +974,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(sni = newValue)
                                         }
                                     },
-                                    label = { Text("SNI") },
+                                    label = { Text(editorSniLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "sni",
-                                            title = "Edit SNI",
+                                            title = editorEditPrefix.format(editorSniLabel),
                                             initialValue = profileModel.sni,
                                             onConfirm = { newSni ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -940,10 +995,10 @@ fun ProfileEditorScreen(
                                     onExpandedChange = { utlsFingerprintExpanded = it }
                                 ) {
                                     OutlinedTextField(
-                                        value = profileModel.utlsFingerprint.ifEmpty { "Select uTLS Fingerprint" },
+                                        value = profileModel.utlsFingerprint.ifEmpty { editorSelectUtls },
                                         onValueChange = {},
                                         readOnly = true,
-                                        label = { Text("uTLS Fingerprint") },
+                                        label = { Text(editorUtlsLabel) },
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
@@ -981,10 +1036,10 @@ fun ProfileEditorScreen(
                                     onExpandedChange = { alpnExpanded = it }
                                 ) {
                                     OutlinedTextField(
-                                        value = profileModel.alpn.ifEmpty { "Select ALPN" },
+                                        value = profileModel.alpn.ifEmpty { editorSelectAlpn },
                                         onValueChange = {},
                                         readOnly = true,
-                                        label = { Text("ALPN") },
+                                        label = { Text(editorAlpnLabel) },
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
@@ -1020,10 +1075,10 @@ fun ProfileEditorScreen(
                                     onExpandedChange = { allowInsecureExpanded = it }
                                 ) {
                                     OutlinedTextField(
-                                        value = profileModel.allowInsecure.ifEmpty { "Select Allow Insecure" },
+                                        value = profileModel.allowInsecure.ifEmpty { editorSelectAllowInsecure },
                                         onValueChange = {},
                                         readOnly = true,
-                                        label = { Text("Allow Insecure") },
+                                        label = { Text(editorAllowInsecureLabel) },
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
@@ -1060,12 +1115,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(echConfigList = newValue)
                                         }
                                     },
-                                    label = { Text("ECH Config List") },
+                                    label = { Text(editorEchConfigLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "echConfigList",
-                                            title = "Edit ECH Config List",
+                                            title = editorEditPrefix.format(editorEchConfigLabel),
                                             initialValue = profileModel.echConfigList,
                                             onConfirm = { newEchConfigList ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -1082,12 +1137,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(cert = newValue)
                                         }
                                     },
-                                    label = { Text("Client Certificate") },
+                                    label = { Text(editorClientCertLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "cert",
-                                            title = "Edit Client Certificate",
+                                            title = editorEditPrefix.format(editorClientCertLabel),
                                             initialValue = profileModel.cert,
                                             onConfirm = { newCert ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -1104,12 +1159,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(certVerifyName = newValue)
                                         }
                                     },
-                                    label = { Text("Verify Peer Cert By Name") },
+                                    label = { Text(editorVerifyPeerNameLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "certVerifyName",
-                                            title = "Edit Verify Peer Cert By Name",
+                                            title = editorEditPrefix.format(editorVerifyPeerNameLabel),
                                             initialValue = profileModel.certVerifyName,
                                             onConfirm = { newCertVerifyName ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -1126,12 +1181,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(certSha = newValue)
                                         }
                                     },
-                                    label = { Text("Client Certificate SHA-256") },
+                                    label = { Text(editorCertShaLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "certSha",
-                                            title = "Edit Client Certificate SHA-256",
+                                            title = editorEditPrefix.format(editorCertShaLabel),
                                             initialValue = profileModel.certSha,
                                             onConfirm = { newCertSha ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -1151,12 +1206,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(realityPublicKey = newValue)
                                         }
                                     },
-                                    label = { Text("Reality Public Key") },
+                                    label = { Text(editorRealityPublicKeyLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "realityPublicKey",
-                                            title = "Edit Reality Public Key",
+                                            title = editorEditPrefix.format(editorRealityPublicKeyLabel),
                                             initialValue = profileModel.realityPublicKey,
                                             onConfirm = { newPublicKey ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -1173,12 +1228,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(realityShortId = newValue)
                                         }
                                     },
-                                    label = { Text("Reality Short ID") },
+                                    label = { Text(editorRealityShortIdLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "realityShortId",
-                                            title = "Edit Reality Short ID",
+                                            title = editorEditPrefix.format(editorRealityShortIdLabel),
                                             initialValue = profileModel.realityShortId,
                                             onConfirm = { newShortId ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -1195,12 +1250,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(realitySpiderX = newValue)
                                         }
                                     },
-                                    label = { Text("Reality SpiderX") },
+                                    label = { Text(editorRealitySpiderXLabel) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "realitySpiderX",
-                                            title = "Edit Reality SpiderX",
+                                            title = editorEditPrefix.format(editorRealitySpiderXLabel),
                                             initialValue = profileModel.realitySpiderX,
                                             onConfirm = { newSpiderX ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -1217,12 +1272,12 @@ fun ProfileEditorScreen(
                                             currentState.copy(realityMldsa65Verify = newValue)
                                         }
                                     },
-                                    label = { Text("Reality mldsa65verify") },
+                                    label = { Text(editorRealityMldsa65Label) },
                                     modifier = Modifier.fillMaxWidth(),
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "realityMldsa65Verify",
-                                            title = "Edit Reality mldsa65verify",
+                                            title = editorEditPrefix.format(editorRealityMldsa65Label),
                                             initialValue = profileModel.realityMldsa65Verify,
                                             onConfirm = { newMldsa65Verify ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -1237,7 +1292,7 @@ fun ProfileEditorScreen(
                     }
                 }
             }
-            item { FormSectionHeader(title = "Finalmask settings") }
+            item { FormSectionHeader(title = stringResource(R.string.editor_finalmask_settings)) }
             item {
                 FormCard {
                     Column(
@@ -1250,12 +1305,12 @@ fun ProfileEditorScreen(
                                     currentState.copy(finalmask = newValue)
                                 }
                             },
-                            label = { Text("Finalmask") },
+                            label = { Text(editorFinalmaskLabel) },
                             modifier = Modifier.fillMaxWidth(),
                             onEditIconClick = {
                                 activeDialogContext = FormBottomSheetContext(
                                     fieldKey = "finalmask",
-                                    title = "Edit Finalmask",
+                                    title = editorEditPrefix.format(editorFinalmaskLabel),
                                     initialValue = profileModel.finalmask,
                                     onConfirm = { newFinalmask ->
                                         viewModel.updateProfileModel { currentState ->

@@ -43,6 +43,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
@@ -74,12 +75,12 @@ fun SettingsRoutingScreen() {
         modifier = Modifier.padding(rootInnerPadding),
         topBar = {
             TopAppBar(
-                title = { Text("Routing Settings") },
+                title = { Text(stringResource(R.string.routing_settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navigator.goBack() }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.logcat_back)
                         )
                     }
                 },
@@ -95,7 +96,7 @@ fun SettingsRoutingScreen() {
         ) {
             item {
                 Text(
-                    text = "Routing settings",
+                    text = stringResource(R.string.routing_settings_section),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(16.dp)
@@ -112,7 +113,7 @@ fun SettingsRoutingScreen() {
                         value = domainStrategy.ifEmpty { GlobalConst.AsIs },
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Transport Security") },
+                        label = { Text(stringResource(R.string.routing_domain_strategy)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
@@ -157,11 +158,11 @@ fun SettingsRoutingScreen() {
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Auto Detachment",
+                            text = stringResource(R.string.routing_auto_detachment),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
-                            text = "Automatically separate domain name rules and IP rules into OR logic",
+                            text = stringResource(R.string.routing_auto_detachment_desc),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -178,7 +179,7 @@ fun SettingsRoutingScreen() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Rules",
+                        text = stringResource(R.string.routing_rules),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -190,7 +191,7 @@ fun SettingsRoutingScreen() {
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_add),
-                            contentDescription = "Add Rule"
+                            contentDescription = stringResource(R.string.routing_add_rule)
                         )
                     }
                 }
@@ -222,7 +223,7 @@ fun SettingsRoutingScreen() {
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_drag_handle),
-                                contentDescription = "Drag Handle",
+                                contentDescription = stringResource(R.string.profile_list_more_actions),
                                 modifier = Modifier
                                     .size(20.dp)
                                     .longPressDraggableHandle(
@@ -248,13 +249,13 @@ fun SettingsRoutingScreen() {
                                     style = MaterialTheme.typography.titleMedium
                                 )
                                 Text(
-                                    text = "Type: ${rule.ruleType} | Outbound: ${rule.outboundTag}",
+                                    text = stringResource(R.string.routing_rule_type, rule.ruleType, rule.outboundTag),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 if (rule.domain.isNotEmpty()) {
                                     Text(
-                                        text = "Domain: ${rule.domain}",
+                                        text = stringResource(R.string.routing_rule_domain, rule.domain),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1,
@@ -262,7 +263,7 @@ fun SettingsRoutingScreen() {
                                     )
                                 } else if (rule.ip.isNotEmpty()) {
                                     Text(
-                                        text = "IP: ${rule.ip}",
+                                        text = stringResource(R.string.routing_rule_ip, rule.ip),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1,
@@ -289,7 +290,7 @@ fun SettingsRoutingScreen() {
                                 ) {
                                     Icon(
                                         painter = painterResource(R.drawable.ic_edit),
-                                        contentDescription = "Edit Rule",
+                                        contentDescription = stringResource(R.string.routing_edit_rule),
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
@@ -301,7 +302,7 @@ fun SettingsRoutingScreen() {
                                 ) {
                                     Icon(
                                         painter = painterResource(R.drawable.ic_delete),
-                                        contentDescription = "Delete Rule",
+                                        contentDescription = stringResource(R.string.routing_delete_rule),
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }

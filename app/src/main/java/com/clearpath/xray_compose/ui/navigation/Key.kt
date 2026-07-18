@@ -55,22 +55,22 @@ data object Logcat : NavKey
 
 data class NavBarItem(
     val icon: Int,
-    val description: String
+    val description: Int
 )
 
 
 val TOP_LEVEL_ROUTES = mapOf<NavKey, NavBarItem>(
     Home to NavBarItem(
         icon = R.drawable.ic_home,
-        description = "Home"
+        description = R.string.nav_home
     ),
     ProfileList to NavBarItem(
         icon = R.drawable.ic_view_list,
-        description = "Profiles"
+        description = R.string.nav_profiles
     ),
     Settings to NavBarItem(
         icon = R.drawable.ic_settings,
-        description = "Settings"
+        description = R.string.nav_settings
     )
 )
 

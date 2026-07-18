@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
 import com.clearpath.xray_compose.viewmodel.LogcatViewModel
@@ -45,12 +46,12 @@ fun LogcatScreen() {
         modifier = Modifier.padding(rootInnerPadding),
         topBar = {
             TopAppBar(
-                title = { Text("Logcat") },
+                title = { Text(stringResource(R.string.logcat_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navigator.goBack() }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.logcat_back)
                         )
                     }
                 },

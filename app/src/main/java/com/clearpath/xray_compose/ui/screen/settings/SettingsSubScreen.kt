@@ -39,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
 import com.clearpath.xray_compose.ui.navigation.SettingsSubEditor
@@ -68,12 +69,12 @@ fun SettingsSubScreen() {
         modifier = Modifier.padding(rootInnerPadding),
         topBar = {
             TopAppBar(
-                title = { Text("Subscription Settings") },
+                title = { Text(stringResource(R.string.sub_settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = { navigator.goBack() }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = "Back"
+                            contentDescription = stringResource(R.string.logcat_back)
                         )
                     }
                 },
@@ -84,7 +85,7 @@ fun SettingsSubScreen() {
                         }) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_add),
-                                contentDescription = "Add"
+                                contentDescription = stringResource(R.string.settings_add)
                             )
                         }
                     }
@@ -200,7 +201,7 @@ fun SettingsSubScreen() {
                                         java.util.Locale.US
                                     ).format(java.util.Date(subItem.lastUpdate))
                                     Text(
-                                        text = "Updated: $lastUpdateStr",
+                                        text = stringResource(R.string.sub_updated_at, lastUpdateStr),
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.outline
                                     )
@@ -218,7 +219,7 @@ fun SettingsSubScreen() {
                                     ) {
                                         Icon(
                                             painter = painterResource(R.drawable.ic_edit),
-                                            contentDescription = "Edit",
+                                            contentDescription = stringResource(R.string.profile_list_edit_profile),
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }
@@ -228,7 +229,7 @@ fun SettingsSubScreen() {
                                     ) {
                                         Icon(
                                             painter = painterResource(R.drawable.ic_delete),
-                                            contentDescription = "Delete",
+                                            contentDescription = stringResource(R.string.profile_list_delete),
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }
@@ -256,7 +257,7 @@ fun SettingsSubScreen() {
                                             )
                                         ) {
                                             Text(
-                                                "Update",
+                                                stringResource(R.string.sub_update),
                                                 style = MaterialTheme.typography.labelLarge
                                             )
                                         }

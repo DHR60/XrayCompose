@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.data.ProfileModel
@@ -102,7 +103,7 @@ fun ProfileListScreen() {
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Profile List") },
+                title = { Text(stringResource(R.string.profile_list_title)) },
                 actions = {
                     Row {
                         var addProfileMenuExpanded by remember { mutableStateOf(false) }
@@ -114,7 +115,7 @@ fun ProfileListScreen() {
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_add),
-                                    contentDescription = "Add Profile"
+                                    contentDescription = stringResource(R.string.profile_list_add_profile)
                                 )
                             }
                             DropdownMenu(
@@ -122,7 +123,7 @@ fun ProfileListScreen() {
                                 onDismissRequest = { addProfileMenuExpanded = false }
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text("Import from Clipboard") },
+                                    text = { Text(stringResource(R.string.profile_list_import_clipboard)) },
                                     onClick = {
                                         addProfileMenuExpanded = false
                                         viewModel.importFromClipboard()
@@ -131,11 +132,11 @@ fun ProfileListScreen() {
                                 var manualAddSubExpanded by remember { mutableStateOf(false) }
                                 Box {
                                     DropdownMenuItem(
-                                        text = { Text("Add Manual") },
+                                        text = { Text(stringResource(R.string.profile_list_add_manual)) },
                                         trailingIcon = {
                                             Icon(
                                                 painter = painterResource(R.drawable.ic_arrow_right),
-                                                contentDescription = "Add Manual Submenu"
+                                                contentDescription = stringResource(R.string.profile_list_add_manual)
                                             )
                                         },
                                         onClick = {
@@ -178,7 +179,7 @@ fun ProfileListScreen() {
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_more_vert),
-                                    contentDescription = "More Actions"
+                                    contentDescription = stringResource(R.string.profile_list_more_actions)
                                 )
                             }
                             DropdownMenu(
@@ -186,14 +187,14 @@ fun ProfileListScreen() {
                                 onDismissRequest = { moreExpanded.value = false }
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text("Test Real Delay") },
+                                    text = { Text(stringResource(R.string.profile_list_test_real_delay)) },
                                     onClick = {
                                         moreExpanded.value = false
                                         viewModel.testCurrentSubProfiles()
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text("Update Subscription") },
+                                    text = { Text(stringResource(R.string.profile_list_update_subscription)) },
                                     onClick = {
                                         moreExpanded.value = false
                                         viewModel.updateSubForNetwork()
@@ -201,7 +202,7 @@ fun ProfileListScreen() {
                                 )
                                 if (isTesting) {
                                     DropdownMenuItem(
-                                        text = { Text("Stop Testing") },
+                                        text = { Text(stringResource(R.string.profile_list_stop_testing)) },
                                         onClick = {
                                             moreExpanded.value = false
                                             viewModel.stopTesting()
@@ -246,7 +247,7 @@ fun ProfileListScreen() {
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Text(
-                        text = "Testing: ${testProgress.current} / ${testProgress.total}",
+                        text = stringResource(R.string.profile_list_testing, testProgress.current, testProgress.total),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.fillMaxWidth(),
@@ -269,9 +270,9 @@ fun ProfileListScreen() {
                         onClick = { viewModel.switchActiveSubId(subId) },
                         text = {
                             Text(
-                                text = if (subId == null) "All"
-                                else subItems.find { it.id == subId }?.remark?.ifBlank { "Unknown Sub" }
-                                    ?: "Unknown Sub",
+                                text = if (subId == null) stringResource(R.string.profile_list_tab_all)
+                                else subItems.find { it.id == subId }?.remark?.ifBlank { stringResource(R.string.profile_list_unknown_sub) }
+                                    ?: stringResource(R.string.profile_list_unknown_sub),
                                 style = MaterialTheme.typography.titleSmall
                             )
                         }
@@ -325,7 +326,7 @@ fun ProfileListScreen() {
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_drag_handle),
-                                    contentDescription = "Drag Handle",
+                                    contentDescription = stringResource(R.string.profile_list_more_actions),
                                     modifier = Modifier
                                         .size(20.dp)
                                         .longPressDraggableHandle(
@@ -394,7 +395,7 @@ fun ProfileListScreen() {
                                     ) {
                                         Icon(
                                             painter = painterResource(R.drawable.ic_edit),
-                                            contentDescription = "Edit Profile",
+                                            contentDescription = stringResource(R.string.profile_list_edit_profile),
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }
@@ -407,7 +408,7 @@ fun ProfileListScreen() {
                                         ) {
                                             Icon(
                                                 painter = painterResource(R.drawable.ic_more_vert),
-                                                contentDescription = "More Actions",
+                                                contentDescription = stringResource(R.string.profile_list_more_actions),
                                                 modifier = Modifier.size(20.dp)
                                             )
                                         }
@@ -416,11 +417,11 @@ fun ProfileListScreen() {
                                             onDismissRequest = { menuExpanded = false }
                                         ) {
                                             DropdownMenuItem(
-                                                text = { Text("Set Active") },
+                                                text = { Text(stringResource(R.string.profile_list_set_active)) },
                                                 leadingIcon = {
                                                     Icon(
                                                         painter = painterResource(R.drawable.ic_check),
-                                                        contentDescription = "Set Active"
+                                                        contentDescription = stringResource(R.string.profile_list_set_active)
                                                     )
                                                 },
                                                 onClick = {
@@ -429,11 +430,11 @@ fun ProfileListScreen() {
                                                 }
                                             )
                                             DropdownMenuItem(
-                                                text = { Text("Share") },
+                                                text = { Text(stringResource(R.string.profile_list_share)) },
                                                 leadingIcon = {
                                                     Icon(
                                                         painter = painterResource(R.drawable.ic_share),
-                                                        contentDescription = "Share Profile"
+                                                        contentDescription = stringResource(R.string.profile_list_share)
                                                     )
                                                 },
                                                 onClick = {
@@ -443,11 +444,11 @@ fun ProfileListScreen() {
                                                 }
                                             )
                                             DropdownMenuItem(
-                                                text = { Text("Test Real Ping Delay") },
+                                                text = { Text(stringResource(R.string.profile_list_test_ping)) },
                                                 leadingIcon = {
                                                     Icon(
                                                         painter = painterResource(R.drawable.ic_network_ping),
-                                                        contentDescription = "Test Profile"
+                                                        contentDescription = stringResource(R.string.profile_list_test_ping)
                                                     )
                                                 },
                                                 onClick = {
@@ -457,11 +458,11 @@ fun ProfileListScreen() {
                                             )
                                             HorizontalDivider()
                                             DropdownMenuItem(
-                                                text = { Text("Delete") },
+                                                text = { Text(stringResource(R.string.profile_list_delete)) },
                                                 leadingIcon = {
                                                     Icon(
                                                         painter = painterResource(R.drawable.ic_delete),
-                                                        contentDescription = "Delete Profile"
+                                                        contentDescription = stringResource(R.string.profile_list_delete)
                                                     )
                                                 },
                                                 onClick = {

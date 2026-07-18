@@ -1,3 +1,201 @@
 <resources>
     <string name="app_name">Xray Compose</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_profiles">Profiles</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home Screen -->
+    <string name="home_status_stopped">Stopped</string>
+    <string name="home_status_running">Running</string>
+    <string name="home_status_loading">Loading...</string>
+    <string name="home_proxy_core_status">Proxy Core Status</string>
+    <string name="home_active_profile">Active Profile</string>
+    <string name="home_active_engine_setting">Active Engine Setting</string>
+    <string name="home_permission_granted">Granted</string>
+    <string name="home_permission_not_granted">Not Granted</string>
+    <string name="home_notification_permission">Notification Permission</string>
+    <string name="home_query_all_packages_permission">Query All Packages Permission</string>
+    <string name="home_access_local_network_permission">Access Local Network Permission</string>
+    <string name="home_tap_to_verify">Tap to verify</string>
+    <string name="home_denied">Denied</string>
+    <string name="home_url_test_delay">URL Test Delay</string>
+    <string name="home_not_tested">Not Tested</string>
+    <string name="home_testing">Testing...</string>
+    <string name="home_timeout">Timeout</string>
+    <string name="home_proxy_up">Proxy Up</string>
+    <string name="home_proxy_down">Proxy Down</string>
+    <string name="home_proxy_total">Proxy Total</string>
+    <string name="home_direct_up">Direct Up</string>
+    <string name="home_direct_down">Direct Down</string>
+    <string name="home_direct_total">Direct Total</string>
+    <string name="home_no_active_profile">No active profile</string>
+    <string name="home_start">Start</string>
+    <string name="home_stop">Stop</string>
+
+    <!-- Profile List Screen -->
+    <string name="profile_list_title">Profile List</string>
+    <string name="profile_list_add_profile">Add Profile</string>
+    <string name="profile_list_import_clipboard">Import from Clipboard</string>
+    <string name="profile_list_add_manual">Add Manual</string>
+    <string name="profile_list_more_actions">More Actions</string>
+    <string name="profile_list_test_real_delay">Test Real Delay</string>
+    <string name="profile_list_update_subscription">Update Subscription</string>
+    <string name="profile_list_stop_testing">Stop Testing</string>
+    <string name="profile_list_testing">Testing: %1$d / %2$d</string>
+    <string name="profile_list_tab_all">All</string>
+    <string name="profile_list_unknown_sub">Unknown Sub</string>
+    <string name="profile_list_edit_profile">Edit Profile</string>
+    <string name="profile_list_set_active">Set Active</string>
+    <string name="profile_list_share">Share</string>
+    <string name="profile_list_test_ping">Test Real Ping Delay</string>
+    <string name="profile_list_delete">Delete</string>
+
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_engine_config">Engine Configuration</string>
+    <string name="settings_active_config">Active configuration</string>
+    <string name="settings_unnamed">Unnamed</string>
+    <string name="settings_rename">Rename</string>
+    <string name="settings_copy">Copy</string>
+    <string name="settings_add">Add</string>
+    <string name="settings_delete">Delete</string>
+    <string name="settings_module_settings">Module Settings</string>
+    <string name="settings_inbound">Inbound</string>
+    <string name="settings_inbound_desc">Configure inbound traffic rules</string>
+    <string name="settings_dns">DNS</string>
+    <string name="settings_dns_desc">Configure DNS servers and rules</string>
+    <string name="settings_routing">Routing</string>
+    <string name="settings_routing_desc">Manage traffic routing and rules</string>
+    <string name="settings_per_app">Per-app settings</string>
+    <string name="settings_per_app_desc">Configure VPN per-app settings</string>
+    <string name="settings_app_settings">App Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_appearance_desc">Change the appearance of the app</string>
+    <string name="settings_subscription">Subscription Settings</string>
+    <string name="settings_subscription_desc">Configure subscription settings</string>
+    <string name="settings_asset_files">Asset files Settings</string>
+    <string name="settings_asset_files_desc">Configure asset files</string>
+    <string name="settings_tools_diagnostics">Tools &amp; Diagnostics</string>
+    <string name="settings_logcat">Logcat</string>
+    <string name="settings_logcat_desc">View system and engine logs</string>
+
+    <!-- Logcat Screen -->
+    <string name="logcat_title">Logcat</string>
+    <string name="logcat_back">Back</string>
+
+    <!-- Profile Editor -->
+    <string name="editor_basic_settings">Basic settings</string>
+    <string name="editor_remark">Remark</string>
+    <string name="editor_address">Address</string>
+    <string name="editor_port">Port</string>
+    <string name="editor_password">Password</string>
+    <string name="editor_id">ID</string>
+    <string name="editor_flow">Flow</string>
+    <string name="editor_encryption">VLESS Encryption</string>
+    <string name="editor_transport_methods">Transport Methods</string>
+    <string name="editor_transport_security">Transport Security</string>
+    <string name="editor_sni">SNI</string>
+    <string name="editor_utls">uTLS Fingerprint</string>
+    <string name="editor_alpn">ALPN</string>
+    <string name="editor_allow_insecure">Allow Insecure</string>
+    <string name="editor_reality_public_key">Reality Public Key</string>
+    <string name="editor_reality_short_id">Reality Short ID</string>
+    <string name="editor_reality_spider_x">Reality SpiderX</string>
+    <string name="editor_reality_mldsa65">Reality mldsa65verify</string>
+    <string name="editor_finalmask">Finalmask</string>
+    <string name="editor_save">Save</string>
+    <string name="editor_delete">Delete</string>
+    <string name="editor_select_flow">Select Flow</string>
+    <string name="editor_select_transport">Select Transport Methods</string>
+    <string name="editor_select_security">Select Transport Security</string>
+    <string name="editor_select_utls">Select uTLS Fingerprint</string>
+    <string name="editor_select_alpn">Select ALPN</string>
+    <string name="editor_select_allow_insecure">Select Allow Insecure</string>
+    <string name="editor_xhttp_mode">XHTTP Mode</string>
+    <string name="editor_xhttp_host">XHTTP Host</string>
+    <string name="editor_xhttp_path">XHTTP Path</string>
+    <string name="editor_xhttp_extra">XHTTP Extra</string>
+    <string name="editor_host">Host</string>
+    <string name="editor_path">Path</string>
+    <string name="editor_grpc_mode">GRPC Mode</string>
+    <string name="editor_grpc_authority">Authority</string>
+    <string name="editor_grpc_service_name">Service Name</string>
+    <string name="editor_kcp_header">KCP Header</string>
+    <string name="editor_kcp_seed">Seed</string>
+    <string name="editor_ech_config">ECH Config List</string>
+    <string name="editor_client_cert">Client Certificate</string>
+    <string name="editor_verify_peer_name">Verify Peer Cert By Name</string>
+    <string name="editor_cert_sha">Client Certificate SHA-256</string>
+    <string name="editor_bandwidth_up">Bandwidth up (Mbps/s)</string>
+    <string name="editor_bandwidth_down">Bandwidth down (Mbps/s)</string>
+    <string name="editor_port_hopping">Port Hopping</string>
+    <string name="editor_hop_interval">Port Hopping Interval</string>
+    <string name="editor_salamander_password">Salamander Password</string>
+
+    <string name="editor_vless_settings">VLESS settings</string>
+    <string name="editor_hysteria2_settings">HYSTERIA2 settings</string>
+    <string name="editor_trojan_settings">TROJAN settings</string>
+    <string name="editor_transport_methods_settings">Transport Methods settings</string>
+    <string name="editor_transport_security_settings">Transport Security settings</string>
+    <string name="editor_finalmask_settings">Finalmask settings</string>
+
+    <string name="editor_edit_prefix">Edit %s</string>
+    <string name="editor_error_delete">Failed to delete profile: %s</string>
+    <string name="editor_error_save">Failed to save profile: %s</string>
+
+    <!-- Validators -->
+    <string name="validator_port_empty">Port cannot be empty</string>
+    <string name="validator_port_digits">Port must contain only digits</string>
+    <string name="validator_port_range">Port must be between 1 and 65535</string>
+
+    <!-- DNS Settings -->
+    <string name="dns_settings_title">DNS Settings</string>
+    <string name="dns_remote_dns">Remote DNS</string>
+    <string name="dns_remote_dns_desc">Comma separated list of remote DNS servers</string>
+    <string name="dns_local_dns">Local DNS</string>
+    <string name="dns_local_dns_desc">Comma separated list of local DNS servers</string>
+    <string name="dns_not_set">Not Set</string>
+    <string name="dns_enable_fake_dns">Enable Fake DNS</string>
+    <string name="dns_enable_fake_dns_desc">Reduces DNS pollution by responding with synthetic IPs</string>
+    <string name="dns_serve_stale">Serve Stale</string>
+    <string name="dns_serve_stale_desc">Serve stale DNS records while updating in background</string>
+    <string name="dns_parallel_query">Parallel Query</string>
+    <string name="dns_parallel_query_desc">Query multiple DNS servers simultaneously</string>
+    <string name="dns_additional_hosts">Additional Hosts</string>
+    <string name="dns_additional_hosts_desc">Custom host mappings (\"Domain IP1 IP2\", line by line)</string>
+    <string name="dns_entries_count">%1$d entries</string>
+
+    <!-- Inbound Settings -->
+    <string name="inbound_settings_title">Inbound Settings</string>
+    <string name="inbound_socks_port">Socks Port</string>
+    <string name="inbound_socks_port_desc">Port for SOCKS5 proxy</string>
+    <string name="inbound_sniffing">Sniffing</string>
+    <string name="inbound_sniffing_desc">Enable traffic sniffing for transparent proxy</string>
+    <string name="inbound_sniff_override">Sniff Override Destination</string>
+    <string name="inbound_sniff_override_desc">Override destination with sniffed domain</string>
+    <string name="inbound_allow_lan">Allow LAN</string>
+    <string name="inbound_allow_lan_desc">Allow connections from local network</string>
+    <string name="inbound_enable_tun">Enable TUN</string>
+    <string name="inbound_enable_tun_desc">Enable transparent proxy via TUN interface</string>
+
+    <!-- Routing Settings -->
+    <string name="routing_settings_title">Routing Settings</string>
+    <string name="routing_settings_section">Routing settings</string>
+    <string name="routing_domain_strategy">Domain Strategy</string>
+    <string name="routing_auto_detachment">Auto Detachment</string>
+    <string name="routing_auto_detachment_desc">Automatically separate domain name rules and IP rules into OR logic</string>
+    <string name="routing_rules">Rules</string>
+    <string name="routing_add_rule">Add Rule</string>
+    <string name="routing_edit_rule">Edit Rule</string>
+    <string name="routing_delete_rule">Delete Rule</string>
+    <string name="routing_rule_type">Type: %1$s | Outbound: %2$s</string>
+    <string name="routing_rule_domain">Domain: %s</string>
+    <string name="routing_rule_ip">IP: %s</string>
+
+    <!-- Subscription Screen -->
+    <string name="sub_settings_title">Subscription Settings</string>
+    <string name="sub_updated_at">Updated: %s</string>
+    <string name="sub_update">Update</string>
 </resources>

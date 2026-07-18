@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.stringResource
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.enums.EngineState
@@ -117,7 +118,7 @@ fun HomeScreen() {
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Xray Compose") },
+                title = { Text(stringResource(R.string.app_name)) },
                 windowInsets = WindowInsets(0.dp)
             )
         },
@@ -154,21 +155,21 @@ fun HomeScreen() {
                 if (activeProfile == null) {
                     Icon(
                         painter = painterResource(R.drawable.ic_block),
-                        contentDescription = "No active profile",
+                        contentDescription = stringResource(R.string.home_no_active_profile),
                     )
                 } else {
                     when (engineState) {
                         EngineState.STOPPED -> {
                             Icon(
                                 painter = painterResource(R.drawable.ic_play_arrow),
-                                contentDescription = "Start",
+                                contentDescription = stringResource(R.string.home_start),
                             )
                         }
 
                         EngineState.STARTED -> {
                             Icon(
                                 painter = painterResource(R.drawable.ic_stop),
-                                contentDescription = "Stop",
+                                contentDescription = stringResource(R.string.home_stop),
                             )
                         }
 
@@ -176,7 +177,7 @@ fun HomeScreen() {
                             // show loading state
                             Icon(
                                 painter = painterResource(R.drawable.ic_hourglass_empty),
-                                contentDescription = "Loading",
+                                contentDescription = stringResource(R.string.home_status_loading),
                             )
                         }
                     }
@@ -211,9 +212,9 @@ fun HomeScreen() {
                     ) {
                         Text(
                             text = when (engineState) {
-                                EngineState.STOPPED -> "Stopped"
-                                EngineState.STARTED -> "Running"
-                                else -> "Loading..."
+                                EngineState.STOPPED -> stringResource(R.string.home_status_stopped)
+                                EngineState.STARTED -> stringResource(R.string.home_status_running)
+                                else -> stringResource(R.string.home_status_loading)
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium,
@@ -226,7 +227,7 @@ fun HomeScreen() {
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "Proxy Core Status",
+                            text = stringResource(R.string.home_proxy_core_status),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
                             maxLines = 1
@@ -246,7 +247,7 @@ fun HomeScreen() {
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "Active Profile",
+                            text = stringResource(R.string.home_active_profile),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
                             maxLines = 1
@@ -266,7 +267,7 @@ fun HomeScreen() {
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "Active Engine Setting",
+                            text = stringResource(R.string.home_active_engine_setting),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
                             maxLines = 1
@@ -302,7 +303,7 @@ fun HomeScreen() {
                                 }
                         ) {
                             Text(
-                                text = if (isNotificationGranted) "Granted" else "Not Granted",
+                                text = if (isNotificationGranted) stringResource(R.string.home_permission_granted) else stringResource(R.string.home_permission_not_granted),
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
                                 color = if (isNotificationGranted) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.error,
@@ -310,7 +311,7 @@ fun HomeScreen() {
                                 overflow = TextOverflow.Ellipsis
                             )
                             Text(
-                                text = "Notification Permission",
+                                text = stringResource(R.string.home_notification_permission),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
                                 maxLines = 1
@@ -339,9 +340,9 @@ fun HomeScreen() {
                         ) {
                             Text(
                                 text = when (isQueryAllPackagesGranted) {
-                                    0 -> "Tap to verify"
-                                    1 -> "Granted"
-                                    else -> "Denied"
+                                    0 -> stringResource(R.string.home_tap_to_verify)
+                                    1 -> stringResource(R.string.home_permission_granted)
+                                    else -> stringResource(R.string.home_denied)
                                 },
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
@@ -354,7 +355,7 @@ fun HomeScreen() {
                                 overflow = TextOverflow.Ellipsis
                             )
                             Text(
-                                text = "Query All Packages Permission",
+                                text = stringResource(R.string.home_query_all_packages_permission),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
                                 maxLines = 1
@@ -376,7 +377,7 @@ fun HomeScreen() {
                                 }
                         ) {
                             Text(
-                                text = if (isAccessLocalNetworkGranted) "Granted" else "Not Granted",
+                                text = if (isAccessLocalNetworkGranted) stringResource(R.string.home_permission_granted) else stringResource(R.string.home_permission_not_granted),
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
                                 color = if (isAccessLocalNetworkGranted) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.error,
@@ -384,7 +385,7 @@ fun HomeScreen() {
                                 overflow = TextOverflow.Ellipsis
                             )
                             Text(
-                                text = "Access Local Network Permission",
+                                text = stringResource(R.string.home_access_local_network_permission),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
                                 maxLines = 1
@@ -414,10 +415,10 @@ fun HomeScreen() {
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             val (delayText, delayColor) = when (val status = engineHttpDelay) {
-                                HttpDelayStatus.NotTested -> "Not Tested" to MaterialTheme.colorScheme.outline
-                                HttpDelayStatus.Testing -> "Testing..." to MaterialTheme.colorScheme.primary
+                                HttpDelayStatus.NotTested -> stringResource(R.string.home_not_tested) to MaterialTheme.colorScheme.outline
+                                HttpDelayStatus.Testing -> stringResource(R.string.home_testing) to MaterialTheme.colorScheme.primary
                                 is HttpDelayStatus.Success -> "${status.delayMs} ms" to MaterialTheme.colorScheme.success
-                                HttpDelayStatus.Timeout -> "Timeout" to MaterialTheme.colorScheme.error
+                                HttpDelayStatus.Timeout -> stringResource(R.string.home_timeout) to MaterialTheme.colorScheme.error
                             }
                             Text(
                                 text = delayText,
@@ -428,7 +429,7 @@ fun HomeScreen() {
                                 overflow = TextOverflow.Ellipsis
                             )
                             Text(
-                                text = "URL Test Delay",
+                                text = stringResource(R.string.home_url_test_delay),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
                                 maxLines = 1
@@ -459,21 +460,21 @@ fun HomeScreen() {
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxHeight(),
-                                label = "Proxy Up",
+                                label = stringResource(R.string.home_proxy_up),
                                 value = longToSpeedString(trafficSummary.proxy.up.speed)
                             )
                             TrafficItem(
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxHeight(),
-                                label = "Proxy Down",
+                                label = stringResource(R.string.home_proxy_down),
                                 value = longToSpeedString(trafficSummary.proxy.down.speed)
                             )
                             TrafficItem(
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxHeight(),
-                                label = "Proxy Total",
+                                label = stringResource(R.string.home_proxy_total),
                                 value = longToSizeString(trafficSummary.proxy.up.total + trafficSummary.proxy.down.total)
                             )
                         }
@@ -488,21 +489,21 @@ fun HomeScreen() {
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxHeight(),
-                                label = "Direct Up",
+                                label = stringResource(R.string.home_direct_up),
                                 value = longToSpeedString(trafficSummary.direct.up.speed)
                             )
                             TrafficItem(
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxHeight(),
-                                label = "Direct Down",
+                                label = stringResource(R.string.home_direct_down),
                                 value = longToSpeedString(trafficSummary.direct.down.speed)
                             )
                             TrafficItem(
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxHeight(),
-                                label = "Direct Total",
+                                label = stringResource(R.string.home_direct_total),
                                 value = longToSizeString(trafficSummary.direct.up.total + trafficSummary.direct.down.total)
                             )
                         }
