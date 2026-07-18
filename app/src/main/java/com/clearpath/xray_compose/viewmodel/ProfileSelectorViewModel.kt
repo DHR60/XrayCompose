@@ -8,7 +8,6 @@ import com.clearpath.xray_compose.data.repo.ConfigRepository
 import com.clearpath.xray_compose.data.repo.PreferencesRepository
 import com.clearpath.xray_compose.data.repo.ProfileRepository
 import com.clearpath.xray_compose.viewmodel.uistate.ProfileWithTest
-import com.github.f4b6a3.uuid.UuidCreator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,9 +15,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,19 +54,25 @@ class ProfileSelectorViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val profilesWithTestFlow: StateFlow<List<ProfileWithTest>> = allProfilesFlow
-        .flatMapLatest { profiles ->
-            val idList = profiles.map { it.id }
-            profileRepository.observeProfileTestsByIds(idList)
-                .map { testList ->
-                    profiles.map { profile ->
-                        val test =
-                            testList.find { test -> test.id == UuidCreator.fromString(profile.id) }
-                        ProfileWithTest(profile, test)
-                    }
-                }
-        }.flowOn(Dispatchers.Default)
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    private val testsMapFlow = allProfilesFlow
+        .map { profiles -> profiles.map { it.id }.toSet() }
+        .distinctUntilChanged()
+        .flatMapLatest { idSet ->
+            profileRepository.observeProfileTestsByIds(idSet.toList())
+        }
+        .map { testList -> testList.associateBy { it.id.toString() } }
+        .onStart { emit(emptyMap()) }
+        .flowOn(Dispatchers.Default)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val profilesWithTestFlow: StateFlow<List<ProfileWithTest>> = combine(
+        allProfilesFlow,
+        testsMapFlow
+    ) { profiles, testsMap ->
+        profiles.map { profile ->
+            ProfileWithTest(profile, testsMap[profile.id])
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
         viewModelScope.launch {
