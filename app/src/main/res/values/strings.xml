@@ -12,7 +12,7 @@
     <string name="home_status_loading">Loading...</string>
     <string name="home_proxy_core_status">Proxy Core Status</string>
     <string name="home_active_profile">Active Profile</string>
-    <string name="home_active_engine_setting">Active Engine Setting</string>
+    <string name="home_active_engine_setting">Active Core Setting</string>
     <string name="home_permission_granted">Granted</string>
     <string name="home_permission_not_granted">Not Granted</string>
     <string name="home_notification_permission">Notification Permission</string>
@@ -54,7 +54,7 @@
 
     <!-- Settings Screen -->
     <string name="settings_title">Settings</string>
-    <string name="settings_engine_config">Engine Configuration</string>
+    <string name="settings_engine_config">Core Configuration</string>
     <string name="settings_active_config">Active configuration</string>
     <string name="settings_unnamed">Unnamed</string>
     <string name="settings_rename">Rename</string>
@@ -79,7 +79,7 @@
     <string name="settings_asset_files_desc">Configure asset files</string>
     <string name="settings_tools_diagnostics">Tools &amp; Diagnostics</string>
     <string name="settings_logcat">Logcat</string>
-    <string name="settings_logcat_desc">View system and engine logs</string>
+    <string name="settings_logcat_desc">View system and core logs</string>
 
     <!-- Logcat Screen -->
     <string name="logcat_title">Logcat</string>
@@ -123,7 +123,7 @@
     <string name="editor_grpc_authority">Authority</string>
     <string name="editor_grpc_service_name">Service Name</string>
     <string name="editor_kcp_header">KCP Header</string>
-    <string name="editor_kcp_seed">Seed</string>
+    <string name="editor_kcp_seed">KCP Seed</string>
     <string name="editor_ech_config">ECH Config List</string>
     <string name="editor_client_cert">Client Certificate</string>
     <string name="editor_verify_peer_name">Verify Peer Cert By Name</string>

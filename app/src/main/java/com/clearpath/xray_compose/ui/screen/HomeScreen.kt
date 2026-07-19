@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.ui.res.stringResource
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.enums.EngineState
@@ -303,7 +303,9 @@ fun HomeScreen() {
                                 }
                         ) {
                             Text(
-                                text = if (isNotificationGranted) stringResource(R.string.home_permission_granted) else stringResource(R.string.home_permission_not_granted),
+                                text = if (isNotificationGranted) stringResource(R.string.home_permission_granted) else stringResource(
+                                    R.string.home_permission_not_granted
+                                ),
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
                                 color = if (isNotificationGranted) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.error,
@@ -377,7 +379,9 @@ fun HomeScreen() {
                                 }
                         ) {
                             Text(
-                                text = if (isAccessLocalNetworkGranted) stringResource(R.string.home_permission_granted) else stringResource(R.string.home_permission_not_granted),
+                                text = if (isAccessLocalNetworkGranted) stringResource(R.string.home_permission_granted) else stringResource(
+                                    R.string.home_permission_not_granted
+                                ),
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
                                 color = if (isAccessLocalNetworkGranted) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.error,

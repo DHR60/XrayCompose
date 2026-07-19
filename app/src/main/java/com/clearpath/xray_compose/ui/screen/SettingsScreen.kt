@@ -41,9 +41,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.compose.ui.res.stringResource
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.data.ConfigEngineItem
 import com.clearpath.xray_compose.ui.navigation.LocalNavigator
@@ -162,7 +162,10 @@ fun SettingsScreen() {
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp)
                                 )
-                                Text(stringResource(R.string.settings_delete), modifier = Modifier.padding(start = 4.dp))
+                                Text(
+                                    stringResource(R.string.settings_delete),
+                                    modifier = Modifier.padding(start = 4.dp)
+                                )
                             }
 
                             Row(
@@ -188,7 +191,10 @@ fun SettingsScreen() {
                                         contentDescription = null,
                                         modifier = Modifier.size(18.dp)
                                     )
-                                    Text(stringResource(R.string.settings_copy), modifier = Modifier.padding(start = 4.dp))
+                                    Text(
+                                        stringResource(R.string.settings_copy),
+                                        modifier = Modifier.padding(start = 4.dp)
+                                    )
                                 }
                                 FilledTonalButton(
                                     onClick = {
@@ -203,7 +209,10 @@ fun SettingsScreen() {
                                         contentDescription = null,
                                         modifier = Modifier.size(18.dp)
                                     )
-                                    Text(stringResource(R.string.settings_add), modifier = Modifier.padding(start = 4.dp))
+                                    Text(
+                                        stringResource(R.string.settings_add),
+                                        modifier = Modifier.padding(start = 4.dp)
+                                    )
                                 }
                             }
                         }

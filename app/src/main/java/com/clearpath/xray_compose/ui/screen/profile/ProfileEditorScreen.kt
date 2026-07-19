@@ -172,7 +172,11 @@ fun ProfileEditorScreen(
                                     navigator.goBack()
                                 }, onError = {
                                     scope.launch {
-                                        snackbarHostState.showSnackbar(deleteErrorMsgPrefix.format(it))
+                                        snackbarHostState.showSnackbar(
+                                            deleteErrorMsgPrefix.format(
+                                                it
+                                            )
+                                        )
                                     }
                                 })
                             }) {
@@ -434,7 +438,9 @@ fun ProfileEditorScreen(
                                 onEditIconClick = {
                                     activeDialogContext = FormBottomSheetContext(
                                         fieldKey = "hysteria2SalamanderPassword",
-                                        title = editorEditPrefix.format(editorSalamanderPasswordLabel),
+                                        title = editorEditPrefix.format(
+                                            editorSalamanderPasswordLabel
+                                        ),
                                         initialValue = protoExtra.salamanderPass ?: "",
                                         onConfirm = { newValue ->
                                             viewModel.updateProtocolExtra { currentState ->
@@ -839,7 +845,9 @@ fun ProfileEditorScreen(
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "serviceName",
-                                            title = editorEditPrefix.format(editorGrpcServiceNameLabel),
+                                            title = editorEditPrefix.format(
+                                                editorGrpcServiceNameLabel
+                                            ),
                                             initialValue = transportExtra.grpcServiceName ?: "",
                                             onConfirm = { newPath ->
                                                 viewModel.updateTransportExtra { currentState ->
@@ -1164,7 +1172,9 @@ fun ProfileEditorScreen(
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "certVerifyName",
-                                            title = editorEditPrefix.format(editorVerifyPeerNameLabel),
+                                            title = editorEditPrefix.format(
+                                                editorVerifyPeerNameLabel
+                                            ),
                                             initialValue = profileModel.certVerifyName,
                                             onConfirm = { newCertVerifyName ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -1211,7 +1221,9 @@ fun ProfileEditorScreen(
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "realityPublicKey",
-                                            title = editorEditPrefix.format(editorRealityPublicKeyLabel),
+                                            title = editorEditPrefix.format(
+                                                editorRealityPublicKeyLabel
+                                            ),
                                             initialValue = profileModel.realityPublicKey,
                                             onConfirm = { newPublicKey ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -1233,7 +1245,9 @@ fun ProfileEditorScreen(
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "realityShortId",
-                                            title = editorEditPrefix.format(editorRealityShortIdLabel),
+                                            title = editorEditPrefix.format(
+                                                editorRealityShortIdLabel
+                                            ),
                                             initialValue = profileModel.realityShortId,
                                             onConfirm = { newShortId ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -1255,7 +1269,9 @@ fun ProfileEditorScreen(
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "realitySpiderX",
-                                            title = editorEditPrefix.format(editorRealitySpiderXLabel),
+                                            title = editorEditPrefix.format(
+                                                editorRealitySpiderXLabel
+                                            ),
                                             initialValue = profileModel.realitySpiderX,
                                             onConfirm = { newSpiderX ->
                                                 viewModel.updateProfileModel { currentState ->
@@ -1277,7 +1293,9 @@ fun ProfileEditorScreen(
                                     onEditIconClick = {
                                         activeDialogContext = FormBottomSheetContext(
                                             fieldKey = "realityMldsa65Verify",
-                                            title = editorEditPrefix.format(editorRealityMldsa65Label),
+                                            title = editorEditPrefix.format(
+                                                editorRealityMldsa65Label
+                                            ),
                                             initialValue = profileModel.realityMldsa65Verify,
                                             onConfirm = { newMldsa65Verify ->
                                                 viewModel.updateProfileModel { currentState ->

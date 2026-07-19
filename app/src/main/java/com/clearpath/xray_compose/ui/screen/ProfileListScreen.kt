@@ -46,11 +46,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.compose.ui.res.stringResource
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.R
 import com.clearpath.xray_compose.data.ProfileModel
@@ -247,7 +247,11 @@ fun ProfileListScreen() {
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Text(
-                        text = stringResource(R.string.profile_list_testing, testProgress.current, testProgress.total),
+                        text = stringResource(
+                            R.string.profile_list_testing,
+                            testProgress.current,
+                            testProgress.total
+                        ),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.fillMaxWidth(),
@@ -271,7 +275,11 @@ fun ProfileListScreen() {
                         text = {
                             Text(
                                 text = if (subId == null) stringResource(R.string.profile_list_tab_all)
-                                else subItems.find { it.id == subId }?.remark?.ifBlank { stringResource(R.string.profile_list_unknown_sub) }
+                                else subItems.find { it.id == subId }?.remark?.ifBlank {
+                                    stringResource(
+                                        R.string.profile_list_unknown_sub
+                                    )
+                                }
                                     ?: stringResource(R.string.profile_list_unknown_sub),
                                 style = MaterialTheme.typography.titleSmall
                             )
