@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         submodules: 'recursive'
         fetch-depth: '0'
@@ -26,11 +26,11 @@ jobs:
       uses: android-actions/setup-android@v4
       with:
         log-accepted-android-sdk-licenses: false
-        cmdline-tools-version: '14742923'
-        packages: 'platforms;android-37.0 build-tools;37.0.0 platform-tools'
+        cmdline-tools-version: '15859902'
+        packages: 'platforms;android-37.1 build-tools;37.0.0 platform-tools'
 
     - name: Download libv2ray
-      uses: robinraju/release-downloader@v1.13
+      uses: robinraju/release-downloader@v1
       with:
         repository: '2dust/AndroidLibXrayLite'
         latest: true
