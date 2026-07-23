@@ -56,6 +56,8 @@ object GlobalConst {
     const val trueStr = "true"
     const val falseStr = "false"
 
+    const val unidentifiedPackageName = "__unknown_app__"
+
     val configTypeHumanFyMap = mapOf(
         "VLESS" to EConfigType.VLESS,
         "ShadowSocks" to EConfigType.SHADOWSOCKS,
@@ -179,7 +181,7 @@ object GlobalConst {
         EConfigType.HTTP to "http://",
     )
 
-    val hysteria2SchemeAlias = "hy2://"
+    const val hysteria2SchemeAlias = "hy2://"
 
     val LocalDNSList = listOf(
         "119.29.29.29,223.5.5.5,https://doh.pub/dns-query",

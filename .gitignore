@@ -17,3 +17,5 @@ local.properties
 .idea/planningMode.xml
 
 .idea/deploymentTargetSelector.xml
+
+.idea/markdown.xml

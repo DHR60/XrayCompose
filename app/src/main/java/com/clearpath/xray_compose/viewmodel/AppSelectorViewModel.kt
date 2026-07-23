@@ -87,6 +87,14 @@ class AppSelectorViewModel @Inject constructor(
 
         fetchingPackages.add(packageName)
         viewModelScope.launch(Dispatchers.IO) {
+            // if (packageName == GlobalConst.unidentifiedPackageName) {
+            //     context.getDrawable(R.drawable.ic_question_mark)?.let {
+            //         iconCache[packageName] = it
+            //     }
+            //     fetchingPackages.remove(packageName)
+            //     return@launch
+            // }
+
             try {
                 val icon = getAppIcon(appInfo)
                 if (icon != null) {
