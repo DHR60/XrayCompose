@@ -3,7 +3,7 @@ package com.clearpath.xray_compose.data.importer
 import com.clearpath.xray_compose.data.ProfileModel
 import com.clearpath.xray_compose.data.repo.PreferencesRepository
 import com.clearpath.xray_compose.data.repo.ProfileRepository
-import com.clearpath.xray_compose.service.formatter.FmtFact
+import com.clearpath.xray_compose.service.fmt.FmtFact
 import com.clearpath.xray_compose.utils.Base64Util
 import com.clearpath.xray_compose.utils.LogUtil
 

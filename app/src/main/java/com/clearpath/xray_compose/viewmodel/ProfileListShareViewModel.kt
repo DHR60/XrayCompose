@@ -6,7 +6,7 @@ import com.clearpath.xray_compose.data.repo.ProfileRepository
 import com.clearpath.xray_compose.data.tempstore.TempStore
 import com.clearpath.xray_compose.service.engine.config.XrayConfigService
 import com.clearpath.xray_compose.service.engine.context.EngineConfigContextBuilder
-import com.clearpath.xray_compose.service.formatter.FmtFact
+import com.clearpath.xray_compose.service.fmt.FmtFact
 import com.clearpath.xray_compose.utils.JsonUtil
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

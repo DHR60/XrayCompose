@@ -1,6 +1,6 @@
-package com.clearpath.xray_compose.service.formatter.model
+package com.clearpath.xray_compose.service.fmt.model
 
-import com.clearpath.xray_compose.service.formatter.model.serializer.LenientIntSerializer
+import com.clearpath.xray_compose.service.fmt.model.serializer.LenientIntSerializer
 import kotlinx.serialization.Serializable
 
 @Serializable

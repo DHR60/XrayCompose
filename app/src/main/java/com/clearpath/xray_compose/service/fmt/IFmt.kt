@@ -1,4 +1,4 @@
-package com.clearpath.xray_compose.service.formatter
+package com.clearpath.xray_compose.service.fmt
 
 import com.clearpath.xray_compose.data.ProfileModel
 

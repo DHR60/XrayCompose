@@ -1,8 +1,8 @@
-package com.clearpath.xray_compose.service.formatter
+package com.clearpath.xray_compose.service.fmt
 
 import com.clearpath.xray_compose.data.ProfileModel
 import com.clearpath.xray_compose.enums.EConfigType
-import com.clearpath.xray_compose.service.formatter.model.EncodedParameters
+import com.clearpath.xray_compose.service.fmt.model.EncodedParameters
 import io.ktor.http.URLBuilder
 
 class Hysteria2Fmt : IFmt {

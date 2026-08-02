@@ -1,4 +1,4 @@
-package com.clearpath.xray_compose.service.formatter.model.serializer
+package com.clearpath.xray_compose.service.fmt.model.serializer
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException

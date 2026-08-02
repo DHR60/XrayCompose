@@ -1,4 +1,4 @@
-package com.clearpath.xray_compose.service.formatter.model
+package com.clearpath.xray_compose.service.fmt.model
 
 import com.clearpath.xray_compose.utils.Utils
 import io.ktor.http.ParametersBuilder

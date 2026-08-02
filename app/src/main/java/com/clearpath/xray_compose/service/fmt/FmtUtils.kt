@@ -1,4 +1,4 @@
-package com.clearpath.xray_compose.service.formatter
+package com.clearpath.xray_compose.service.fmt
 
 import com.clearpath.xray_compose.GlobalConst
 import com.clearpath.xray_compose.data.ProfileModel
@@ -11,7 +11,7 @@ import com.clearpath.xray_compose.enums.ETransport.KCP
 import com.clearpath.xray_compose.enums.ETransport.RAW
 import com.clearpath.xray_compose.enums.ETransport.WS
 import com.clearpath.xray_compose.enums.ETransport.XHTTP
-import com.clearpath.xray_compose.service.formatter.model.EncodedParameters
+import com.clearpath.xray_compose.service.fmt.model.EncodedParameters
 import com.clearpath.xray_compose.utils.JsonUtil
 import com.clearpath.xray_compose.utils.LogUtil
 import com.clearpath.xray_compose.utils.Utils
