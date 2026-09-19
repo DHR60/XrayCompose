@@ -12,7 +12,7 @@ android {
     namespace = "com.clearpath.xray_compose"
     compileSdk {
         version = release(37) {
-            minorApiLevel = 1
+            minorApiLevel = 2
         }
     }
 
